@@ -2,10 +2,11 @@ import { wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
-import { GraphQLResolveInfo } from 'graphql';
-import { CurrentUser, getFieldsToPopulate } from '../../../common';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
+import { GraphQLResolveInfo } from 'graphql/type';
+import { CurrentUser } from '../../temp/current-user.decorator';
+import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export interface ICreateOneType<T> {
   createOne: (

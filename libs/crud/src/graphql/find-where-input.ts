@@ -43,7 +43,7 @@ const getFilterDesignType = (p: CrudInfo) => {
     return StringFilter; // TODO workaround for enums
   } else {
     if (isArray(designType)) {
-      return whereInput(designType as Type);
+      return whereInput(designType as unknown as Type);
     }
     return findOneRelationFilter(designType as Type);
   }

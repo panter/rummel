@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import {
   PERMISSION_CHECKER_KEY,
   RequiredPermission,
-} from '../../core/authorization/permission.decorator';
+} from './permission.decorator';
 import { CaslAbilityFactory } from './csal-ability.factory';
 import { getRequest } from '../../common';
 import { AppAbility } from '../../common/interfaces/authorization/types';

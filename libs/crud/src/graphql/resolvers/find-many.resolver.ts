@@ -1,13 +1,14 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Int, Query, Resolver } from '@nestjs/graphql';
-import { GraphQLResolveInfo } from 'graphql';
 import { isArray, lowerFirst } from 'lodash';
 import * as pluralize from 'pluralize';
-import { CurrentUser, getFieldsToPopulate } from '../../../common';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { findManyEntityArgs } from '../find-many-entity-args';
+import { GraphQLResolveInfo } from 'graphql/type';
+import { CurrentUser } from '../../temp/current-user.decorator';
+import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export interface IFindManyType<T> {
   findMany: (

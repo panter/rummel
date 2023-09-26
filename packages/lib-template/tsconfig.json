@@ -1,22 +1,17 @@
 {
-  "extends": "@rummel/tsconfig/server-library.json",
+  "extends": "tsconfig/server-library.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./"
   },
   "include": [
     "index.ts",
-    "./asset-manager/**/*.ts",
-    "./common/**/*.ts",
-    "./core/**/*.ts",
-    "../crud/src/graphql/graphql-upload.d.ts",
     "./types.d.ts"
   ],
   "exclude": [
     "dist"
   ],
   "typeRoots": [
-    "graphql-upload.d.ts",
     "types.d.ts",
     "node_modules/@types"
   ]

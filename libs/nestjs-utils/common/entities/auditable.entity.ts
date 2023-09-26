@@ -1,7 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { Field, InterfaceType } from '@nestjs/graphql';
 import { AppEntity } from './app.entity';
-import { CrudField } from '../../crud/graphql/crud-field.decorator';
+import { CrudField } from '../../../crud/src/graphql/crud-field.decorator';
 
 @InterfaceType({ isAbstract: true })
 @Entity({ abstract: true })

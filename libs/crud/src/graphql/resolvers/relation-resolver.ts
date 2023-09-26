@@ -1,12 +1,13 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Query, Resolver } from '@nestjs/graphql';
-import { GraphQLResolveInfo } from 'graphql';
 import { isArray, lowerFirst } from 'lodash';
-import { CurrentUser, getFieldsToPopulate } from '../../../common';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
+import { GraphQLResolveInfo } from 'graphql/type';
+import { CurrentUser } from '../../temp/current-user.decorator';
+import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export interface IFindOneType<T> {
   findOne: (
@@ -33,6 +34,7 @@ export function FindOneResolver<T>(
     | undefined = {},
 ): Type<IFindOneType<T>> {
   const methodName = name ? name : lowerFirst(classRef.name);
+
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindOneType<T> {
     constructor(protected readonly em: EntityManager) {}

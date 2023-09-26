@@ -6,7 +6,7 @@ import {
   PermissionSubjectType,
 } from '../../common/interfaces/authorization/types';
 import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
-import { UserAuthorityProvider } from '../..//common/interfaces/authorization/user-authority-provider';
+import { UserAuthorityProvider } from '../../common/interfaces/authorization/user-authority-provider';
 
 @Injectable()
 export class CaslAbilityFactory {

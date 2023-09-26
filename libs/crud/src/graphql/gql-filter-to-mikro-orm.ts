@@ -1,5 +1,4 @@
 import { ObjectQuery } from '@mikro-orm/core';
-// import { UserEntity } from '../../modules/user/models/user.entity';
 import {
   applyStaticWhereFieldResolver,
   CrudInfo,

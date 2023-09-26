@@ -2,7 +2,7 @@ import { Entity, EntityRepositoryType, Property } from '@mikro-orm/core';
 import { Field, HideField, ObjectType } from '@nestjs/graphql';
 import { AppEntity } from '../../common';
 import { AutocompleteRepository } from './autocomplete.repository';
-import { CrudObject } from '../../crud/graphql/crud-object.decorator';
+import { CrudObject } from '../../../crud/src/graphql/crud-object.decorator';
 
 @ObjectType()
 @CrudObject()

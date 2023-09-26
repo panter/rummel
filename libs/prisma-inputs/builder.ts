@@ -4,7 +4,7 @@ import {
   PrismaInputSchema,
   PrismaInputSchemaProperties,
   object,
-} from '.';
+} from './index';
 
 type Difference<T, U> = Exclude<keyof T, keyof U>;
 

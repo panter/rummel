@@ -1,0 +1,27 @@
+{
+  "name": "@rummel/lib-template",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "yarn build --watch",
+    "clean": "rimraf \"dist\"",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "yarn lint --fix",
+    "lint:type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.7.0",
+    "@types/supertest": "^2.0.13",
+    "eslint": "^8.50.0",
+    "eslint-config-custom": "*",
+    "jest": "29.7.0",
+    "rimraf": "^5.0.4",
+    "supertest": "^6.3.3",
+    "tsconfig": "^7.0.0",
+    "tsconfig-paths": "4.2.0",
+    "typescript": "^5.1.6"
+  }
+}

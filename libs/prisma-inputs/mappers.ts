@@ -10,7 +10,7 @@ import {
   PrismaOneObjectInput,
   PrismaOneReferenceInput,
   PropertyMapper,
-} from './';
+} from './index';
 import { deepCompareObjects } from './deepCompare';
 
 export const setPropertyMapper = <T, M extends 'create' | 'update'>(

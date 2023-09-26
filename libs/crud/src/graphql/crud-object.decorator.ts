@@ -1,7 +1,6 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import 'reflect-metadata';
-// import { UserEntity } from '../../modules/user/models/user.entity';
 import { getTypeName } from './utils';
 
 export type InputResolverOptions<Entity> = {

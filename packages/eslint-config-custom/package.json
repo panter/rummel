@@ -1,5 +1,5 @@
 {
-  "name": "eslint-config-custom",
+  "name": "@rummel/eslint-config-custom",
   "version": "0.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -16,7 +16,7 @@
     "prettier": "^2.8.4"
   },
   "devDependencies": {
-    "eslint": "7.32.0",
+    "eslint": "8.50.0",
     "next": "^13.4.1",
     "react": "18.2",
     "react-dom": "18.2",

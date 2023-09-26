@@ -1,4 +1,4 @@
-import { PrismaInput, PrismaInputSchema, prismaSchemaBuilder } from '.';
+import { PrismaInput, PrismaInputSchema, prismaSchemaBuilder } from './index';
 import {
   manyReference,
   manyRelation,

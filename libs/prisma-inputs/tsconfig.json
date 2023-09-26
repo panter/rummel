@@ -1,7 +1,7 @@
 {
-  "extends": "tsconfig/react-library.json",
+  "extends": "@rummel/tsconfig/react-library.json",
   "include": [
-    "."
+    "./"
   ],
   "exclude": [
     "dist",

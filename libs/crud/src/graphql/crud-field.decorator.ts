@@ -5,7 +5,6 @@ import { ReturnTypeFunc } from '@nestjs/graphql';
 import { TypeOptions } from '@nestjs/graphql/dist/interfaces/type-options.interface';
 import { uniqBy } from 'lodash';
 import 'reflect-metadata';
-// import { UserEntity } from '../../modules/user/models/user.entity';
 import { CrudInfo, getPrototypeChain } from './utils';
 
 /**
