@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Server Library",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "isolatedModules": false,
+    "sourceMap": true,
+    "emitDecoratorMetadata": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "skipDefaultLibCheck": true,
+    "esModuleInterop": false,
+    "downlevelIteration": true,
+    "declaration": true,
+    "lib": [
+      "es2021",
+      "dom"
+    ],
+    "module": "commonjs",
+    "target": "es2017"
+  }
+}

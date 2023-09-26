@@ -1,0 +1,23 @@
+{
+  "name": "@rummel/monorepo",
+  "version": "0.0.1",
+  "description": "Rummel monorepo with examples",
+  "author": "bbl",
+  "private": true,
+  "license": "ICS",
+  "workspaces": [
+    "packages/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "lint": "turbo run lint",
+    "lint:type-check": "turbo run lint:type-check"
+  },
+  "devDependencies": {
+    "@catladder/cli": "^1.122.0",
+    "@catladder/pipeline": "^1.122.0",
+    "concurrently": "^8.2.1",
+    "turbo": "^1.10.14"
+  },
+  "packageManager": "yarn@3.4.1"
+}
