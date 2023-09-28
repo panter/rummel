@@ -1,0 +1,11 @@
+type User {
+  id: Float!
+}
+
+type Mutation {
+  createOneUser(data: UserCreateInput): User!
+}
+
+input UserCreateInput {
+  id: Float
+}

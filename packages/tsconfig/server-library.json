@@ -9,7 +9,6 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "skipDefaultLibCheck": true,
-    "esModuleInterop": false,
     "downlevelIteration": true,
     "declaration": true,
     "lib": [

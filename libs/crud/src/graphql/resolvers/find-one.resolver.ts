@@ -12,7 +12,7 @@ import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 export interface IFindOneType<T> {
   findOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: unknown,
     whereArgs: FindOneEntityWhereArgs,
   ) => Promise<T | null | undefined>;
 }
@@ -27,7 +27,7 @@ export function FindOneResolver<T>(
         name?: string;
         onResolve?: (
           info: GraphQLResolveInfo,
-          currentUser: any,
+          currentUser: unknown,
           data: any,
         ) => Promise<any>;
       }
@@ -45,7 +45,7 @@ export function FindOneResolver<T>(
     })
     async findOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
@@ -65,7 +65,7 @@ export function FindOneResolver<T>(
     })
     async findOne(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: unknown,
       where: FindOneEntityWhereArgs,
     ) {
       if (onResolve) {
@@ -85,7 +85,7 @@ export const resolveFindOne = async <T extends Type>(
     info,
     em,
     currentUser,
-  }: { em: EntityManager; currentUser: any; info: GraphQLResolveInfo },
+  }: { em: EntityManager; currentUser: unknown; info: GraphQLResolveInfo },
 ) => {
   const crudInfos = getCrudInfosForType(type);
 

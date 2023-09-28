@@ -22,7 +22,7 @@ export const gqlUpsertKeyInputToOrm = async (
     skipInputResolver,
   }: {
     em: EntityManager;
-    currentUser: any;
+    currentUser: unknown;
     currentOrmData?: any;
     rootOrmData?: any;
     skipInputResolver?: boolean;
@@ -110,7 +110,7 @@ export const gqlUpsertInputToOrm = async <Entity>(
     currentOrmData,
     rootOrmData,
   }: {
-    currentUser: any;
+    currentUser: unknown;
     em: EntityManager;
     currentOrmData?: any;
     rootOrmData?: any;
@@ -165,7 +165,7 @@ export const upsertMany = async (
     rootOrmData,
   }: {
     currentOrmData?: any;
-    currentUser: any;
+    currentUser: unknown;
     em: EntityManager;
     rootOrmData?: any;
   },

@@ -11,7 +11,7 @@ import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 export interface ICreateOneType<T> {
   createOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: unknown,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -34,7 +34,7 @@ export function CreateOneResolver<T>(
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
     async createOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args('data', {
         type: () => CreateOneArg,
         nullable: true,
@@ -53,7 +53,7 @@ export function CreateOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
-    async createOne(info: GraphQLResolveInfo, currentUser: any, data?: any) {
+    async createOne(info: GraphQLResolveInfo, currentUser: unknown, data?: any) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
@@ -74,7 +74,7 @@ export const resolveCreateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: any;
+    currentUser: unknown;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

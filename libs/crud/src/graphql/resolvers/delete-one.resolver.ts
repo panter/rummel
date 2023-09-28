@@ -10,7 +10,7 @@ import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 export interface IDeleteOneType<T> {
   deleteOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: unknown,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -31,7 +31,7 @@ export function DeleteOneResolver<T>(
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
     async deleteOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args() data: FindOneEntityWhereArgs,
     ) {
       return resolveDeleteOne(classRef, data, {
@@ -45,7 +45,7 @@ export function DeleteOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
-    async deleteOne(info: GraphQLResolveInfo, currentUser: any, data?: any) {
+    async deleteOne(info: GraphQLResolveInfo, currentUser: unknown, data?: any) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
@@ -64,7 +64,7 @@ export const resolveDeleteOne = async <T extends Type>(
     em,
     info,
   }: {
-    currentUser: any;
+    currentUser: unknown;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

@@ -1,0 +1,86 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  id: Float!
+  name: String!
+}
+
+type Query {
+  user(where: EntityIdInput): User
+  users(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]!
+  usersCount(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): Int!
+}
+
+input EntityIdInput {
+  id: String!
+}
+
+input UserWhereInput {
+  AND: [UserWhereInput!]
+  OR: [UserWhereInput!]
+  NOT: [UserWhereInput!]
+  id: IntFilter
+  name: StringFilter
+}
+
+input IntFilter {
+  equals: Float
+  gt: Float
+  gte: Float
+  lt: Float
+  lte: Float
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  nin: [String!]
+  contains: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  fulltext: String
+  mode: SringQueryMode
+}
+
+enum SringQueryMode {
+  default
+  insensitive
+}
+
+input UserOrderByInput {
+  id: SortOrder
+  name: SortOrder
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+type Mutation {
+  createOneUser(data: UserCreateInput): User!
+  updateOneUser(data: UserUpdateInput, where: EntityIdInput!): User!
+  deleteOneUser(where: EntityIdInput): User!
+}
+
+input UserCreateInput {
+  id: Float
+  name: String
+}
+
+input UserUpdateInput {
+  id: NumberInput
+  name: StringInput
+}
+
+input NumberInput {
+  set: Float
+}
+
+input StringInput {
+  set: String
+}

@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Int, Query, Resolver } from '@nestjs/graphql';
 import { isArray, lowerFirst } from 'lodash';
-import * as pluralize from 'pluralize';
+import pluralize from 'pluralize';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { findManyEntityArgs } from '../find-many-entity-args';
@@ -13,10 +13,10 @@ import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 export interface IFindManyType<T> {
   findMany: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: unknown,
     input: any,
   ) => Promise<T[]>;
-  findManyCount: (currentUser: any, input: any) => Promise<number>;
+  findManyCount: (currentUser: unknown, input: any) => Promise<number>;
 }
 
 export function FindManyResolver<T>(
@@ -32,10 +32,10 @@ export function FindManyResolver<T>(
         nullable?: boolean;
         onResolve?: (
           info: GraphQLResolveInfo,
-          currentUser: any,
+          currentUser: unknown,
           data: any,
         ) => Promise<T[]>;
-        onCountResolve?: (currentUser: any, data: any) => Promise<number>;
+        onCountResolve?: (currentUser: unknown, data: any) => Promise<number>;
       }
     | undefined = {},
 ): Type<IFindManyType<T>> {
@@ -52,7 +52,7 @@ export function FindManyResolver<T>(
     })
     async findMany(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<T[]> {
@@ -67,7 +67,7 @@ export function FindManyResolver<T>(
       name: `${methodName}Count`,
     })
     async findManyCount(
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<number> {
@@ -91,7 +91,7 @@ export function FindManyResolver<T>(
     })
     override async findMany(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: unknown,
       input: any,
     ) {
       if (onResolve) {
@@ -103,7 +103,7 @@ export function FindManyResolver<T>(
     @Query(() => Int, {
       name: `${methodName}Count`,
     })
-    override async findManyCount(currentUser: any, input: any) {
+    override async findManyCount(currentUser: unknown, input: any) {
       if (onCountResolve) {
         return onCountResolve(currentUser, input);
       }
@@ -121,7 +121,7 @@ export const resolveFindMany = async <T extends Type>(
     info,
     em,
     currentUser,
-  }: { em: EntityManager; currentUser: any; info: GraphQLResolveInfo },
+  }: { em: EntityManager; currentUser: unknown; info: GraphQLResolveInfo },
 ) => {
   const crudInfos = getCrudInfosForType(type);
 

@@ -5,7 +5,7 @@ import { getTypeName } from './utils';
 
 export type InputResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: any;
+  currentUser: unknown;
   currentOrmData?: Entity;
   type: Type<Entity>;
 };

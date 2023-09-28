@@ -15,7 +15,7 @@ import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 export type IUpdateOneType<T> = {
   updateOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: unknown,
     data?: any,
     where?: any,
   ) => Promise<T>;
@@ -41,7 +41,7 @@ export function UpdateOneResolver<T>(
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: unknown,
       @Args('data', { type: () => UpdateOneArg, nullable: true })
       data?: any,
       @Args('where', { type: () => EntityIdInput })
@@ -61,7 +61,7 @@ export function UpdateOneResolver<T>(
     @Mutation(() => classRef, { name: methodName })
     override async updateOne(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: unknown,
       data?: any,
       where?: EntityIdInput,
     ) {
@@ -86,7 +86,7 @@ export const resolveUpdateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: any;
+    currentUser: unknown;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

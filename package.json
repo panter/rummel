@@ -7,7 +7,8 @@
   "license": "ICS",
   "workspaces": [
     "packages/*",
-    "libs/*"
+    "libs/*",
+    "samples/*"
   ],
   "scripts": {
     "lint": "turbo run lint",

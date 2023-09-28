@@ -2,12 +2,12 @@
   "extends": "@rummel/tsconfig/server-library.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./",
-    "rootDir": "./src"
+    "allowJs": false
   },
   "include": [
     "./types.d.ts",
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./test/**/*.ts"
   ],
   "exclude": [
     "dist"

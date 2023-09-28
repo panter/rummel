@@ -20,7 +20,7 @@ const operators: {
     key: string,
     gqlWhere: any,
     crudInfos: CrudInfo[],
-    options: { parentKey?: string; currentUser: any },
+    options: { parentKey?: string; currentUser: unknown },
   ) => void;
 } = {
   OR: (obj, key, original, crudInfos, options) =>
@@ -48,7 +48,7 @@ export function gqlFilterToMikro<T = any>(
   crudInfos: CrudInfo[],
   options: {
     parentKey?: string;
-    currentUser: any;
+    currentUser: unknown;
     isRelation?: boolean;
   },
 ): ObjectQuery<T> | ObjectQuery<T>[] | undefined {

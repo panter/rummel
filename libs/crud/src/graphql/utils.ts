@@ -158,7 +158,7 @@ export const applyStaticWhereFieldResolver = <T = any>(
     currentUser,
     ormQuery,
     gqlWhere,
-  }: { currentUser: any; ormQuery: ObjectQuery<T>; gqlWhere: any },
+  }: { currentUser: unknown; ormQuery: ObjectQuery<T>; gqlWhere: any },
 ) => {
   crudInfos.forEach((crudInfo) => {
     if (crudInfo.crudOptions?.staticWhereResolver) {
@@ -181,7 +181,7 @@ export const applyStaticInputFieldResolver = async <Entity>(
     rootOrmData,
   }: {
     em: EntityManager;
-    currentUser: any;
+    currentUser: unknown;
     ormData: object;
     gqlInput: object;
     rootOrmData?: object;
