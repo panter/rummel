@@ -53,7 +53,11 @@ export function CreateOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
-    async createOne(info: GraphQLResolveInfo, currentUser: unknown, data?: any) {
+    async createOne(
+      info: GraphQLResolveInfo,
+      currentUser: unknown,
+      data?: any,
+    ) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }

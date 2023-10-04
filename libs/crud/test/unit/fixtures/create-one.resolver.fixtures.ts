@@ -1,5 +1,6 @@
-type User {
+export const CREATE_ONE_USER_GQL_SCHEMA: string = `type User {
   id: Float!
+  name: String!
 }
 
 type Mutation {
@@ -7,5 +8,5 @@ type Mutation {
 }
 
 input UserCreateInput {
-  id: Float
-}
+  name: String
+}`;

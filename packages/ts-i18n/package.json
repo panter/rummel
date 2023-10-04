@@ -5,7 +5,7 @@
   "license": "MIT",
   "devDependencies": {
     "flattenjs": "^2.1.3",
-    "typescript": "^5.1.3"
+    "typescript": "^5.2.2"
   },
   "bin": "./bin/ts-i18n",
   "publishConfig": {
