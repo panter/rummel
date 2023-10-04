@@ -1,7 +1,8 @@
-import { PrismaInput, PrismaInputSchema, prismaSchemaBuilder } from './index';
+import { PrismaInput, PrismaInputSchema, prismaSchemaBuilder } from '.';
 import {
   manyReference,
   manyRelation,
+  mapFromPrismaSchema,
   object,
   property,
   reference,
@@ -15,9 +16,9 @@ export type Scalars = {
   Int: { input: number; output: number };
   Float: { input: number; output: number };
   /** The `BigInt` scalar type represents non-fractional signed whole numeric values. */
-  BigInt: { input: any; output: any };
+  BigInt: { input: string; output: string };
   /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
-  DateTime: { input: any; output: any };
+  DateTime: { input: string; output: string };
 };
 
 export type StringInput = {
@@ -42,6 +43,7 @@ export type SimpleCreateInput = {
 
 export type SimpleUpdateInput = {
   name?: InputMaybe<StringInput>;
+  secondName?: InputMaybe<StringInput>;
 };
 
 export type PersonCreateInput = {
@@ -138,57 +140,36 @@ export type SimpleUpdateWithoutOrganisationInput = {
   name?: InputMaybe<StringInput>;
 };
 
-const simpleSchema = prismaSchemaBuilder<SimpleCreateInput, SimpleUpdateInput>(
-  () => ({
-    props: {
-      name: property(),
-    },
-    create: {},
-    update: {},
-  }),
-);
+const simpleSchema = prismaSchemaBuilder<SimpleCreateInput, SimpleUpdateInput>({
+  props: {
+    name: property(),
+  },
+  create: {},
+  update: { secondName: property() },
+});
 
-const personSchema = prismaSchemaBuilder<PersonCreateInput, PersonUpdateInput>(
-  () => ({
-    props: {
-      name: property(),
-      addresses: manyRelation(() => addressSchema.relation()),
-      addressesIds: manyReference(),
-      organisation: relation(() => ({
-        create: () => organisationCreateMapper,
-        update: () => organisationUpdateMapper,
-      })),
-      organisationId: reference(),
-    },
-    create: {},
-    update: {},
-  }),
-);
+const personSchema = prismaSchemaBuilder<PersonCreateInput, PersonUpdateInput>({
+  props: {
+    name: property(),
+    addresses: manyRelation(() => addressSchema.relation()),
+    addressesIds: manyReference(),
+    organisation: reference(),
+    organisationId: reference(),
+  },
+  create: {},
+  update: {},
+});
 
 const addressSchema = prismaSchemaBuilder<
   AddressCreateWithoutPersonInput,
   AddressUpdateInput
->(() => ({
+>({
   props: {
     address: property(),
   },
   create: {},
   update: {},
-}));
-
-// const organisationMapper: PrismaInputSchema<
-//   PrismaInput<OrganisationCreateInput | OrganisationUpdateInput>
-// > = {
-//   mapper: object(),
-//   properties: {
-//     // simple: relation(simpleSchema.relation()),
-//     // simpleId: reference(),
-//     description: property(),
-//     personIds: manyReference(),
-//     simple: relation(() => simpleSchema.relation()),
-//     simpleId: reference(),
-//   },
-// };
+});
 
 const organisationCreateMapper: PrismaInputSchema<
   PrismaInput<OrganisationCreateInput>
@@ -196,20 +177,7 @@ const organisationCreateMapper: PrismaInputSchema<
   mapper: object(),
   properties: {
     description: property(),
-    personIds: manyReference(),
-    simple: relation(() => simpleSchema.relation()),
-    simpleId: reference(),
-    simples: manyRelation(() => simpleSchema.relation()),
-    simplesIds: manyReference(),
-  },
-};
-
-const organisationUpdateMapper: PrismaInputSchema<
-  PrismaInput<OrganisationUpdateInput>
-> = {
-  mapper: object(),
-  properties: {
-    description: property(),
+    person: manyReference(),
     personIds: manyReference(),
     simple: relation(() => simpleSchema.relation()),
     simpleId: reference(),
@@ -592,19 +560,19 @@ describe('object()', () => {
   });
 
   it('should use relation()', () => {
-    const personCreateSchema = personSchema.createSchema;
-    expect(personCreateSchema).not.toBeUndefined();
+    const simpleCreateSchema = organisationCreateMapper;
+    expect(simpleCreateSchema).not.toBeUndefined();
 
     const resultCreate = object()({
       // we checked that personCreateSchema is not undefined
-      mapper: personCreateSchema ? personCreateSchema : ({} as any),
+      mapper: simpleCreateSchema ? simpleCreateSchema : ({} as any),
       value: {
-        organisation: { description: 'Org1' },
+        simple: { name: 'Org1' },
       },
     });
     // nest simple-entity into organisation and check if the reference can be used when nested
     expect(resultCreate).toEqual({
-      organisation: { create: { description: 'Org1' } },
+      simple: { create: { name: 'Org1' } },
     });
   });
 
@@ -640,27 +608,8 @@ describe('object()', () => {
     });
   });
 
-  it('should use nested reference()', () => {
-    const personCreateSchema = personSchema.createSchema;
-    expect(personCreateSchema).not.toBeUndefined();
-
-    const resultCreate = object()({
-      // we checked that personCreateSchema is not undefined
-      mapper: personCreateSchema ? personCreateSchema : ({} as any),
-      value: {
-        organisation: { description: 'Org1', simpleId: { id: '1' } },
-      },
-    });
-    expect(resultCreate).toEqual({
-      organisation: {
-        create: { description: 'Org1', simple: { connect: { id: '1' } } },
-      },
-    });
-  });
-
   it('should use manyReference()', () => {
     const personCreateSchema = personSchema.createSchema;
-    expect(personCreateSchema).not.toBeUndefined();
 
     const resultCreate = object()({
       // we checked that personCreateSchema is not undefined
@@ -672,25 +621,22 @@ describe('object()', () => {
     });
   });
 
-  // it('should assert a disconnect conflict between reference and relation', () => {
-  //   const consoleErrorSpy = jest.spyOn(console, 'error');
-  //   const result = object<
-  //     Partial<PrismaInputReferences<UpdatePersonInput> & UpdatePersonInput>,
-  //     InferPrismaModel<
-  //       Partial<PrismaInputReferences<UpdatePersonInput> & UpdatePersonInput>
-  //     >
-  //   >()({
-  //     mapper: personUpdateMapper,
-  //     value: {
-  //       organisationId: { id: '1' },
-  //     },
-  //     oldValue: {
-  //       organisationId: { id: '2' },
-  //       organisation: { description: 'Org1', id: '1' } as any,
-  //     },
-  //   });
-  //   // expect(result).toEqual({});
-  //   expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
-  //   //`Cannot disconnect and connect a relation at the same time`,
-  // });
+  describe('mapFromPrismaSchema()', () => {
+    it('should map using the schema', () => {
+      const createSchema = personSchema.createSchema;
+      expect(createSchema).not.toBeUndefined();
+      if (!createSchema) {
+        return;
+      }
+
+      const resultCreate = mapFromPrismaSchema({
+        schema: createSchema,
+        value: { addressesIds: [{ id: '1' }] },
+      });
+
+      expect(resultCreate).toEqual({
+        addresses: { connect: [{ id: '1' }] },
+      });
+    });
+  });
 });

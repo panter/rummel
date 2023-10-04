@@ -1,6 +1,11 @@
 # Prisma Inputs
 
-Prisma Inputs is a TypeScript library that provides utility functions and types for working with Prisma input schemas. It offers a set of mapper functions that help you map and transform input data to match the structure expected by Prisma's `create`, `update`, `connect` and `disconnect` methods.
+Prisma Inputs is a TypeScript library that provides utility functions and types for working with Prisma input schemas. It offers a set of mapper functions that help you map and transform a model that can be used in a form  to match the structure expected by Prisma's `create`, `update`, `connect` and `disconnect` methods.
+
+- [prisma create](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#create)
+- [prisma update](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#update)
+- [prisma connect](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#connect)
+- [prisma delete](https://www.prisma.io/docs/reference/api-reference/prisma-client-reference#delete)
 
 ## Installation
 
@@ -11,11 +16,60 @@ yarn add @panter/prisma-inputs
 ```
 
 
+
+## What does prisma-inputs do?
+
+Before diving into the code, let's understand the transformation with a simple example. Consider a model for a User that has an associated address.
+
+```ts
+type UserModel = {
+  name: string;
+  email: string;
+  address: {
+    street: string;
+    city: string;
+    zip: string;
+  };
+};
+```
+Suppose you have an instance of this model:
+```ts
+const user: UserModel = {
+  name: "John Doe",
+  email: "john.doe@example.com",
+  address: {
+    id: "1",
+    street: "123 Main St",
+    city: "Anytown",
+    zip: "12345"
+  }
+};
+
+```
+Now, let's say you want to update the user's address in your database using Prisma. Prisma expects the input for relations in a specific format, using create, update, connect, and disconnect.
+
+After Mapping
+Using Prisma Inputs, the transformed model ready for a Prisma update might look like:
+```ts
+const prismaUpdateInput = {
+  name: "John Doe",
+  email: "john.doe@example.com",
+  address: {
+    update: {
+      street: { set: "123 Main St" },
+      city: { set: "Anytown" },
+      zip: { set: "12345" }
+    }
+  }
+};
+
+```
+In this example, the address field of the UserModel is transformed to match Prisma's expected input format for updating relations. The PrismaInputSchema and the provided utility functions handle this transformation seamlessly.
+
 ## Usage
 To use Prisma Inputs, you need to import the necessary functions and types from the library. Here's an example of how you can use Prisma Inputs to define an input schema and map input data:
 
-
-## PrismaInputSchema
+### PrismaInputSchema
 ``` ts
 import {
   PrismaInputSchema,
@@ -24,55 +78,74 @@ import {
   reference,
   relation,
   object,
+  mapFromPrismaSchema,
 } from '@panter/prisma-inputs';
 
-// Define your input schema
-type UserInput = {
-  name: string;
-  email: string;
-  role: 'admin' | 'user';
-  address: {
-    street: string;
-    city: string;
-    country: string;
-  };
-  companyId?: number;
-};
-});
-
 // Create an input schema
-const userSchema: PrismaInputSchema<UserInput> = {
+const addressCreateSchema: PrismaInputSchema<
+  AddressCreateWithoutPersonInput,
+  InferPrismaModel<Partial<AddressCreateWithoutPersonInput>>
+> = {
   mapper: object(),
   properties: {
-    name: property<string>(),
-    email: property<string>(),
-    role: property<'admin' | 'user'>(),
-    address: object<AddressInput>(),
-    companyId: reference<CompanyIdInput>(),
+    address: property(),
   },
 };
 
-// Map input data using the input schema
-const mapUserInput = (data: UserInput) => userSchema.mapper({ value: data });
-
-// Usage example
-const userInput: UserInput = {
-  name: 'John Doe',
-  email: 'john@example.com',
-  role: 'user',
-  address: {
-    street: '123 Main St',
-    city: 'New York',
-    country: 'USA',
+// Update an input schema
+const addressUpdateSchema: PrismaInputSchema<
+  AddressUpdateInput,
+  InferPrismaModel<Partial<AddressUpdateInput>>
+> = {
+  mapper: object(),
+  properties: {
+    address: property(),
   },
-  companyId: 1,
 };
 
-const prismaData = mapUserInput(userInput);
-console.log(prismaData);
+// create a new address
+const createAddressInput = mapFromPrismaSchema({
+  schema: addressCreateSchema,
+  value: { address: 'otherstreet' },
+});
+console.log(createAddressInput); // { address: 'otherstreet' }
+
+// update new address
+const newAddress = { id: '1', address: 'streetname' };
+const updateAddressInput = mapFromPrismaSchema({
+  schema: addressUpdateSchema,
+  value: newAddress,
+});
+console.log(updateAddressInput); // { address: { set: 'streetname' } }
+
+// use address schema in a relation
+const userCreateSchema: PrismaInputSchema<PersonCreateInput> = {
+  mapper: object(),
+  properties: {
+    name: property(),
+    addresses: manyRelation(() => ({
+      create: () => addressCreateSchema,
+      update: () => addressUpdateSchema,
+    })),
+    organisation: reference(),
+  },
+};
+
+const createPersonInput = mapFromPrismaSchema({
+  schema: userCreateSchema,
+  value: { organisation: { id: '1' }, addresses: [{ address: 'streetname' }] },
+});
+
+/**
+{
+  organisation: { connect: { id: '1' } },
+  addresses: { create: [{ address: 'streetname' }] },
+}
+ */
+console.log(createPersonInput);
 ```
 
-## PrismaSchemaBuilder
+### PrismaSchemaBuilder
 
 To define an input schema builder, you can use the prismaSchema function. It takes three parameters: unionProps, createProps, and updateProps. These parameters are functions that define the properties of the input schema.
 
@@ -80,66 +153,73 @@ Here's an example of how to define an input schema for the Simple model:
 
 
 ```ts
-const simpleSchema = () =>
-  prismaSchemaBuilder<CreateSimpleInput, UpdateSimpleInput>([
-    () => ({
-      name: property(),
-    }),
-    true,
-    true,
-  ]);
+const simpleSchema = prismaSchemaBuilder<SimpleCreateInput, SimpleUpdateInput>({
+  props: {
+    name: property(),
+  },
+  create: {},
+  update: { secondName: property() },
+});
 
-const personSchema = (): InferSchema<CreatePersonInput, UpdatePersonInput> =>
-  prismaSchemaBuilder<CreatePersonInput, UpdatePersonInput>([
-    () => ({
-      name: property(),
-      addresses: manyRelation(addressSchema().relation()),
-      addressesIds: manyReference(),
-      organisation: relation({
-        create: () => organisationCreateMapper,
-        update: () => organisationUpdateMapper,
-      }),
-      organisationId: reference(),
-    }),
-    true,
-    true,
-  ]);
+const personSchema = prismaSchemaBuilder<PersonCreateInput, PersonUpdateInput>({
+  props: {
+    name: property(),
+    addresses: manyRelation(() => addressSchema.relation()),
+    addressesIds: manyReference(),
+    organisation: reference(),
+    organisationId: reference(),
+  },
+  create: {},
+  update: {},
+});
 
-const addressSchema = () =>
-  prismaSchemaBuilder<UpdateAddressInput, UpdateAddressInput>([
-    () => ({
-      address: property(),
-      personId: reference(),
-      person: relation(personSchema().relation()),
-    }),
-    true,
-    true,
-  ]);
+const addressSchema = prismaSchemaBuilder<
+  AddressCreateWithoutPersonInput,
+  AddressUpdateInput
+>({
+  props: {
+    address: property(),
+  },
+  create: {},
+  update: {},
+});
 
-const organisationMapper: PrismaInputSchema<
-  PrismaInput<CreateOrganisationInput | UpdateOrganisationInput>
+const organisationCreateMapper: PrismaInputSchema<
+  PrismaInput<OrganisationCreateInput>
 > = {
   mapper: object(),
   properties: {
-    simple: relation(simpleSchema().relation()),
-    simpleId: reference(),
     description: property(),
-    person: relation(personSchema().relation()),
-    personId: reference(),
+    person: manyReference(),
+    personIds: manyReference(),
+    simple: relation(() => simpleSchema.relation()),
+    simpleId: reference(),
+    simples: manyRelation(() => simpleSchema.relation()),
+    simplesIds: manyReference(),
   },
 };
 ```
 
-### Referenced directly or indirectly in one of its return expressions
+### Using the schemas to map
 
-Error Message would look like this:
-```
-'personSchema' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions
-```
+```ts
+describe('mapFromPrismaSchema()', () => {
+  it('should map using the schema', () => {
+    const createSchema = personSchema.createSchema;
+    expect(createSchema).not.toBeUndefined();
+    if (!createSchema) {
+      return;
+    }
 
-To get rid of this, just type one of the conficting schemas with the `InferSchema` type:
+    const resultCreate = mapFromPrismaSchema({
+      schema: createSchema,
+      value: { addressesIds: [{ id: '1' }] },
+    });
 
-``` ts
-const personSchema = (): InferSchema<CreatePersonInput, UpdatePersonInput> => prismaSchemaBuilder<CreatePersonInput, UpdatePersonInput>([
+    expect(resultCreate).toEqual({
+      addresses: { connect: [{ id: '1' }] },
+    });
+  });
+});
 ```
 

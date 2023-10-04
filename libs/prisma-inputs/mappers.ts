@@ -1,4 +1,5 @@
 import {
+  InferPrismaModel,
   ManyReferenceMapper,
   ManyRelationMapper,
   OneReferenceMapper,
@@ -12,6 +13,14 @@ import {
   PropertyMapper,
 } from './index';
 import { deepCompareObjects } from './deepCompare';
+
+const MAPPER_ORDER: { [key: string]: number } = {
+  Property: 1,
+  Relation: 2,
+  Reference: 3,
+  ManyRelation: 4,
+  ManyReference: 5,
+};
 
 export const setPropertyMapper = <T, M extends 'create' | 'update'>(
   method: M,
@@ -73,7 +82,10 @@ export const relation = <
       (value === undefined || value === null)
     ) {
       inputData.disconnect = true;
-    } else if ((value as any).id) {
+    } else if (
+      (value as any)?.id &&
+      (value as any)?.id === (oldValue as any)?.id
+    ) {
       const updateMapper = update?.();
       const updateInputData = updateMapper?.mapper?.({
         value: value === undefined ? null : value,
@@ -83,6 +95,8 @@ export const relation = <
       if (updateInputData) {
         inputData.update = updateInputData;
       }
+    } else if ((value as any)?.id) {
+      inputData.connect = { id: (value as any)?.id };
     } else if (value !== undefined && value !== null) {
       const createMapper = create?.();
       const createInputData = createMapper?.mapper?.({
@@ -105,7 +119,7 @@ export const relation = <
 });
 
 export const manyRelation = <
-  T extends { create?: any[]; update?: any[] },
+  T extends { create?: any[] | null; update?: any[] | null },
   S = T,
   SourceUpdate = T extends { update?: (infer U)[] | null } ? U : never,
   Create = T extends { create?: (infer C)[] | null } ? C : never,
@@ -152,12 +166,15 @@ export const manyRelation = <
     value?.forEach((newValueItem) => {
       const oldValueItem = oldValue?.find((oldValueItem) => {
         return (
-          (newValueItem as any).id &&
-          (newValueItem as any).id === (oldValueItem as any).id
+          (newValueItem as any)?.id &&
+          (newValueItem as any)?.id === (oldValueItem as any)?.id
         );
       });
 
-      if ((newValueItem as any)?.id) {
+      if (
+        (newValueItem as any)?.id &&
+        (newValueItem as any)?.id == (oldValueItem as any)?.id
+      ) {
         const updateMapper = update?.();
         const updateInputData = updateMapper?.mapper?.({
           value: newValueItem,
@@ -171,6 +188,9 @@ export const manyRelation = <
             data: updateInputData,
           });
         }
+      } else if ((newValueItem as any)?.id && !oldValueItem) {
+        inputData.connect = inputData.connect || [];
+        inputData.connect.push({ id: (newValueItem as any)?.id });
       } else {
         const createMapper = create?.();
         const createInputData = createMapper?.mapper?.({
@@ -304,68 +324,111 @@ export const object =
     //   return props.mapper.mapper(props);
     // }
 
-    const { value: source, oldValue: oldSource } = props;
+    const source = props.value;
+    const oldSource = props.oldValue;
     if (source === oldSource) {
       return;
     }
 
     const inputData: Record<string, any> = {};
     if (source) {
-      Object.keys(props.mapper.properties).forEach((key) => {
-        const propMapper: PrismaInputSchemaProperty<
-          Input[typeof key],
-          Source[typeof key]
-        > = (props.mapper.properties as any)[key as keyof Input];
+      Object.keys(props.mapper.properties)
+        .sort((a, b) => {
+          // sort by mapper type so that relations before references
+          const aPropMapper: PrismaInputSchemaProperty<any> = (
+            props.mapper.properties as any
+          )[a as keyof Input];
 
-        const value = source[key as keyof Source];
-        const oldValue = oldSource?.[key as keyof Source];
+          const bPropMapper: PrismaInputSchemaProperty<any> = (
+            props.mapper.properties as any
+          )[b as keyof Input];
 
-        if (propMapper.__typename === 'Property') {
-          const method = (source as any)?.id ? 'update' : 'create';
-          const mappedValue = propMapper.map?.({ value, oldValue, method });
-          if (mappedValue) {
-            inputData[key] = mappedValue;
+          return (
+            MAPPER_ORDER[aPropMapper.__typename] -
+            MAPPER_ORDER[bPropMapper.__typename]
+          );
+        })
+        .forEach((key) => {
+          const propMapper: PrismaInputSchemaProperty<any> = (
+            props.mapper.properties as any
+          )[key as keyof Input];
+
+          const value = source[key as keyof Source];
+          const oldValue = oldSource?.[key as keyof Source];
+
+          if (propMapper.__typename === 'Property') {
+            const method = (source as any)?.id ? 'update' : 'create';
+            const mappedValue = propMapper.map?.({ value, oldValue, method });
+            if (mappedValue) {
+              inputData[key] = mappedValue;
+            }
+          } else if (propMapper.__typename === 'Reference') {
+            const relationPropKey = key.endsWith('Id') ? key.slice(0, -2) : key;
+            if (inputData[relationPropKey]) {
+              console.warn(
+                `prima-input mapper: ${relationPropKey} relation already set, skipping reference updates`,
+                key,
+              );
+              return;
+            }
+            const referenceInput = propMapper.map?.({ value, oldValue });
+
+            // assertDisconnectConflict(
+            //   inputData[relationPropKey],
+            //   referenceInput,
+            //   relationPropKey,
+            // );
+            if (referenceInput) {
+              inputData[relationPropKey] = referenceInput;
+            }
+          } else if (propMapper.__typename === 'ManyReference') {
+            const relationPropKey = key.endsWith('Ids')
+              ? key.slice(0, -3)
+              : key;
+
+            if (inputData[relationPropKey]) {
+              console.warn(
+                `prima-input mapper: ${relationPropKey} relation already set, skipping reference updates`,
+                key,
+              );
+              return;
+            }
+            const manyReferenceInput = propMapper.map?.({ value, oldValue });
+
+            // assertDisconnectConflict(
+            //   inputData[relationPropKey],
+            //   manyReferenceInput,
+            //   relationPropKey,
+            // );
+            if (manyReferenceInput) {
+              inputData[relationPropKey] = manyReferenceInput;
+            }
+          } else if (propMapper.__typename === 'Relation') {
+            const relationInput = propMapper.map?.({ value, oldValue });
+
+            // assertDisconnectConflict(inputData[key], relationInput, key);
+            if (relationInput) {
+              inputData[key] = relationInput;
+            } else {
+              const refValue = source[`${key}Id` as keyof Source];
+              const oldRefValue = oldSource?.[`${key}Id` as keyof Source];
+              const referenceInput = propMapper.map?.({
+                value: refValue,
+                oldValue: oldRefValue,
+              });
+              if (referenceInput) {
+                inputData[key] = referenceInput;
+              }
+            }
+          } else if (propMapper.__typename === 'ManyRelation') {
+            const manyRelationInput = propMapper.map?.({ value, oldValue });
+
+            // assertDisconnectConflict(inputData[key], manyRelationInput, key);
+            if (manyRelationInput) {
+              inputData[key] = manyRelationInput;
+            }
           }
-        } else if (propMapper.__typename === 'Reference') {
-          const relationPropKey = key.endsWith('Id') ? key.slice(0, -2) : key;
-          const referenceInput = propMapper.map?.({ value, oldValue });
-
-          // assertDisconnectConflict(
-          //   inputData[relationPropKey],
-          //   referenceInput,
-          //   relationPropKey,
-          // );
-          if (referenceInput) {
-            inputData[relationPropKey] = referenceInput;
-          }
-        } else if (propMapper.__typename === 'ManyReference') {
-          const relationPropKey = key.endsWith('Ids') ? key.slice(0, -3) : key;
-          const manyReferenceInput = propMapper.map?.({ value, oldValue });
-
-          // assertDisconnectConflict(
-          //   inputData[relationPropKey],
-          //   manyReferenceInput,
-          //   relationPropKey,
-          // );
-          if (manyReferenceInput) {
-            inputData[relationPropKey] = manyReferenceInput;
-          }
-        } else if (propMapper.__typename === 'Relation') {
-          const relationInput = propMapper.map?.({ value, oldValue });
-
-          // assertDisconnectConflict(inputData[key], relationInput, key);
-          if (relationInput) {
-            inputData[key] = relationInput;
-          }
-        } else if (propMapper.__typename === 'ManyRelation') {
-          const manyRelationInput = propMapper.map?.({ value, oldValue });
-
-          // assertDisconnectConflict(inputData[key], manyRelationInput, key);
-          if (manyRelationInput) {
-            inputData[key] = manyRelationInput;
-          }
-        }
-      });
+        });
     }
     if (Object.keys(inputData).length === 0) {
       return;
@@ -373,6 +436,16 @@ export const object =
 
     return inputData as Input;
   };
+
+export const mapFromPrismaSchema = <T>({
+  schema,
+  value,
+  oldValue,
+}: {
+  schema: PrismaInputSchema<T>;
+  value?: InferPrismaModel<T> | null | undefined;
+  oldValue?: InferPrismaModel<T> | null | undefined;
+}) => schema.mapper({ value, oldValue, mapper: schema });
 
 // const assertDisconnectConflict = (v: any, v2: any, key: string) => {
 //   if (v?.disconnect && v2?.disconnect) {
