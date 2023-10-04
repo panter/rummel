@@ -45,7 +45,11 @@ export function DeleteOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
-    async deleteOne(info: GraphQLResolveInfo, currentUser: unknown, data?: any) {
+    async deleteOne(
+      info: GraphQLResolveInfo,
+      currentUser: unknown,
+      data?: any,
+    ) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
