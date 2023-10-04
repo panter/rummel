@@ -20,7 +20,7 @@
     "@ant-design/icons": "^5.2.5",
     "@apollo/client": "^3.7.17",
     "@collapsed/react": "^4.0.1",
-    "@panter/prisma-inputs": "*",
+    "@rummel/prisma-inputs": "*",
     "@panter/transporter": "^0.0.8",
     "antd": "^5.8.2",
     "apollo-upload-client": "^17.0.0",

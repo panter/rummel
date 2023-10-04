@@ -1,8 +1,9 @@
 {
   "name": "@panter/prisma-inputs",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "main": "index.ts",
   "license": "MIT",
+  "private": false,
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
     "test": "jest",
@@ -11,8 +12,6 @@
   "devDependencies": {
     "@rummel/eslint-config-custom": "*",
     "@rummel/tsconfig": "*",
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
     "eslint": "^7.32.0",
     "react": "18.2",
     "typescript": "^5.1.3"

@@ -12,7 +12,7 @@ Prisma Inputs is a TypeScript library that provides utility functions and types 
 You can install Prisma Inputs using npm or yarn:
 
 ```shell
-yarn add @panter/prisma-inputs
+yarn add @rummel/prisma-inputs
 ```
 
 
@@ -79,7 +79,7 @@ import {
   relation,
   object,
   mapFromPrismaSchema,
-} from '@panter/prisma-inputs';
+} from '@rummel/prisma-inputs';
 
 // Create an input schema
 const addressCreateSchema: PrismaInputSchema<

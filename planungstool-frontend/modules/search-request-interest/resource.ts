@@ -111,13 +111,14 @@ export const SearchRequestInterestFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const SearchRequestInterestReferenceSelectorFragment =
-  graphql(/* GraphQL */ `
+export const SearchRequestInterestReferenceSelectorFragment = graphql(
+  /* GraphQL */ `
     fragment SearchRequestInterestReferenceSelector on SearchRequestInterest {
       id
       state
     }
-  `);
+  `,
+);
 
 export const SearchRequestInterestReferenceQuery = graphql(/* GraphQL */ `
   query searchRequestInterestReference(
