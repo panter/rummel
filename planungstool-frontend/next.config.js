@@ -8,7 +8,7 @@ const { GRAPHQL_ENDPOINT, ASSET_SERVER_ENDPOINT } = process.env;
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@panter/prisma-inputs"],
+  transpilePackages: ["@rummel/prisma-inputs"],
   publicRuntimeConfig: {
     GRAPHQL_ENDPOINT,
     ASSET_SERVER_ENDPOINT,

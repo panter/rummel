@@ -138,9 +138,10 @@ export class AuthenticationService {
             userIdentification,
           );
       } else {
-        user = await this.userIdentityProvider.createUserIdentityFromEmail(
-          userIdentification,
-        );
+        user =
+          await this.userIdentityProvider.createUserIdentityFromEmail(
+            userIdentification,
+          );
       }
     }
     throw new OtpUserNotFoundException();

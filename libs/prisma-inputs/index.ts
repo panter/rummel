@@ -1,11 +1,6 @@
 export * from './mappers';
 export * from './builder';
 
-type KeysOfSpecificType<T, U> = {
-  [K in keyof T]: T[K] extends U ? K : never;
-}[keyof T];
-type OmitByType<T, U> = Omit<T, KeysOfSpecificType<T, U>>;
-
 // TODO: composed primary keys
 type EntityIdInput = {
   id?: string;
@@ -16,7 +11,7 @@ type ConnectRelationInput = {
   id?: string;
 };
 
-type PropertyTypes = string | number | boolean | Date;
+type PropertyTypes = string | number | boolean | Date | bigint;
 
 type GenericPrismaInput = Record<string, unknown>;
 
@@ -67,11 +62,11 @@ export type PrismaInputReferences<T> = {
     : T[K] extends GenericPrismaOneConnect | undefined | null
     ? PrismaInputReferenceOneKeys<K>
     : never]: T[K] extends { connect?: infer U } | undefined | null
-    ? { connect?: U; __reference: true }
+    ? { connect?: U }
     : never;
 };
 
-export type PrismaInput<T> = Required<PrismaInputReferences<T> & T>;
+export type PrismaInput<T> = PrismaInputReferences<T> & T;
 
 export type PrismaOneObjectInput<Create, Update> = {
   connect?: ConnectRelationInput;
@@ -163,6 +158,17 @@ export type ManyReferenceMapper<
 
 // ---
 
+/**
+ * Represents a type that determines the appropriate schema property mapper based on the structure of a given Prisma input property.
+ *
+ * The type performs a series of checks on the input property `T` to decide which mapper type should be used:
+ *
+ * This type is instrumental in constructing a Prisma input schema that accurately represents the structure
+ * and relations of the underlying Prisma model.
+ *
+ * @typeParam T - Represents the Prisma input property structure.
+ * @typeParam S - Represents a source type, defaulting to a partial version of `T`.
+ */
 export type PrismaInputSchemaProperty<T, S = Partial<T>> = T extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
@@ -180,9 +186,9 @@ export type PrismaInputSchemaProperty<T, S = Partial<T>> = T extends {
       C extends unknown ? C | undefined : C | undefined,
       U extends unknown ? U | undefined : U | undefined
     >
-  : T extends { connect?: (infer C)[] | null; __reference: true }
+  : T extends { connect?: (infer C)[] | null }
   ? ManyReferenceMapper<T, S[], Partial<C> | undefined>
-  : T extends { connect?: infer C; __reference: true }
+  : T extends { connect?: infer C }
   ? OneReferenceMapper<T, S, Partial<C> | undefined>
   : T extends PropertyTypes
   ? PropertyMapper<T>
@@ -190,9 +196,27 @@ export type PrismaInputSchemaProperty<T, S = Partial<T>> = T extends {
   ? PropertyMapper<Partial<S>>
   : never;
 
+/**
+ * Represents a type that defines the structure and mapping behavior of a Prisma input schema.
+ *
+ * The type consists of two main parts:
+ *
+ * 1. `mapper`: A function that transforms a given source value (and its previous value, if any) into the desired
+ *    Prisma input format. The function receives the current value, the old value, and the schema itself as arguments.
+ *
+ * 2. `properties`: An object that maps each key of the input type `T` to its corresponding Prisma input schema property.
+ *    It ensures that only valid properties, as defined by `PrismaInputSchemaProperty`, are included in the resulting schema.
+ *
+ * This type provides a blueprint for constructing and transforming Prisma input data, ensuring that the input aligns
+ * with the expected structure and relations of the underlying Prisma model.
+ *
+ * @typeParam T - Represents the Prisma input structure. It should extend from `GenericPrismaInput` or be `unknown`.
+ * @typeParam Source - Represents the inferred Prisma model derived from a partial version of `T`. By default, it's inferred
+ *                     from the input type `T`.
+ */
 export type PrismaInputSchema<
   T extends GenericPrismaInput | unknown,
-  Source = InferPrismaFormModel<Partial<T>>,
+  Source = InferPrismaModel<Partial<T>>,
 > = {
   mapper(props: {
     value?: Source | null;
@@ -208,41 +232,62 @@ export type PrismaInputSchema<
   };
 };
 
-export type PrismaInputSchemaProperties<Input> = {
-  [K in keyof InferPrismaFormModel<Input>]-?: PrismaInputSchemaProperty<
-    Input[K],
-    InferPrismaFormModel<Input>[K]
-  >;
-};
-
+/**
+ * Represents a type that infers the structure of a property within a Prisma model based on a given Prisma input property.
+ *
+ * This type is useful for determining the expected model property structure based on various Prisma input patterns,
+ * especially when dealing with relations, connections, or value updates.
+ *
+ * @typeParam T - Represents the Prisma input property structure.
+ */
 export type InferPrismaModelProperty<T> = T extends {
   set?: infer U;
 }
   ? U
   : T extends { create?: (infer C)[] | null; update?: (infer U)[] | null }
   ?
-      | InferPrismaFormModel<Partial<ExtractPrismaInputFromMany<C, U>>>[]
+      | InferPrismaModel<Partial<ExtractPrismaInputFromMany<C, U>>>[]
       | undefined
       | null
   : T extends { create?: infer C; update?: infer U }
   ?
-      | InferPrismaFormModel<Partial<ExtractPrismaInputFromOne<C, U>>>
+      | InferPrismaModel<Partial<ExtractPrismaInputFromOne<C, U>>>
       | undefined
       | null
-  : T extends { connect?: infer C; __reference: true }
+  : T extends { connect?: infer C }
   ? C
-  : T extends { connect?: any }
-  ? '__omit'
   : T;
 
+/**
+ * Represents a type that infers the structure of a Prisma model based on a given Prisma input.
+ *
+ * For each property `K` in the input type `T`, it infers the corresponding model property type
+ * using the `InferPrismaModelProperty` utility type.
+ *
+ * This type is useful for deriving the expected model structure from a Prisma input, especially
+ * when dealing with complex nested inputs or relations.
+ *
+ * @typeParam T - A type that extends from `GenericPrismaInput` or is `unknown`. Represents the Prisma input structure.
+ */
 export type InferPrismaModel<T extends GenericPrismaInput | unknown> = {
   [K in keyof T]: InferPrismaModelProperty<T[K]>;
 };
 
-export type InferPrismaFormModel<T> = OmitByType<
-  InferPrismaModel<T>,
-  | '__omit'
-  | ('__omit' | undefined)
-  | ('__omit' | null)
-  | ('__omit' | undefined | null)
->;
+/**
+ * Represents a type that maps each property of an inferred Prisma model to its corresponding Prisma input schema property.
+ *
+ * For each key `K` in the inferred Prisma model derived from the input type `Input`, this type associates it with
+ * a `PrismaInputSchemaProperty` that describes how the input property should be structured and how it relates to
+ * the model property.
+ *
+ * This type is instrumental in constructing a comprehensive Prisma input schema that aligns with the structure
+ * and relations of the underlying Prisma model.
+ *
+ * @typeParam Input - Represents the Prisma input structure from which the model is inferred.
+ */
+export type PrismaInputSchemaProperties<Input> = {
+  [K in keyof InferPrismaModel<Input>]-?: PrismaInputSchemaProperty<
+    Input[K],
+    InferPrismaModel<Input>[K]
+  >;
+};

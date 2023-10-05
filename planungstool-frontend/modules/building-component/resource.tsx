@@ -204,8 +204,8 @@ export const BuildingComponentFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const BuildingComponentReferenceSelectorFragment =
-  graphql(/* GraphQL */ `
+export const BuildingComponentReferenceSelectorFragment = graphql(
+  /* GraphQL */ `
     fragment BuildingComponentReferenceSelector on BuildingComponent {
       id
       name
@@ -215,7 +215,8 @@ export const BuildingComponentReferenceSelectorFragment =
         id
       }
     }
-  `);
+  `,
+);
 
 export const ReferenceBuildingComponentQuery = graphql(/* GraphQL */ `
   query buildingComponentReference(

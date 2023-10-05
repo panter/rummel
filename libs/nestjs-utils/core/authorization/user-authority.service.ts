@@ -30,7 +30,7 @@ export class UserAuthorityService implements UserAuthorityProvider {
               action: permission.action,
               subject: permission.subject.name,
               condition: Permission.parseCondition(permission.condition, user),
-            } as CaslPermission),
+            }) as CaslPermission,
         ),
       );
   }

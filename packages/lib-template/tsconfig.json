@@ -1,5 +1,5 @@
 {
-  "extends": "tsconfig/server-library.json",
+  "extends": "@rummel/tsconfig/server-library.json",
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": "./"
