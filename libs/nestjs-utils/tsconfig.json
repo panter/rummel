@@ -9,7 +9,6 @@
     "./asset-manager/**/*.ts",
     "./common/**/*.ts",
     "./core/**/*.ts",
-    "../crud/src/graphql/graphql-upload.d.ts",
     "./types.d.ts"
   ],
   "exclude": [

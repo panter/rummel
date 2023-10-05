@@ -1,4 +1,5 @@
 import { ObjectQuery } from '@mikro-orm/core';
+// import { UserEntity } from '../../modules/user/models/user.entity';
 import {
   applyStaticWhereFieldResolver,
   CrudInfo,
@@ -20,7 +21,7 @@ const operators: {
     key: string,
     gqlWhere: any,
     crudInfos: CrudInfo[],
-    options: { parentKey?: string; currentUser: unknown },
+    options: { parentKey?: string; currentUser: any },
   ) => void;
 } = {
   OR: (obj, key, original, crudInfos, options) =>
@@ -48,7 +49,7 @@ export function gqlFilterToMikro<T = any>(
   crudInfos: CrudInfo[],
   options: {
     parentKey?: string;
-    currentUser: unknown;
+    currentUser: any;
     isRelation?: boolean;
   },
 ): ObjectQuery<T> | ObjectQuery<T>[] | undefined {

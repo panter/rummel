@@ -5,6 +5,7 @@ import { ReturnTypeFunc } from '@nestjs/graphql';
 import { TypeOptions } from '@nestjs/graphql/dist/interfaces/type-options.interface';
 import { uniqBy } from 'lodash';
 import 'reflect-metadata';
+// import { UserEntity } from '../../modules/user/models/user.entity';
 import { CrudInfo, getPrototypeChain } from './utils';
 
 /**
@@ -29,14 +30,14 @@ export type WhereFieldResolver<Entity = any, GqlWhere = any> = (
   ormQuery: ObjectQuery<Entity>,
   gqlWhere: GqlWhere,
   options: {
-    currentUser: unknown;
+    currentUser: any;
     key: string | number | symbol;
   },
 ) => void;
 
 export type InputFieldResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: unknown;
+  currentUser: any;
   currentOrmData?: Entity;
   rootOrmData?: Entity;
   type: Type<Entity>;

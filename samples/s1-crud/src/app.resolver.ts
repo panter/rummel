@@ -6,7 +6,7 @@ import {
   FindManyResolver,
   FindOneResolver,
   UpdateOneResolver,
-} from '@rummel/crud';
+} from '@panter/crud';
 
 @Resolver()
 export class FinOneUserResolver extends FindOneResolver(User) {}

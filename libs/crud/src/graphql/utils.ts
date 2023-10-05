@@ -12,6 +12,12 @@ import {
   InputResolverOptions,
 } from './crud-object.decorator';
 
+export function notNil<TValue>(
+  value: TValue | null | undefined,
+): value is TValue {
+  return value !== null && value !== undefined;
+}
+
 export interface Class<T> {
   new (...args: any[]): T;
 }
@@ -158,7 +164,7 @@ export const applyStaticWhereFieldResolver = <T = any>(
     currentUser,
     ormQuery,
     gqlWhere,
-  }: { currentUser: unknown; ormQuery: ObjectQuery<T>; gqlWhere: any },
+  }: { currentUser: any; ormQuery: ObjectQuery<T>; gqlWhere: any },
 ) => {
   crudInfos.forEach((crudInfo) => {
     if (crudInfo.crudOptions?.staticWhereResolver) {
@@ -181,7 +187,7 @@ export const applyStaticInputFieldResolver = async <Entity>(
     rootOrmData,
   }: {
     em: EntityManager;
-    currentUser: unknown;
+    currentUser: any;
     ormData: object;
     gqlInput: object;
     rootOrmData?: object;
