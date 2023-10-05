@@ -4,6 +4,7 @@ export * from './resolvers/update-one.resolver';
 export * from './resolvers/find-one.resolver';
 export * from './resolvers/find-many.resolver';
 export * from './resolvers/delete-one.resolver';
+export * from './resolvers/object-relation-resolver';
 export * from './create-one-entity-args';
 export * from './find-many-entity-args';
 export * from './gql-filter-to-mikro-orm';

@@ -7,6 +7,7 @@ import {
   DateTimeFilter,
   IntFilter,
   StringFilter,
+  enumFilter,
 } from './gql-filter-types';
 import { typesCache } from './types-cache';
 import { CrudInfo, getCrudInfosForType, getTypeName } from './utils';
@@ -40,10 +41,10 @@ const getFilterDesignType = (p: CrudInfo) => {
   } else if (p.options.isArray) {
     return whereInput(designType as Type);
   } else if (typeof designType !== 'function') {
-    return StringFilter; // TODO workaround for enums
+    return enumFilter(designType); // TODO workaround for enums
   } else {
     if (isArray(designType)) {
-      return whereInput(designType as unknown as Type);
+      return whereInput(designType as Type);
     }
     return findOneRelationFilter(designType as Type);
   }

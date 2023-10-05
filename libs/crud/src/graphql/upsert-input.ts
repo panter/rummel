@@ -196,28 +196,28 @@ export const upsertInput = <T>(
     abstract class A {}
 
     typesCache[name] = A;
-    uniqueFields.forEach((p) => {
+    uniqueFields.forEach((crudInfo) => {
       if (
-        options?.ignoreType === p.typeFn() ||
-        (!options?.isUpdate && p.crudOptions?.hideCreate) ||
-        (options?.isUpdate && p.crudOptions?.hideUpdate)
+        options?.ignoreType === crudInfo.typeFn() ||
+        (!options?.isUpdate && crudInfo.crudOptions?.hideCreate) ||
+        (options?.isUpdate && crudInfo.crudOptions?.hideUpdate)
       ) {
         return;
       }
       const filterDesignType = options?.isUpdate
-        ? getUpdateDesignType(p, classRef)
-        : getCreateDesignType(p, classRef);
+        ? getUpdateDesignType(crudInfo, classRef)
+        : getCreateDesignType(crudInfo, classRef);
 
       if (filterDesignType) {
-        Object.defineProperty(A.prototype, p.schemaName, {
+        Object.defineProperty(A.prototype, crudInfo.schemaName, {
           writable: true,
           configurable: true,
         });
         Field(() => filterDesignType, {
-          ...p.options,
+          ...crudInfo.options,
           nullable: true,
           isArray: false,
-        } as any)(A.prototype, p.schemaName);
+        } as any)(A.prototype, crudInfo.schemaName);
       }
     });
 

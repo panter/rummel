@@ -2,16 +2,16 @@ import { wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
+import { GraphQLResolveInfo } from 'graphql';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
-import { GraphQLResolveInfo } from 'graphql/type';
 import { CurrentUser } from '../../temp/current-user.decorator';
 import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export interface ICreateOneType<T> {
   createOne: (
     info: GraphQLResolveInfo,
-    currentUser: unknown,
+    currentUser: any,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -34,7 +34,7 @@ export function CreateOneResolver<T>(
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
     async createOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: unknown,
+      @CurrentUser() currentUser: any,
       @Args('data', {
         type: () => CreateOneArg,
         nullable: true,
@@ -53,11 +53,7 @@ export function CreateOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
-    async createOne(
-      info: GraphQLResolveInfo,
-      currentUser: unknown,
-      data?: any,
-    ) {
+    async createOne(info: GraphQLResolveInfo, currentUser: any, data?: any) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
@@ -78,7 +74,7 @@ export const resolveCreateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: unknown;
+    currentUser: any;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

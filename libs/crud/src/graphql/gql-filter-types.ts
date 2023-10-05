@@ -1,5 +1,6 @@
-import { Field, InputType } from '@nestjs/graphql';
+import { Field, InputType, TypeMetadataStorage } from '@nestjs/graphql';
 import { SringQueryMode } from './enums';
+import { typesCache } from './types-cache';
 
 @InputType()
 export class BoolFilter {
@@ -76,3 +77,56 @@ export class StringFilter {
   @Field(() => SringQueryMode, { nullable: true })
   mode?: SringQueryMode;
 }
+
+export const enumFilter = (e: any) => {
+  const enumMetaData = TypeMetadataStorage.getEnumsMetadata().find(
+    (enumMetadata) => enumMetadata.ref === e,
+  );
+
+  if (!enumMetaData) {
+    return null;
+  }
+
+  const name = `${enumMetaData.name}EnumFilter`;
+
+  const cached = typesCache[name];
+  if (cached) {
+    return cached;
+  }
+
+  @InputType(name)
+  class EnumFilter {
+    @Field(() => e, { nullable: true })
+    equals?: string;
+
+    @Field(() => [e], { nullable: true })
+    in?: string[];
+
+    @Field(() => [e], { nullable: true })
+    nin?: string[];
+
+    @Field(() => e, { nullable: true })
+    contains?: string[];
+
+    @Field(() => e, { nullable: true })
+    gt?: string;
+
+    @Field(() => e, { nullable: true })
+    gte?: string;
+
+    @Field(() => e, { nullable: true })
+    lt?: string;
+
+    @Field(() => e, { nullable: true })
+    lte?: string;
+
+    @Field(() => e, { nullable: true })
+    fulltext?: string;
+
+    // TODO: we currently do not support this, we overall irgnore props named "mode"
+    @Field(() => SringQueryMode, { nullable: true })
+    mode?: SringQueryMode;
+  }
+  typesCache[name] = EnumFilter;
+  return EnumFilter;
+};

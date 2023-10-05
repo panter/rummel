@@ -2,20 +2,20 @@ import { wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
+import { GraphQLResolveInfo } from 'graphql';
 import { isArray } from 'lodash';
+import { CurrentUser } from '../../temp/current-user.decorator';
+import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 import { EntityIdInput } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
-import { GraphQLResolveInfo } from 'graphql/type';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export type IUpdateOneType<T> = {
   updateOne: (
     info: GraphQLResolveInfo,
-    currentUser: unknown,
+    currentUser: any,
     data?: any,
     where?: any,
   ) => Promise<T>;
@@ -41,7 +41,7 @@ export function UpdateOneResolver<T>(
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: unknown,
+      @CurrentUser() currentUser: any,
       @Args('data', { type: () => UpdateOneArg, nullable: true })
       data?: any,
       @Args('where', { type: () => EntityIdInput })
@@ -61,7 +61,7 @@ export function UpdateOneResolver<T>(
     @Mutation(() => classRef, { name: methodName })
     override async updateOne(
       info: GraphQLResolveInfo,
-      currentUser: unknown,
+      currentUser: any,
       data?: any,
       where?: EntityIdInput,
     ) {
@@ -86,7 +86,7 @@ export const resolveUpdateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: unknown;
+    currentUser: any;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

@@ -1,18 +1,18 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Query, Resolver } from '@nestjs/graphql';
+import { GraphQLResolveInfo } from 'graphql';
 import { isArray, lowerFirst } from 'lodash';
+import { CurrentUser } from '../../temp/current-user.decorator';
+import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
-import { GraphQLResolveInfo } from 'graphql/type';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 
 export interface IFindOneType<T> {
   findOne: (
     info: GraphQLResolveInfo,
-    currentUser: unknown,
+    currentUser: any,
     whereArgs: FindOneEntityWhereArgs,
   ) => Promise<T | null | undefined>;
 }
@@ -27,14 +27,13 @@ export function FindOneResolver<T>(
         name?: string;
         onResolve?: (
           info: GraphQLResolveInfo,
-          currentUser: unknown,
+          currentUser: any,
           data: any,
         ) => Promise<any>;
       }
     | undefined = {},
 ): Type<IFindOneType<T>> {
   const methodName = name ? name : lowerFirst(classRef.name);
-
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindOneType<T> {
     constructor(protected readonly em: EntityManager) {}
@@ -45,7 +44,7 @@ export function FindOneResolver<T>(
     })
     async findOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: unknown,
+      @CurrentUser() currentUser: any,
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
@@ -65,7 +64,7 @@ export function FindOneResolver<T>(
     })
     async findOne(
       info: GraphQLResolveInfo,
-      currentUser: unknown,
+      currentUser: any,
       where: FindOneEntityWhereArgs,
     ) {
       if (onResolve) {
@@ -85,7 +84,7 @@ export const resolveFindOne = async <T extends Type>(
     info,
     em,
     currentUser,
-  }: { em: EntityManager; currentUser: unknown; info: GraphQLResolveInfo },
+  }: { em: EntityManager; currentUser: any; info: GraphQLResolveInfo },
 ) => {
   const crudInfos = getCrudInfosForType(type);
 

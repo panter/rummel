@@ -1,11 +1,12 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import 'reflect-metadata';
+// import { UserEntity } from '../../modules/user/models/user.entity';
 import { getTypeName } from './utils';
 
 export type InputResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: unknown;
+  currentUser: any;
   currentOrmData?: Entity;
   type: Type<Entity>;
 };

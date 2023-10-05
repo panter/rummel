@@ -1,16 +1,15 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
-import { FindOneEntityWhereArgs } from '../generic-types';
-import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
-import { GraphQLResolveInfo } from 'graphql/type';
+import { GraphQLResolveInfo } from 'graphql';
 import { CurrentUser } from '../../temp/current-user.decorator';
 import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
-
+import { FindOneEntityWhereArgs } from '../generic-types';
+import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
 export interface IDeleteOneType<T> {
   deleteOne: (
     info: GraphQLResolveInfo,
-    currentUser: unknown,
+    currentUser: any,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -31,7 +30,7 @@ export function DeleteOneResolver<T>(
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
     async deleteOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: unknown,
+      @CurrentUser() currentUser: any,
       @Args() data: FindOneEntityWhereArgs,
     ) {
       return resolveDeleteOne(classRef, data, {
@@ -45,11 +44,7 @@ export function DeleteOneResolver<T>(
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
-    async deleteOne(
-      info: GraphQLResolveInfo,
-      currentUser: unknown,
-      data?: any,
-    ) {
+    async deleteOne(info: GraphQLResolveInfo, currentUser: any, data?: any) {
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
@@ -68,7 +63,7 @@ export const resolveDeleteOne = async <T extends Type>(
     em,
     info,
   }: {
-    currentUser: unknown;
+    currentUser: any;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },
