@@ -167,8 +167,8 @@ export const prismaSchemaBuilder = <
     } as any);
 
   const relation = (customSchemas?: {
-    create: () => PrismaInputSchema<PrismaCreateInput>;
-    update: () => PrismaInputSchema<PrismaUpdateInput>;
+    create?: () => PrismaInputSchema<PrismaCreateInput>;
+    update?: () => PrismaInputSchema<PrismaUpdateInput>;
   }): {
     create: () => PrismaInputSchema<PrismaCreateInput>;
     update: () => PrismaInputSchema<PrismaUpdateInput>;
