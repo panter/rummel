@@ -1,9 +1,11 @@
 import {
+  GenericPrismaInput,
   InferPrismaModel,
   ManyReferenceMapper,
   ManyRelationMapper,
   OneReferenceMapper,
   OneRelationMapper,
+  PrismaInput,
   PrismaInputSchema,
   PrismaInputSchemaProperty,
   PrismaManyObjectInput,
@@ -170,7 +172,7 @@ export const manyRelation = <
           (newValueItem as any)?.id === (oldValueItem as any)?.id
         );
       });
-
+      console.log({ newValueItem, oldValueItem });
       if (
         (newValueItem as any)?.id &&
         (newValueItem as any)?.id == (oldValueItem as any)?.id
@@ -198,6 +200,7 @@ export const manyRelation = <
           oldValue: oldValueItem,
           mapper: createMapper,
         });
+        console.log({ newValueItem, oldValueItem, createInputData });
         if (createInputData) {
           inputData.create = inputData.create || [];
           inputData.create.push(createInputData);
@@ -314,11 +317,14 @@ export const manyReference = <
 });
 
 export const object =
-  <Input extends Record<string, any>, Source extends Record<string, any>>() =>
+  <
+    Input extends GenericPrismaInput,
+    Model extends InferPrismaModel<Partial<Input>>,
+  >() =>
   (props: {
-    value?: Source | null;
-    oldValue?: Source | null;
-    mapper: PrismaInputSchema<Input, Source>;
+    value?: Model | null;
+    oldValue?: Model | null;
+    mapper: PrismaInputSchema<Input, Model>;
   }): Input | undefined => {
     // if (props.mapper.mapper) {
     //   return props.mapper.mapper(props);
@@ -335,11 +341,11 @@ export const object =
       Object.keys(props.mapper.properties)
         .sort((a, b) => {
           // sort by mapper type so that relations before references
-          const aPropMapper: PrismaInputSchemaProperty<any> = (
+          const aPropMapper: PrismaInputSchemaProperty = (
             props.mapper.properties as any
           )[a as keyof Input];
 
-          const bPropMapper: PrismaInputSchemaProperty<any> = (
+          const bPropMapper: PrismaInputSchemaProperty = (
             props.mapper.properties as any
           )[b as keyof Input];
 
@@ -349,16 +355,20 @@ export const object =
           );
         })
         .forEach((key) => {
-          const propMapper: PrismaInputSchemaProperty<any> = (
+          const propMapper: PrismaInputSchemaProperty = (
             props.mapper.properties as any
           )[key as keyof Input];
 
-          const value = source[key as keyof Source];
-          const oldValue = oldSource?.[key as keyof Source];
+          const value = source[key as keyof Model] as any;
+          const oldValue = oldSource?.[key as keyof Model] as any;
 
           if (propMapper.__typename === 'Property') {
             const method = (source as any)?.id ? 'update' : 'create';
-            const mappedValue = propMapper.map?.({ value, oldValue, method });
+            const mappedValue = propMapper.map?.({
+              value,
+              oldValue,
+              method,
+            });
             if (mappedValue) {
               inputData[key] = mappedValue;
             }
@@ -410,8 +420,8 @@ export const object =
             if (relationInput) {
               inputData[key] = relationInput;
             } else {
-              const refValue = source[`${key}Id` as keyof Source];
-              const oldRefValue = oldSource?.[`${key}Id` as keyof Source];
+              const refValue = source[`${key}Id` as keyof Model] as any;
+              const oldRefValue = oldSource?.[`${key}Id` as keyof Model] as any;
               const referenceInput = propMapper.map?.({
                 value: refValue,
                 oldValue: oldRefValue,
@@ -436,6 +446,12 @@ export const object =
 
     return inputData as Input;
   };
+
+export function prismaInputSchema<T>(
+  schema: PrismaInputSchema<PrismaInput<T>>,
+): PrismaInputSchema<PrismaInput<T>> {
+  return schema;
+}
 
 export const mapFromPrismaSchema = <T>({
   schema,

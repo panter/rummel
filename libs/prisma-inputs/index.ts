@@ -13,7 +13,7 @@ type ConnectRelationInput = {
 
 type PropertyTypes = string | number | boolean | Date | bigint;
 
-type GenericPrismaInput = Record<string, unknown>;
+export type GenericPrismaInput = Record<string, unknown>;
 
 type GenericPrismaOneConnect = { connect?: any };
 
@@ -56,6 +56,11 @@ type ExtractManyRelationUpdateDataType<U> = U extends { data?: infer UU }
 
 export type CommonProperties<T, U> = Extract<keyof T, keyof U>;
 
+/**
+ * A utility type that takes a Prisma model input type and returns a new type that only includes
+ * the fields that reference other models. For each reference field, the type is modified to only
+ * include the `connect` property, which is used to specify the primary keys of the related model instance.
+ */
 export type PrismaInputReferences<T> = {
   [K in keyof T as T[K] extends GenericPrismaManyConnect | undefined | null
     ? PrismaInputReferenceManyKeys<K>
@@ -93,60 +98,60 @@ export type PrismaManyReferenceInput<Connect> = {
 };
 
 // ---
-export type PropertyMapper<T> = {
+export type PropertyMapper<Model> = {
   map: (props: {
-    value?: T | null;
-    oldValue?: T | null;
+    value?: Model | null;
+    oldValue?: Model | null;
     method: 'create' | 'update';
-  }) => T | { set?: T } | undefined;
+  }) => Model | { set?: Model } | undefined;
   __typename: 'Property';
 };
 
 export type OneRelationMapper<
-  T extends GenericPrismaRelation | undefined,
-  Source = T,
-  Create = 'create' extends keyof T ? T['create'] : never,
-  Update = 'update' extends keyof T ? T['update'] : never,
+  Input extends GenericPrismaRelation | undefined,
+  Model = any,
+  Create = 'create' extends keyof Input ? Input['create'] : never,
+  Update = 'update' extends keyof Input ? Input['update'] : never,
 > = {
   // embbedded?: boolean;
   map: (props: {
-    value?: Source | null;
-    oldValue?: Source | null;
+    value?: Model | null;
+    oldValue?: Model | null;
   }) => PrismaOneObjectInput<Create, Update> | undefined;
   __typename: 'Relation';
 };
 
 export type ManyRelationMapper<
-  T extends GenericPrismaRelation,
-  Source = T,
-  Create = T['create'],
-  Update = T['update'],
+  Input extends GenericPrismaRelation,
+  Model = any,
+  Create = Input['create'],
+  Update = Input['update'],
 > = {
   // embbedded?: boolean;
   map: (props: {
-    value?: Source[] | null;
-    oldValue?: Source[] | null;
+    value?: Model[] | null;
+    oldValue?: Model[] | null;
   }) => PrismaManyObjectInput<Create, Update> | undefined;
   __typename: 'ManyRelation';
 };
 
 export type OneReferenceMapper<
-  T extends GenericPrismaOneConnect,
-  Source = T,
-  Connect = T['connect'],
+  Input extends GenericPrismaOneConnect,
+  Model = Input,
+  Connect = Input['connect'],
 > = {
   // embbedded?: boolean;
   map: (props: {
-    value?: Source | null;
-    oldValue?: Source | null;
+    value?: Model | null;
+    oldValue?: Model | null;
   }) => PrismaOneReferenceInput<Connect> | undefined;
   __typename: 'Reference';
 };
 
 export type ManyReferenceMapper<
-  T extends GenericPrismaManyConnect,
-  Source = T,
-  Connect = ExtractManyReferenceType<T>,
+  Input extends GenericPrismaManyConnect,
+  Source = any,
+  Connect = ExtractManyReferenceType<Input>,
 > = {
   // embbedded?: boolean;
   map: (props: {
@@ -166,33 +171,36 @@ export type ManyReferenceMapper<
  * This type is instrumental in constructing a Prisma input schema that accurately represents the structure
  * and relations of the underlying Prisma model.
  *
- * @typeParam T - Represents the Prisma input property structure.
- * @typeParam S - Represents a source type, defaulting to a partial version of `T`.
+ * @typeParam Input - Represents the Prisma input property structure.
+ * @typeParam Model - Represents the model property type that the input property maps to.
  */
-export type PrismaInputSchemaProperty<T, S = Partial<T>> = T extends {
+export type PrismaInputSchemaProperty<
+  Input = any,
+  Model = any,
+> = Input extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
 }
   ? ManyRelationMapper<
-      T,
-      ExtractModelDataType<S>,
+      Input,
+      ExtractModelDataType<Model>,
       C | undefined,
       ExtractManyRelationUpdateDataType<U> | undefined
     >
-  : T extends { create?: infer C; update?: infer U }
+  : Input extends { create?: infer C; update?: infer U }
   ? OneRelationMapper<
-      T,
-      S,
+      Input,
+      Model,
       C extends unknown ? C | undefined : C | undefined,
       U extends unknown ? U | undefined : U | undefined
     >
-  : T extends { connect?: (infer C)[] | null }
-  ? ManyReferenceMapper<T, S[], Partial<C> | undefined>
-  : T extends { connect?: infer C }
-  ? OneReferenceMapper<T, S, Partial<C> | undefined>
-  : T extends PropertyTypes
-  ? PropertyMapper<T>
-  : T extends { set?: infer S }
+  : Input extends { connect?: (infer C)[] | null }
+  ? ManyReferenceMapper<Input, Model[], Partial<C> | undefined>
+  : Input extends { connect?: infer C }
+  ? OneReferenceMapper<Input, Model, Partial<C> | undefined>
+  : Input extends PropertyTypes
+  ? PropertyMapper<Input>
+  : Input extends { set?: infer S }
   ? PropertyMapper<Partial<S>>
   : never;
 
@@ -210,24 +218,21 @@ export type PrismaInputSchemaProperty<T, S = Partial<T>> = T extends {
  * This type provides a blueprint for constructing and transforming Prisma input data, ensuring that the input aligns
  * with the expected structure and relations of the underlying Prisma model.
  *
- * @typeParam T - Represents the Prisma input structure. It should extend from `GenericPrismaInput` or be `unknown`.
- * @typeParam Source - Represents the inferred Prisma model derived from a partial version of `T`. By default, it's inferred
- *                     from the input type `T`.
+ * @typeParam Input - Represents the Prisma input the mappter will return.
+ * @typeParam Model - The model of the value and value that are mapped to the Input type.
  */
 export type PrismaInputSchema<
-  T extends GenericPrismaInput | unknown,
-  Source = InferPrismaModel<Partial<T>>,
+  Input extends GenericPrismaInput | unknown,
+  Model = InferPrismaModel<Partial<Input>>,
 > = {
   mapper(props: {
-    value?: Source | null;
-    oldValue?: Source | null;
-    mapper: PrismaInputSchema<T, Source>;
-  }): T | undefined;
+    value?: Model | null;
+    oldValue?: Model | null;
+    mapper: PrismaInputSchema<Input, Model>;
+  }): Input | undefined;
   properties: {
-    [K in keyof T as PrismaInputSchemaProperty<T[K]> extends never
-      ? never
-      : K]-?: K extends keyof Source
-      ? PrismaInputSchemaProperty<T[K], Source[K]>
+    [K in keyof Input]-?: K extends keyof Model
+      ? PrismaInputSchemaProperty<Input[K], Model[K]>
       : never;
   };
 };
@@ -238,55 +243,51 @@ export type PrismaInputSchema<
  * This type is useful for determining the expected model property structure based on various Prisma input patterns,
  * especially when dealing with relations, connections, or value updates.
  *
- * @typeParam T - Represents the Prisma input property structure.
+ * @typeParam Input - Represents the Prisma input structure from which the model is inferred.
  */
-export type InferPrismaModelProperty<T> = T extends {
+export type InferPrismaModelProperty<Input> = Input extends {
   set?: infer U;
 }
   ? U
-  : T extends { create?: (infer C)[] | null; update?: (infer U)[] | null }
+  : Input extends { create?: (infer C)[] | null; update?: (infer U)[] | null }
   ?
       | InferPrismaModel<Partial<ExtractPrismaInputFromMany<C, U>>>[]
       | undefined
       | null
-  : T extends { create?: infer C; update?: infer U }
+  : Input extends { create?: infer C; update?: infer U }
   ?
       | InferPrismaModel<Partial<ExtractPrismaInputFromOne<C, U>>>
       | undefined
       | null
-  : T extends { connect?: infer C }
+  : Input extends { connect?: infer C }
   ? C
-  : T;
+  : Input;
 
 /**
  * Represents a type that infers the structure of a Prisma model based on a given Prisma input.
  *
- * For each property `K` in the input type `T`, it infers the corresponding model property type
+ * For each property type `Input`, it infers the corresponding model property type
  * using the `InferPrismaModelProperty` utility type.
  *
  * This type is useful for deriving the expected model structure from a Prisma input, especially
  * when dealing with complex nested inputs or relations.
  *
- * @typeParam T - A type that extends from `GenericPrismaInput` or is `unknown`. Represents the Prisma input structure.
+ * @typeParam Input - Represents the Prisma input structure from which the model is inferred.
  */
-export type InferPrismaModel<T extends GenericPrismaInput | unknown> = {
-  [K in keyof T]: InferPrismaModelProperty<T[K]>;
+export type InferPrismaModel<Input> = {
+  [K in keyof Input]: InferPrismaModelProperty<Input[K]>;
 };
 
 /**
- * Represents a type that maps each property of an inferred Prisma model to its corresponding Prisma input schema property.
+ * Represents a type that maps each property of an inferred Prisma input to its corresponding model property.
  *
- * For each key `K` in the inferred Prisma model derived from the input type `Input`, this type associates it with
- * a `PrismaInputSchemaProperty` that describes how the input property should be structured and how it relates to
- * the model property.
- *
- * This type is instrumental in constructing a comprehensive Prisma input schema that aligns with the structure
- * and relations of the underlying Prisma model.
+ * For each key in `Input`, is associated with a `PrismaInputSchemaProperty` that describes how the model is
+ * mapped to the input.
  *
  * @typeParam Input - Represents the Prisma input structure from which the model is inferred.
  */
 export type PrismaInputSchemaProperties<Input> = {
-  [K in keyof InferPrismaModel<Input>]-?: PrismaInputSchemaProperty<
+  [K in keyof Input]-?: PrismaInputSchemaProperty<
     Input[K],
     InferPrismaModel<Input>[K]
   >;
