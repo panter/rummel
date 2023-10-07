@@ -2,35 +2,38 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type User {
-  id: Float!
+type Address {
+  id: ID!
+  address: String!
+}
+
+type Simple {
+  id: ID!
+  name: String
+  secondName: String
+  related: Simple!
+}
+
+type Organisation {
+  id: ID!
+  description: String
+  persons: [Person!]!
+  simple: Simple
+}
+
+type Person {
+  id: ID!
   name: String!
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByInput!], skip: Int, take: Int): [Address!]
+  organisation: Organisation
 }
 
-type Query {
-  user(where: EntityIdInput): User
-  users(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]!
-  usersCount(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): Int!
-}
-
-input EntityIdInput {
-  id: String!
-}
-
-input UserWhereInput {
-  AND: [UserWhereInput!]
-  OR: [UserWhereInput!]
-  NOT: [UserWhereInput!]
-  id: IntFilter
-  name: StringFilter
-}
-
-input IntFilter {
-  equals: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
+input AddressWhereInput {
+  AND: [AddressWhereInput!]
+  OR: [AddressWhereInput!]
+  NOT: [AddressWhereInput!]
+  id: StringFilter
+  address: StringFilter
 }
 
 input StringFilter {
@@ -51,9 +54,9 @@ enum SringQueryMode {
   insensitive
 }
 
-input UserOrderByInput {
+input AddressOrderByInput {
   id: SortOrder
-  name: SortOrder
+  address: SortOrder
 }
 
 enum SortOrder {
@@ -61,26 +64,138 @@ enum SortOrder {
   desc
 }
 
+type Query {
+  person(where: EntityIdInput): Person
+  people(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): [Person!]!
+  peopleCount(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): Int!
+}
+
+input EntityIdInput {
+  id: String!
+}
+
+input PersonWhereInput {
+  AND: [PersonWhereInput!]
+  OR: [PersonWhereInput!]
+  NOT: [PersonWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  addresses: AddressWhereInput
+  organisation: OrganisationOneRelationFilter
+}
+
+input OrganisationOneRelationFilter {
+  AND: OrganisationWhereInput
+  OR: OrganisationWhereInput
+  NOT: OrganisationWhereInput
+  id: StringFilter
+  description: StringFilter
+  persons: PersonWhereInput
+  simple: SimpleOneRelationFilter
+}
+
+input OrganisationWhereInput {
+  AND: [OrganisationWhereInput!]
+  OR: [OrganisationWhereInput!]
+  NOT: [OrganisationWhereInput!]
+  id: StringFilter
+  description: StringFilter
+  persons: PersonWhereInput
+  simple: SimpleOneRelationFilter
+}
+
+input SimpleOneRelationFilter {
+  AND: SimpleWhereInput
+  OR: SimpleWhereInput
+  NOT: SimpleWhereInput
+  id: StringFilter
+  name: StringFilter
+  secondName: StringFilter
+  related: SimpleOneRelationFilter
+}
+
+input SimpleWhereInput {
+  AND: [SimpleWhereInput!]
+  OR: [SimpleWhereInput!]
+  NOT: [SimpleWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  secondName: StringFilter
+  related: SimpleOneRelationFilter
+}
+
+input PersonOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  addresses: AddressOrderByInput
+  organisation: OrganisationOrderByInput
+}
+
+input OrganisationOrderByInput {
+  id: SortOrder
+  description: SortOrder
+  persons: PersonOrderByInput
+  simple: SimpleOrderByInput
+}
+
+input SimpleOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  secondName: SortOrder
+  related: SimpleOrderByInput
+}
+
 type Mutation {
-  createOneUser(data: UserCreateInput): User!
-  updateOneUser(data: UserUpdateInput, where: EntityIdInput!): User!
-  deleteOneUser(where: EntityIdInput): User!
+  createOnePerson(data: PersonCreateInput): Person!
+  updateOnePerson(data: PersonUpdateInput, where: EntityIdInput!): Person!
+  deleteOnePerson(where: EntityIdInput): Person!
 }
 
-input UserCreateInput {
-  id: Float
+input PersonCreateInput {
   name: String
+  addresses: AddressCreateNestedManyWithoutPersonInput
+  organisation: OrganisationCreateNestedOneWithoutPersonInput
 }
 
-input UserUpdateInput {
-  id: NumberInput
-  name: StringInput
+input AddressCreateNestedManyWithoutPersonInput {
+  connect: [ConnectRelationInput!]
+  disconnect: [EntityIdInput!]
+  create: [AddressCreateWithoutPersonInput!]
+  update: [AddressUpdateWithWhereUniqueWithoutPersonInput!]
 }
 
-input NumberInput {
-  set: Float
+input ConnectRelationInput {
+  id: String!
+}
+
+input AddressCreateWithoutPersonInput {
+  address: String
+}
+
+input AddressUpdateWithWhereUniqueWithoutPersonInput {
+  where: EntityIdInput!
+  data: AddressUpdateInput
+}
+
+input AddressUpdateInput {
+  address: StringInput
 }
 
 input StringInput {
   set: String
+}
+
+input OrganisationCreateNestedOneWithoutPersonInput {
+  connect: ConnectRelationInput
+}
+
+input PersonUpdateInput {
+  name: StringInput
+  addresses: AddressCreateNestedManyWithoutPersonInput
+  organisation: OrganisationUpdateNestedOneWithoutPersonInput
+}
+
+input OrganisationUpdateNestedOneWithoutPersonInput {
+  connect: ConnectRelationInput
+  disconnect: Boolean
 }

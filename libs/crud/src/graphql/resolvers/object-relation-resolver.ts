@@ -55,7 +55,7 @@ export function ObjectRelationResolvers<T>(classRef: Type<T>): Type<any>[] {
 
           const crudInfos = getCrudInfosForType(classRef);
           const where =
-            gqlFilterToMikro<T>(input.where, crudInfos, currentUser) || {};
+            gqlFilterToMikro<T>(input.where, crudInfos, { currentUser }) || {};
 
           return parent[crudInfo.schemaName].matching({
             where,

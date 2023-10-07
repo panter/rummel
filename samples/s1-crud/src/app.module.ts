@@ -11,6 +11,8 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { join } from 'path';
+import { ObjectRelationResolvers } from '@panter/crud';
+import { Person } from './migrations/entities/person.entity';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { join } from 'path';
     CreateOneUserResolver,
     UpdateOneUserResolver,
     DeleteOneUserResolver,
+    ...ObjectRelationResolvers(Person),
   ],
 })
 export class AppModule {}
