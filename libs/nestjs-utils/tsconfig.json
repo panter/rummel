@@ -2,14 +2,14 @@
   "extends": "@rummel/tsconfig/server-library.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "allowJs": false
   },
   "include": [
-    "index.ts",
-    "./asset-manager/**/*.ts",
-    "./common/**/*.ts",
-    "./core/**/*.ts",
-    "./types.d.ts"
+    "./types.d.ts",
+    "./src/**/*.ts",
+    "./test/**/*.ts",
+    "./src/graphql/graphql-upload.d.ts",
   ],
   "exclude": [
     "dist"

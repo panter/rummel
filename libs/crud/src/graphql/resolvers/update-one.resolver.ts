@@ -4,13 +4,12 @@ import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { isArray } from 'lodash';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 import { EntityIdInput } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
+import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 
 export type IUpdateOneType<T> = {
   updateOne: (

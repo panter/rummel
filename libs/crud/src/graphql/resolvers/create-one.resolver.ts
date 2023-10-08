@@ -5,8 +5,7 @@ import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
+import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 
 export interface ICreateOneType<T> {
   createOne: (

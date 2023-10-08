@@ -6,13 +6,20 @@
       "persistent": true
     },
     "build": {
+      "dependsOn": [
+        "^build"
+      ],
       "outputs": [
         ".next/**",
         "dist/**",
         "build/**"
       ]
     },
-    "test": {},
+    "test": {
+      "dependsOn": [
+        "build"
+      ]
+    },
     "lint": {},
     "clean": {
       "cache": false

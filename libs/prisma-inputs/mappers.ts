@@ -172,7 +172,6 @@ export const manyRelation = <
           (newValueItem as any)?.id === (oldValueItem as any)?.id
         );
       });
-      console.log({ newValueItem, oldValueItem });
       if (
         (newValueItem as any)?.id &&
         (newValueItem as any)?.id == (oldValueItem as any)?.id
@@ -200,7 +199,7 @@ export const manyRelation = <
           oldValue: oldValueItem,
           mapper: createMapper,
         });
-        console.log({ newValueItem, oldValueItem, createInputData });
+
         if (createInputData) {
           inputData.create = inputData.create || [];
           inputData.create.push(createInputData);

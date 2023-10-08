@@ -1,0 +1,119 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type AsyncJobMetadata {
+  key: String!
+  value: String!
+}
+
+type AsyncJobConfig {
+  id: ID!
+  handlerUrl: String
+  ownerId: String!
+  name: String!
+  label: String
+  metadata: [AsyncJobMetadata!]
+}
+
+type Query {
+  asyncJobConfig(where: EntityIdInput): AsyncJobConfig
+  asyncJobConfigs(where: AsyncJobConfigWhereInput, orderBy: [AsyncJobConfigOrderByInput!], skip: Int, take: Int): [AsyncJobConfig!]!
+  asyncJobConfigsCount(where: AsyncJobConfigWhereInput, orderBy: [AsyncJobConfigOrderByInput!], skip: Int, take: Int): Int!
+}
+
+input EntityIdInput {
+  id: String!
+}
+
+input AsyncJobConfigWhereInput {
+  AND: [AsyncJobConfigWhereInput!]
+  OR: [AsyncJobConfigWhereInput!]
+  NOT: [AsyncJobConfigWhereInput!]
+  id: StringFilter
+  handlerUrl: StringFilter
+  ownerId: StringFilter
+  name: StringFilter
+  label: StringFilter
+  metadata: AsyncJobMetadataWhereInput
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  nin: [String!]
+  contains: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  fulltext: String
+  mode: SringQueryMode
+}
+
+enum SringQueryMode {
+  default
+  insensitive
+}
+
+input AsyncJobMetadataWhereInput {
+  AND: [AsyncJobMetadataWhereInput!]
+  OR: [AsyncJobMetadataWhereInput!]
+  NOT: [AsyncJobMetadataWhereInput!]
+  key: StringFilter
+  value: StringFilter
+}
+
+input AsyncJobConfigOrderByInput {
+  id: SortOrder
+  handlerUrl: SortOrder
+  ownerId: SortOrder
+  name: SortOrder
+  label: SortOrder
+  metadata: AsyncJobMetadataOrderByInput
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+input AsyncJobMetadataOrderByInput {
+  key: SortOrder
+  value: SortOrder
+}
+
+type Mutation {
+  enqueueAsyncJob(jobId: String!): Boolean!
+  createOneAsyncJobConfig(data: AsyncJobConfigCreateInput): AsyncJobConfig!
+  updateOneAsyncJobConfig(data: AsyncJobConfigUpdateInput, where: EntityIdInput!): AsyncJobConfig!
+}
+
+input AsyncJobConfigCreateInput {
+  handlerUrl: String
+  ownerId: String
+  name: String
+  label: String
+  metadata: AsyncJobMetadataCreateNestedManyWithoutAsyncJobConfigInput
+}
+
+input AsyncJobMetadataCreateNestedManyWithoutAsyncJobConfigInput {
+  connect: [ConnectRelationInput!]
+  disconnect: [EntityIdInput!]
+}
+
+input ConnectRelationInput {
+  id: String!
+}
+
+input AsyncJobConfigUpdateInput {
+  handlerUrl: StringInput
+  ownerId: StringInput
+  name: StringInput
+  label: StringInput
+  metadata: AsyncJobMetadataCreateNestedManyWithoutAsyncJobConfigInput
+}
+
+input StringInput {
+  set: String
+}

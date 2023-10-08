@@ -7,8 +7,7 @@ import pluralize from 'pluralize';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { findManyEntityArgs } from '../find-many-entity-args';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
+import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 
 export interface IFindManyType<T> {
   findMany: (
