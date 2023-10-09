@@ -153,11 +153,11 @@ type Mutation {
 
 input PersonCreateInput {
   name: String
-  addresses: AddressCreateNestedManyWithoutPersonInput
-  organisation: OrganisationCreateNestedOneWithoutPersonInput
+  addresses: AddressConnectCreateUpdateNestedManyWithoutPersonInput
+  organisation: OrganisationConnectNestedOneWithoutPersonInput
 }
 
-input AddressCreateNestedManyWithoutPersonInput {
+input AddressConnectCreateUpdateNestedManyWithoutPersonInput {
   connect: [ConnectRelationInput!]
   disconnect: [EntityIdInput!]
   create: [AddressCreateWithoutPersonInput!]
@@ -185,17 +185,12 @@ input StringInput {
   set: String
 }
 
-input OrganisationCreateNestedOneWithoutPersonInput {
+input OrganisationConnectNestedOneWithoutPersonInput {
   connect: ConnectRelationInput
 }
 
 input PersonUpdateInput {
   name: StringInput
-  addresses: AddressCreateNestedManyWithoutPersonInput
-  organisation: OrganisationUpdateNestedOneWithoutPersonInput
-}
-
-input OrganisationUpdateNestedOneWithoutPersonInput {
-  connect: ConnectRelationInput
-  disconnect: Boolean
+  addresses: AddressConnectCreateUpdateNestedManyWithoutPersonInput
+  organisation: OrganisationConnectNestedOneWithoutPersonInput
 }
