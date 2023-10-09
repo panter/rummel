@@ -20,7 +20,15 @@ export const manyRelationInput = <T>(
   const withoutTypeName = options?.parentRef
     ? `Without${getTypeName(options?.parentRef)}`
     : '';
-  const name = `${typeName}CreateNestedMany${withoutTypeName}Input`;
+  const operationsName =
+    !options?.hideCreate && !options?.hideUpdate
+      ? 'ConnectCreateUpdate'
+      : !options?.hideCreate
+      ? 'ConnectCreate'
+      : !options?.hideUpdate
+      ? 'ConnectUpdate'
+      : 'Connect';
+  const name = `${typeName}${operationsName}NestedMany${withoutTypeName}Input`;
 
   if (typesCache[name]) {
     return typesCache[name];

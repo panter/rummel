@@ -52,8 +52,22 @@ export type InputFieldResolver<Entity = any, GqlInput = any> = (
 ) => Promise<void>;
 
 export type CrudRelationFieldOptions = {
+  /**
+   * If set to `true`, the relation cannot be connected by primary key
+   */
+  hideConnect?: boolean;
+  /**
+   *  If set to `true`, the relation can be created with all it's fields.
+   */
   showCreate?: boolean;
+  /**
+   *  If set to `true`, the relation can be updated with all it's fields.
+   */
   showUpdate?: boolean;
+  /**
+   *  If set to `true`, the relation cannot be disconnected by primary key.
+   */
+  hideDisconnect?: boolean;
 };
 
 export type CrudFieldProps<Entity = any, GqlInput = any, GqlWhere = any> = {
@@ -61,14 +75,31 @@ export type CrudFieldProps<Entity = any, GqlInput = any, GqlWhere = any> = {
   // TODO: this is for CatalogProductPropertyWithValue so we can handle it like the other fields
   ormTypeFn?: ReturnTypeFunc;
   name?: string;
+  /**
+   * Schema instructions.
+   *  If set to `true`, the field will be hidden from the create operation, so the field cannot be set during creation.
+   */
   hideCreate?: boolean;
+  /**
+   * If set to `true`, the field will be hidden from the update operation, so the field cannot be updated.
+   */
   hideUpdate?: boolean;
+  /**
+   * Schema instructions.
+   * If set to `true`, the field will be hidden from the where input type, so the field cannot be filtered.
+   */
   hideWhere?: boolean;
+  /**
+   * Schema instructions.
+   * If set to `true`, the relation can be connected by primary key
+   */
   fieldOptions?: TypeOptions;
+  /**
+   * Relation schema instructions
+   */
   relation?: CrudRelationFieldOptions & {
     parentPropert?: string;
   };
-  // defaultWhereResolver?: WhereResolver;
   staticWhereResolver?: WhereFieldResolver<Entity, GqlWhere>;
   whereResolver?: WhereFieldResolver<Entity, GqlWhere>;
   inputResolver?: true | InputFieldResolver<Entity, GqlInput>;
