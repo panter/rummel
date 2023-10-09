@@ -1,0 +1,26 @@
+{
+  "extends": "@rummel/tsconfig/nextjs.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+  },
+  "include": [
+    "next-env.d.ts",
+    "@generated/i18next.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "typeRoots": [
+    "types.d.ts",
+    "@generated/i18next.d.ts",
+    "node_modules/@types"
+  ]
+}

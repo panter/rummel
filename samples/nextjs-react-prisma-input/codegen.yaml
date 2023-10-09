@@ -1,0 +1,17 @@
+schema: ../planungstool-backend/generated/schema/api.gql
+
+documents:
+  - "./pages/**/*.{ts,tsx}"
+  - "./modules/**/*.{ts,tsx}"
+
+generates:
+  ./@generated/:
+    preset: client
+  ./@generated/fragment-matcher.ts:
+    plugins:
+      - fragment-matcher
+  ./@generated/type-policies.ts:
+    plugins:
+      - typescript-apollo-client-helpers
+
+
