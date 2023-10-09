@@ -1,7 +1,7 @@
-# @rummel/nestjs-autocomplete
+# @rummel/nestjs-autocomplete-lib
 
 ```ts
-import { AutocompleteModule } from '@rummel/nestjs-autocomplete';
+import { AutocompleteModule } from '@rummel/nestjs-autocomplete-lib';
 
 @Module({
   imports: [
