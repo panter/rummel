@@ -21,7 +21,7 @@ describe('ObjectRelationResolver', () => {
     }).compile();
   });
 
-  it.only('should generate relation resolvers graphql schema for Group object', async () => {
+  it('should generate relation resolvers graphql schema for Group object', async () => {
     const gqlSchemaFactory = app.get(GraphQLSchemaFactory);
     const schema = await gqlSchemaFactory.create(
       [FindOneGroupResolver, ...ObjectRelationResolvers(Group)],
