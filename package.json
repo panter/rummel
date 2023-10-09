@@ -14,7 +14,8 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "lint:type-check": "turbo run lint:type-check"
+    "lint:type-check": "turbo run lint:type-check",
+    "clean": "turbo run clean"
   },
   "devDependencies": {
     "@catladder/cli": "^1.122.0",

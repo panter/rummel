@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
+import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+
 export interface IDeleteOneType<T> {
   deleteOne: (
     info: GraphQLResolveInfo,

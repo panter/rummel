@@ -3,11 +3,10 @@ import { Type } from '@nestjs/common';
 import { Args, Info, Parent, ResolveField, Resolver } from '@nestjs/graphql';
 import { isArray, uniqBy } from 'lodash';
 import { CrudInfo, getCrudInfosForType, notNil } from '../utils';
-import { CurrentUser } from '../../temp/current-user.decorator';
-import { getFieldsToPopulate } from '../../temp/get-fields-to-populate';
 import { GraphQLResolveInfo } from 'graphql';
 import { findManyEntityArgs } from '../find-many-entity-args';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
+import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 
 const getDesignType = (p: CrudInfo) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
@@ -34,6 +33,7 @@ export function ObjectRelationResolvers<T>(classRef: Type<T>): Type<any>[] {
       }
 
       const FindManyArgs = findManyEntityArgs(filterDesignType);
+
       @Resolver(() => classRef, { isAbstract: true })
       class AbstractResolver {
         constructor(protected readonly em: EntityManager) {}
@@ -69,6 +69,7 @@ export function ObjectRelationResolvers<T>(classRef: Type<T>): Type<any>[] {
 
       @Resolver(() => classRef)
       class RelationResolverClass extends AbstractResolver {}
+
       return RelationResolverClass as Type<any>;
     })
     .filter(notNil);

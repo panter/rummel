@@ -1,5 +1,5 @@
 import { createParamDecorator } from '@nestjs/common';
-import { getRequest } from './utils';
+import { getRequest } from '../graphql';
 
 export const CurrentUser = createParamDecorator(
   (data: string, context: any) => {
