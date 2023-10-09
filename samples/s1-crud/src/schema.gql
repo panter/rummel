@@ -64,10 +64,19 @@ enum SortOrder {
   desc
 }
 
+type Autocomplete {
+  id: ID!
+  key: String!
+  value: String!
+}
+
 type Query {
   person(where: EntityIdInput): Person
   people(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): [Person!]!
   peopleCount(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): Int!
+  autocomplete(where: EntityIdInput): Autocomplete
+  autocompletes(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): [Autocomplete!]!
+  autocompletesCount(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): Int!
 }
 
 input EntityIdInput {
@@ -145,10 +154,28 @@ input SimpleOrderByInput {
   related: SimpleOrderByInput
 }
 
+input AutocompleteWhereInput {
+  AND: [AutocompleteWhereInput!]
+  OR: [AutocompleteWhereInput!]
+  NOT: [AutocompleteWhereInput!]
+  id: StringFilter
+  key: StringFilter
+  value: StringFilter
+}
+
+input AutocompleteOrderByInput {
+  id: SortOrder
+  key: SortOrder
+  value: SortOrder
+}
+
 type Mutation {
   createOnePerson(data: PersonCreateInput): Person!
   updateOnePerson(data: PersonUpdateInput, where: EntityIdInput!): Person!
   deleteOnePerson(where: EntityIdInput): Person!
+  createOneAutocomplete(data: AutocompleteCreateInput): Autocomplete!
+  updateOneAutocomplete(data: AutocompleteUpdateInput, where: EntityIdInput!): Autocomplete!
+  deleteOneAutocomplete(where: EntityIdInput): Autocomplete!
 }
 
 input PersonCreateInput {
@@ -193,4 +220,14 @@ input PersonUpdateInput {
   name: StringInput
   addresses: AddressConnectCreateUpdateNestedManyWithoutPersonInput
   organisation: OrganisationConnectNestedOneWithoutPersonInput
+}
+
+input AutocompleteCreateInput {
+  key: String
+  value: String
+}
+
+input AutocompleteUpdateInput {
+  key: StringInput
+  value: StringInput
 }
