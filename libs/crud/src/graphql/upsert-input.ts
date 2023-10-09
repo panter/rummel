@@ -1,7 +1,6 @@
 import { Type } from '@nestjs/common';
 import { Field, Float, InputType, TypeMetadataStorage } from '@nestjs/graphql';
 import { isArray, uniqBy } from 'lodash';
-import { createOneRelationInput } from './create-one-relation-input';
 import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
 import { updateOneRelationInput } from './update-one-relation-input';
@@ -109,8 +108,10 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     // return String; // TODO workaround for enums
     return designType;
   } else {
-    return createOneRelationInput(designType as Type, {
+    return updateOneRelationInput(designType as Type, {
       parentRef,
+      hideUpdate: true,
+      hideDisconnect: true,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       parentProperty: p.name,
     });
@@ -168,6 +169,8 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
         parentRef,
         hideCreate: !p.crudOptions?.relation?.showCreate,
         hideUpdate: !p.crudOptions?.relation?.showUpdate,
+        hideConnect: p.crudOptions?.relation?.hideConnect,
+        hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
         parentProperty: p.name,
       });
     }
