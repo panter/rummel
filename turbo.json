@@ -17,6 +17,24 @@
     },
     "test": {
       "dependsOn": [
+        "build",
+        "test:unit",
+        "test:e2e",
+        "test:integration"
+      ]
+    },
+    "test:unit": {
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "test:integration": {
+      "dependsOn": [
         "build"
       ]
     },

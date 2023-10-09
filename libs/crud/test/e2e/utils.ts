@@ -46,7 +46,7 @@ export const beforeAllCallback = async (): Promise<TestContext> => {
   }).compile();
   const app = fixture.createNestApplication({ bodyParser: true });
   const orm = app.get(MikroORM<PostgreSqlDriver>);
-  
+
   await orm.getMigrator().up();
   const migrationNeeded = await orm.getMigrator().checkMigrationNeeded();
   if (migrationNeeded) {

@@ -13,8 +13,8 @@
     "prepack": "npm run build",
     "test": "yarn test:unit",
     "test:unit": "jest --config test/jest-unit.json --passWithNoTests",
-    "test:integration": "jest --config test/jest-integration.json",
-    "test:e2e": "jest --config test/jest-e2e.json"
+    "test:integration": "jest --config test/jest-integration.json --passWithNoTests",
+    "test:e2e": "jest --config test/jest-e2e.json --passWithNoTests"
   },
   "devDependencies": {
     "@nestjs/apollo": "^12.0.9",
