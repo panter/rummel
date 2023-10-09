@@ -1,0 +1,233 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Address {
+  id: ID!
+  address: String!
+}
+
+type Simple {
+  id: ID!
+  name: String
+  secondName: String
+  related: Simple!
+}
+
+type Organisation {
+  id: ID!
+  description: String
+  persons: [Person!]!
+  simple: Simple
+}
+
+type Person {
+  id: ID!
+  name: String!
+  addresses(where: AddressWhereInput, orderBy: [AddressOrderByInput!], skip: Int, take: Int): [Address!]
+  organisation: Organisation
+}
+
+input AddressWhereInput {
+  AND: [AddressWhereInput!]
+  OR: [AddressWhereInput!]
+  NOT: [AddressWhereInput!]
+  id: StringFilter
+  address: StringFilter
+}
+
+input StringFilter {
+  equals: String
+  in: [String!]
+  nin: [String!]
+  contains: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  fulltext: String
+  mode: SringQueryMode
+}
+
+enum SringQueryMode {
+  default
+  insensitive
+}
+
+input AddressOrderByInput {
+  id: SortOrder
+  address: SortOrder
+}
+
+enum SortOrder {
+  asc
+  desc
+}
+
+type Autocomplete {
+  id: ID!
+  key: String!
+  value: String!
+}
+
+type Query {
+  person(where: EntityIdInput): Person
+  people(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): [Person!]!
+  peopleCount(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): Int!
+  autocomplete(where: EntityIdInput): Autocomplete
+  autocompletes(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): [Autocomplete!]!
+  autocompletesCount(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): Int!
+}
+
+input EntityIdInput {
+  id: String!
+}
+
+input PersonWhereInput {
+  AND: [PersonWhereInput!]
+  OR: [PersonWhereInput!]
+  NOT: [PersonWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  addresses: AddressWhereInput
+  organisation: OrganisationOneRelationFilter
+}
+
+input OrganisationOneRelationFilter {
+  AND: OrganisationWhereInput
+  OR: OrganisationWhereInput
+  NOT: OrganisationWhereInput
+  id: StringFilter
+  description: StringFilter
+  persons: PersonWhereInput
+  simple: SimpleOneRelationFilter
+}
+
+input OrganisationWhereInput {
+  AND: [OrganisationWhereInput!]
+  OR: [OrganisationWhereInput!]
+  NOT: [OrganisationWhereInput!]
+  id: StringFilter
+  description: StringFilter
+  persons: PersonWhereInput
+  simple: SimpleOneRelationFilter
+}
+
+input SimpleOneRelationFilter {
+  AND: SimpleWhereInput
+  OR: SimpleWhereInput
+  NOT: SimpleWhereInput
+  id: StringFilter
+  name: StringFilter
+  secondName: StringFilter
+  related: SimpleOneRelationFilter
+}
+
+input SimpleWhereInput {
+  AND: [SimpleWhereInput!]
+  OR: [SimpleWhereInput!]
+  NOT: [SimpleWhereInput!]
+  id: StringFilter
+  name: StringFilter
+  secondName: StringFilter
+  related: SimpleOneRelationFilter
+}
+
+input PersonOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  addresses: AddressOrderByInput
+  organisation: OrganisationOrderByInput
+}
+
+input OrganisationOrderByInput {
+  id: SortOrder
+  description: SortOrder
+  persons: PersonOrderByInput
+  simple: SimpleOrderByInput
+}
+
+input SimpleOrderByInput {
+  id: SortOrder
+  name: SortOrder
+  secondName: SortOrder
+  related: SimpleOrderByInput
+}
+
+input AutocompleteWhereInput {
+  AND: [AutocompleteWhereInput!]
+  OR: [AutocompleteWhereInput!]
+  NOT: [AutocompleteWhereInput!]
+  id: StringFilter
+  key: StringFilter
+  value: StringFilter
+}
+
+input AutocompleteOrderByInput {
+  id: SortOrder
+  key: SortOrder
+  value: SortOrder
+}
+
+type Mutation {
+  createOnePerson(data: PersonCreateInput): Person!
+  updateOnePerson(data: PersonUpdateInput, where: EntityIdInput!): Person!
+  deleteOnePerson(where: EntityIdInput): Person!
+  createOneAutocomplete(data: AutocompleteCreateInput): Autocomplete!
+  updateOneAutocomplete(data: AutocompleteUpdateInput, where: EntityIdInput!): Autocomplete!
+  deleteOneAutocomplete(where: EntityIdInput): Autocomplete!
+}
+
+input PersonCreateInput {
+  name: String
+  addresses: AddressConnectCreateUpdateNestedManyWithoutPersonInput
+  organisation: OrganisationConnectNestedOneWithoutPersonInput
+}
+
+input AddressConnectCreateUpdateNestedManyWithoutPersonInput {
+  connect: [ConnectRelationInput!]
+  disconnect: [EntityIdInput!]
+  create: [AddressCreateWithoutPersonInput!]
+  update: [AddressUpdateWithWhereUniqueWithoutPersonInput!]
+}
+
+input ConnectRelationInput {
+  id: String!
+}
+
+input AddressCreateWithoutPersonInput {
+  address: String
+}
+
+input AddressUpdateWithWhereUniqueWithoutPersonInput {
+  where: EntityIdInput!
+  data: AddressUpdateInput
+}
+
+input AddressUpdateInput {
+  address: StringInput
+}
+
+input StringInput {
+  set: String
+}
+
+input OrganisationConnectNestedOneWithoutPersonInput {
+  connect: ConnectRelationInput
+}
+
+input PersonUpdateInput {
+  name: StringInput
+  addresses: AddressConnectCreateUpdateNestedManyWithoutPersonInput
+  organisation: OrganisationConnectNestedOneWithoutPersonInput
+}
+
+input AutocompleteCreateInput {
+  key: String
+  value: String
+}
+
+input AutocompleteUpdateInput {
+  key: StringInput
+  value: StringInput
+}

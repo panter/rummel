@@ -1,6 +1,5 @@
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Breadcrumb, Button, Space, Table, TableColumnType } from 'antd';
-import Link from 'next/link';
+import { Button, Space, Table, TableColumnType } from 'antd';
 import { FragmentType, useFragment } from '../../../@generated';
 import {
   AutocompleteFragment as AutocompleteFragmentType,
@@ -95,12 +94,6 @@ export const AutocompleteTable: React.FC<AutocompleteTableProps> = () => {
 
   return (
     <div>
-      <Breadcrumb
-        style={{ marginBottom: 24 }}
-        items={[
-          { title: <Link href={'/admin/autocomplete'}>Autocomplete</Link> },
-        ]}
-      />
       <FilterPanel>
         <Filter
           filterConfig={filterConfig}

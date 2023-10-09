@@ -1,49 +1,15 @@
+import { gotoListOfAutocompletes } from '../lib/locations';
 import {
   LOCALE,
   commonServerSideTranslations,
 } from '../lib/serverSideTranslations';
-import {
-  gotoListOfAutocompletes,
-  gotoListOfBuildingComponents,
-  gotoListOfMaterialsDepot,
-  gotoListOfProjects,
-  gotoListOfSearchRequestInterests,
-  gotoListOfSearchRequests,
-  gotoListOfStorageLocation,
-  gotoMatching,
-} from '../lib/locations';
 
-import Link from 'next/link';
 import { List } from 'antd';
+import Link from 'next/link';
 
 const linksData = [
   {
-    title: <Link {...gotoMatching()}>Matching</Link>,
-  },
-  {
-    title: <Link {...gotoListOfMaterialsDepot()}>Materials Depots</Link>,
-  },
-  {
-    title: <Link {...gotoListOfStorageLocation()}>Storage locations</Link>,
-  },
-  {
-    title: <Link {...gotoListOfProjects()}>Projects</Link>,
-  },
-  {
     title: <Link {...gotoListOfAutocompletes()}>Autocompletes</Link>,
-  },
-  {
-    title: <Link {...gotoListOfBuildingComponents()}>Building components</Link>,
-  },
-  {
-    title: <Link {...gotoListOfSearchRequests()}>Search requests</Link>,
-  },
-  {
-    title: (
-      <Link {...gotoListOfSearchRequestInterests()}>
-        Search Requests Interests
-      </Link>
-    ),
   },
 ];
 

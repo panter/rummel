@@ -31,9 +31,5 @@ export type HeaderProps = {
 };
 
 export const Header: React.FC<HeaderProps> = ({ style, className }) => {
-  return (
-    <Base>
-      <HeaderLogo />
-    </Base>
-  );
+  return <Base>{/* <HeaderLogo /> */}</Base>;
 };

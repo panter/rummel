@@ -10,32 +10,43 @@ This is a monorepo managed by yarn workspaces powered by turborepo.
 yarn
 ```
 
+## Structure 
 
-### Publish
+### Libs
 
-The packages `prisma-inputs` and `crud` are published from our local machines for now.
+Libs are publish to npm and can be used in other projects.
 
-## Stucture
+- Lib Directory: [s1-crud](./libs)
+### Samples
 
+Samples are not published to npm and are used to show how to use the libs.
+They can be checked out into you project and used as a starting point.
+
+- Sample Directory: [s1-crud](./samples)
+
+### Demo
+To start a demo with `@panter/crud` and `@panter/react-forms` run:
+
+- `yarn dev --filter=@rummel/s1-crud` -> http://localhost:3000/graphql
+
+- `yarn dev --filter=@rummel/nextjs-react-prisma-input`: http://localhost:4010
+- Goto http://localhost:4010
+
+### Packages
+
+This packages are needed to run the yarn workspace. These are not libraries but packages with scripts and chorse
+for the workspace.
+
+Packages Directory: [packages](./packages)
+
+## Publish
 ### Publish Libraries
+
+- Npm packages are published from our local machines for now.
 
 __npm public:__
 - [prism-inputs](https://git.panter.ch/rummel/rummel/-/tree/main/libs/prisma-inputs)
 - [crud](https://git.panter.ch/rummel/rummel/-/tree/main/libs/crud)
-
-
-### Samples
-
-__s1-crud:__
-- [s1-crud](https://git.panter.ch/rummel/rummel/-/tree/main/samples/s1-crud)
-
-This small sample shows how to use the `crud` library to create a simple crud application.
-
-- `yarn dev`: starts the dev server on port 3000
-
-### Packages
-This packages are needed to run the yarn workspace. These are not libraries but packages with scripts and chorse
-for the workspace.
 
 
 ## Links
