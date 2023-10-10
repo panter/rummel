@@ -12,6 +12,8 @@
   ],
   "scripts": {
     "build": "turbo run build",
+    "build:lib": "turbo run build --filter='./libs/*'",
+    "build:samples": "turbo run build --filter='./samples/*'",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "test:unit": "turbo run test:unit",

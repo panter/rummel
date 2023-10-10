@@ -38,7 +38,9 @@
         "build"
       ]
     },
-    "lint": {},
+    "lint": {
+      "cache": false
+    },
     "clean": {
       "cache": false
     }
