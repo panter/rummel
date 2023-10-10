@@ -9,11 +9,11 @@ cache:
 stages:
   - build
   - test
+  - comment
   - release
 
 build:
   stage: build
-  only: ["merge_requests"]
   script:
     - yarn --frozen-lockfile
     - yarn build
@@ -23,18 +23,14 @@ build:
       - .yarn
 
 changeset-mr-comment:
-  image: node:lts-alpine
-  stage: build
+  stage: comment
   only: ["merge_requests"]
-  needs: ["build"]
   script:
     - yarn --frozen-lockfile
     - yarn changesets-gitlab comment
 
 test:
   stage: test
-  only: ["merge_requests"]
-  needs: ["build"]
   script:
     - yarn --frozen-lockfile
     - yarn test
@@ -45,7 +41,7 @@ test:
       - .yarn
 
 release:
-  image: node:lts-alpine
+  stage: release
   only: ["main"]
   script:
     - yarn --frozen-lockfile
