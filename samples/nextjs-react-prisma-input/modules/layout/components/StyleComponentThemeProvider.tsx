@@ -23,7 +23,7 @@ export const ApplicationThemeProvider: React.FC<
   }
 
   return (
-    <ThemeProvider theme={zkuTheme}>
+    <ThemeProvider theme={rummelTheme}>
       <div className={interFont.className}>{children}</div>
     </ThemeProvider>
   );
@@ -31,7 +31,7 @@ export const ApplicationThemeProvider: React.FC<
 
 export const antDesignTheme: Partial<GlobalToken> = {
   fontFamily: interFont.style.fontFamily,
-  colorPrimary: '#D24632',
+  colorPrimary: '#4751a9',
   fontSize: 16,
   screenXS: BREAKPOINTS.xs,
   screenXSMin: BREAKPOINTS.xs,
@@ -52,7 +52,7 @@ export const antDesignTheme: Partial<GlobalToken> = {
   screenXXLMin: BREAKPOINTS.lg,
 };
 
-export const zkuTheme: DefaultTheme = {
+export const rummelTheme: DefaultTheme = {
   antd: {
     ...theme.getDesignToken(),
     ...antDesignTheme,

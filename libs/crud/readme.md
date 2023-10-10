@@ -16,6 +16,12 @@ Auto-Generated Resolvers: Based on your Mikro-Orm entities and GraphQL schema, t
 - Dynamic Querying: The generated API supports dynamic querying capabilities, allowing clients to filter, sort, and paginate results with ease. This is particularly useful for building responsive and efficient front-end interfaces.
 - Consistent Schema Patterns: By using the library, your GraphQL schemas for CRUD operations will follow a consistent pattern, making it easier for developers and clients to understand and work with the API.
 
+# Installation
+
+```shell
+yarn add @panter/crud
+```
+
 # Example
 Consider a simple User entity:
 

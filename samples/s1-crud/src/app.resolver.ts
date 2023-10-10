@@ -6,7 +6,7 @@ import {
   FindOneResolver,
   UpdateOneResolver,
 } from '@panter/crud';
-import { Person } from './migrations/entities/person.entity';
+import { Person } from './entities/person.entity';
 
 @Resolver()
 export class FinOneUserResolver extends FindOneResolver(Person) {}

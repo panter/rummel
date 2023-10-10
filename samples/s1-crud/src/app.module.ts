@@ -12,7 +12,14 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { join } from 'path';
 import { ObjectRelationResolvers } from '@panter/crud';
-import { Person } from './migrations/entities/person.entity';
+import { Person } from './entities/person.entity';
+import {
+  AutocompleteCreateOneResolver,
+  AutocompleteDeleteOneResolver,
+  AutocompleteFindManyResolver,
+  AutocompleteFindOneResolver,
+  AutocompleteUpdateOneResolver,
+} from './autocomplete.resolver';
 
 @Module({
   imports: [
@@ -35,6 +42,11 @@ import { Person } from './migrations/entities/person.entity';
     UpdateOneUserResolver,
     DeleteOneUserResolver,
     ...ObjectRelationResolvers(Person),
+    AutocompleteFindOneResolver,
+    AutocompleteFindManyResolver,
+    AutocompleteCreateOneResolver,
+    AutocompleteUpdateOneResolver,
+    AutocompleteDeleteOneResolver,
   ],
 })
 export class AppModule {}

@@ -62,12 +62,3 @@ export const formatValue = ({
 
   return displayValue;
 };
-
-export const formatPrice = (price: number) => {
-  return `CHF ${formatValue({
-    value: price,
-    digits: 2,
-    round: true,
-    thousandSeparator: true,
-  })}`;
-};

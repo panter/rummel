@@ -8,6 +8,11 @@ async function bootstrap() {
   //DON"T DO THIS IN PRODUCTION, it is just for samples purposes
   await orm.getSchemaGenerator().refreshDatabase();
   await orm.getSchemaGenerator().clearDatabase();
+
+  app.enableCors({
+    origin: true,
+    credentials: true,
+  });
   app.enableShutdownHooks();
   await app.listen(3000);
 }

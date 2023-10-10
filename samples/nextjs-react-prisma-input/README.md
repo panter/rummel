@@ -1,10 +1,15 @@
-## Translations
+# @rummel/nextjs-react-prisma-input
 
-Translations are done using `@panter/transporter` with Airtable integration.
+Example of a Next.js app with `@panter/react-form`.
 
-### Adding new keys to local file
+## Getting Started
 
-1. pull latest translations from Airtable `yarn translations:pull` (so later push won't overwrite changes made by
-   customers)
-2. Add new key to `public/locales/[language]/translation.json`
-3. push new version to Airtable `yarn translations:push`
+- Start [s1-crud](../s1-crud)
+- `yarn`
+- `yarn dev`
+- Open http://localhost:4010
+
+
+## Development Notes
+- Schema is copied over from [s1-crud](../s1-crud/src/schema.gql)
+- Generate graphql types: `yarn graphql:generate`

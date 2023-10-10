@@ -1,4 +1,4 @@
-schema: ../planungstool-backend/generated/schema/api.gql
+schema: schema.gql
 
 documents:
   - "./pages/**/*.{ts,tsx}"

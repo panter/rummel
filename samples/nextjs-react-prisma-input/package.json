@@ -1,5 +1,5 @@
 {
-  "name": "@zku/planungstool-frontend",
+  "name": "@rummel/nextjs-react-prisma-input",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -12,16 +12,13 @@
     "lint:type-check": "tsc --noEmit",
     "graphql:generate": "graphql-codegen",
     "graphql:generate:watch": "yarn graphql:generate --watch",
-    "translation:generate:types": "yarn ts-i18n -i ./public/locales/de -o ./@generated/resources.d.ts",
-    "translation:pull": "npx transporter pull",
-    "translation:push": "npx transporter push"
+    "translation:generate:types": "yarn ts-i18n -i ./public/locales/de -o ./@generated/resources.d.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@apollo/client": "^3.8.4",
     "@collapsed/react": "^4.0.1",
     "@panter/prisma-inputs": "*",
-    "@panter/transporter": "^0.0.9",
     "antd": "^5.9.4",
     "apollo-upload-client": "^17.0.0",
     "dayjs": "^1.11.10",
@@ -51,6 +48,8 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-codegen/fragment-matcher": "^5.0.0",
     "@graphql-codegen/typescript-apollo-client-helpers": "^3.0.0",
+    "@rummel/eslint-config-custom": "*",
+    "@rummel/tsconfig": "*",
     "@types/apollo-upload-client": "^17.0.3",
     "@types/jest": "^29.5.5",
     "@types/lodash": "^4.14.199",
@@ -61,13 +60,12 @@
     "@types/react-transition-group": "^4.4.7",
     "@types/styled-components": "^5.1.28",
     "babel-plugin-styled-components-px2rem": "^1.5.5",
-    "eslint-config-custom": "*",
+    "eslint": "^7.32.0",
     "jest": "^29.7.0",
     "rimraf": "^5.0.5",
     "ts-i18n": "*",
     "ts-jest": "^29.1.1",
     "tsconfig": "*",
     "typescript": "^5.2.2"
-  },
-  "packageManager": "yarn@3.4.1"
+  }
 }
