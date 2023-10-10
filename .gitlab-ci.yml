@@ -47,7 +47,6 @@ test:
 release:
   image: node:lts-alpine
   only: ["main"]
-  needs: ["build"]
   script:
     - yarn --frozen-lockfile
     - yarn changesets-gitlab
