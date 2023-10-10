@@ -44,7 +44,6 @@ test:
       - node_modules/
       - .yarn
 
-
 release:
   image: node:lts-alpine
   only: ["main"]
