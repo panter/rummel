@@ -27,6 +27,13 @@ They can be checked out into you project and used as a starting point.
 ### Demo
 To start a demo with `@panter/crud` and `@panter/react-forms` run:
 
+ - have a postgres db running:
+ - host: 'localhost',
+ - port: 5432,
+ - dbName: 's1-crud',
+ - password: 'postgres',
+ - user: 'postgres',
+
 - `yarn dev --filter=@rummel/s1-crud` -> http://localhost:3000/graphql
 
 - `yarn dev --filter=@rummel/nextjs-react-prisma-input`: http://localhost:4010

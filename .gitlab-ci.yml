@@ -1,1 +1,32 @@
-include: https://git.panter.ch/api/v4/projects/catladder%2Fcatladder/packages/generic/ci-includes/v1/gitlab-ci.yml
+image: node:18-alpine
+
+cache:
+  paths:
+    - node_modules/
+    - .yarn
+
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - yarn install
+    - yarn build
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
+
+test:
+  stage: test
+  needs: ["build"]
+  script:
+    - yarn install
+    - yarn test
+    - yarn lint
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
