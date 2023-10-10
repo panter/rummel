@@ -28,14 +28,12 @@ They can be checked out into you project and used as a starting point.
 To start a demo with `@panter/crud` and `@panter/react-forms` run:
 
  - have a postgres db running:
- - host: 'localhost',
- - port: 5432,
- - dbName: 's1-crud',
- - password: 'postgres',
- - user: 'postgres',
-
+   - host: 'localhost',
+   - port: 5432,
+   - dbName: 's1-crud',
+   - password: 'postgres',
+   - user: 'postgres',
 - `yarn dev --filter=@rummel/s1-crud` -> http://localhost:3000/graphql
-
 - `yarn dev --filter=@rummel/nextjs-react-prisma-input`: http://localhost:4010
 - Goto http://localhost:4010
 
@@ -46,7 +44,7 @@ for the workspace.
 
 Packages Directory: [packages](./packages)
 
-## Publish
+## Publish
 ### Publish Libraries
 
 - Npm packages are published from our local machines for now.
