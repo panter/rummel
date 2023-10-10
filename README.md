@@ -45,14 +45,26 @@ for the workspace.
 Packages Directory: [packages](./packages)
 
 ## Publish
-### Publish Libraries
 
-- Npm packages are published from our local machines for now.
+### Published Libraries
 
 __npm public:__
 - [prism-inputs](https://git.panter.ch/rummel/rummel/-/tree/main/libs/prisma-inputs)
 - [crud](https://git.panter.ch/rummel/rummel/-/tree/main/libs/crud)
 
+### How to publish a new version of a lib.
+
+[We use the npm package changesets to manage our releases.](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md)
+
+If you want to include you changes in the next release, you have to create a changeset:
+
+- Run the command line script npx changeset or yarn changeset.
+
+- Select the packages you want to include in the changeset using ↑ and ↓ to navigate to packages, and space to select a package. Hit enter when all desired packages are selected.
+
+- You will be prompted to select a bump type for each selected package. Select an appropriate bump type for the changes made. See here for information on semver versioning
+
+- Your final prompt will be to provide a message to go alongside the changeset. This will be written into the changelog when the next release occurs.
 
 ## Links
 - https://www.notion.so/panterch/Notes-bb32ae412c3949c1961eb1c75cb9f262?pvs=4
