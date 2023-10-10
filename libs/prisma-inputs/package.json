@@ -1,8 +1,10 @@
 {
   "name": "@panter/prisma-inputs",
   "version": "0.0.1",
-  "main": "index.ts",
+  "private": true,
+  "access": "public",
   "license": "MIT",
+  "main": "index.ts",
   "scripts": {
     "clean": "rimraf \"dist\"",
     "lint": "eslint \"**/*.ts*\"",
