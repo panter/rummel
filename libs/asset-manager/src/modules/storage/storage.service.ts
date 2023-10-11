@@ -1,3 +1,4 @@
+import type { File } from '@google-cloud/storage';
 import { AssetAccess } from '../asset';
 import { StorageFile } from './interface';
 
@@ -17,7 +18,7 @@ export abstract class StorageService {
   abstract delete(path: string, access: AssetAccess): Promise<void>;
 
   abstract get(path: string, access: AssetAccess): Promise<StorageFile>;
-
+  abstract getFiles(bucketName: string): Promise<File[]>;
   abstract copy(
     path: string,
     newPath: string,

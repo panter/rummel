@@ -10,11 +10,11 @@ import {
 import { AssetNotFoundException } from './asset-not-found.exception';
 import { UnknownException } from '@panter/nestjs-utils';
 
-export class AssetService<S extends AssetProvider> {
-  protected readonly assetProvider: S;
+export class AssetService<Provider extends AssetProvider> {
+  protected readonly assetProvider: Provider;
   protected readonly storageService: StorageService;
 
-  constructor(assetProvider: S, storageService: StorageService) {
+  constructor(assetProvider: Provider, storageService: StorageService) {
     this.assetProvider = assetProvider;
     this.storageService = storageService;
   }
@@ -83,6 +83,11 @@ export class AssetService<S extends AssetProvider> {
 
   async getAllByIds(assetIds: string[], ownerId: string): Promise<Asset[]> {
     return this.assetProvider.getAllByIds(assetIds, ownerId);
+  }
+  async getAll(access: AssetAccess) {
+    console.log('asset.service.ts');
+    console.log('getAll');
+    return this.storageService.get('', access);
   }
 
   async copy(assetId: string, ownerId: string): Promise<Asset> {

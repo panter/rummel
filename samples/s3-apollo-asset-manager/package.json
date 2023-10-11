@@ -1,0 +1,64 @@
+{
+  "name": "@rummel/s3-asset-manager-example",
+  "private": true,
+  "main": "dist/main.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "type": "commonjs"
+    }
+  },
+  "scripts": {
+    "build": "rm -r dist && npx tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "dev": "yarn build && concurrently \"npx tsc --watch\" \"nodemon -q dist/main\"",
+    "start": "node dist/main",
+    "lint": "eslint \"**/*.ts\"",
+    "lint:fix": "eslint \"**/*.ts\" --fix"
+  },
+  "dependencies": {
+    "@apollo/server": "^4.9.4",
+    "@graphql-tools/delegate": "^10.0.3",
+    "@graphql-tools/executor-http": "^1.0.3",
+    "@graphql-tools/stitch": "^9.0.3",
+    "@graphql-tools/wrap": "^10.0.1",
+    "@pothos/core": "^3.38.0",
+    "@pothos/plugin-add-graphql": "^3.1.1",
+    "@rummel/asset-manager": "*",
+    "apollo-server-express": "^3.12.1",
+    "axios": "^1.5.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "file-type": "^18.5.0",
+    "graphql": "^16.8.1",
+    "graphql-upload": "^16.0.2",
+    "graphql-yoga": "^4.0.5",
+    "make-dir": "^3.1.0",
+    "mime-types": "^2.1.35",
+    "multer": "^1.4.4",
+    "sharp": "^0.32.6",
+    "shortid": "^2.2.16",
+    "wait-on": "^7.0.1"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.19",
+    "@types/file-type": "^10.9.1",
+    "@types/graphql-upload": "^16.0.3",
+    "@types/mime-types": "^2.1.2",
+    "@types/multer": "^1.4.7",
+    "@types/node": "^18.11.18",
+    "@types/sharp": "^0.32.0",
+    "@types/wait-on": "^5.3.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "@typescript-eslint/parser": "^6.7.5",
+    "concurrently": "^7.6.0",
+    "eslint": "^8.51.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2"
+  }
+}

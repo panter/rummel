@@ -1,4 +1,10 @@
-import { DownloadResponse, Storage } from '@google-cloud/storage';
+import {
+  DownloadResponse,
+  File,
+  GetFilesOptions,
+  GetFilesResponse,
+  Storage,
+} from '@google-cloud/storage';
 import { BucketsNotFoundException } from './buckets-not-found.exception';
 import { GoogleCloudStorageServiceConfig } from './google-cloud-storage-service.config';
 import { AssetAccess } from '../../../asset';
@@ -62,6 +68,26 @@ export class GcloudStorageService extends StorageService {
     return storageFile;
   }
 
+  async getAll(
+    access: AssetAccess,
+    query?: GetFilesOptions,
+  ): Promise<GetFilesResponse> {
+    const storageFiles = await this.storage
+      .bucket(this.getBucket(access))
+      .getFiles(query);
+
+    return storageFiles;
+  }
+
+  async getFiles(bucketName: string): Promise<File[]> {
+    const bucket = this.storage.bucket(bucketName);
+    const [files] = await bucket.getFiles({
+      autoPaginate: true,
+      maxApiCalls: 2,
+      versions: true,
+    });
+    return files;
+  }
   public async ensureBuckets() {
     const notFoundBuckets = [];
     for (const bucket of [this.privateBucket, this.publicBucket].filter(

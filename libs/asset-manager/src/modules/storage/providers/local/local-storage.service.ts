@@ -5,6 +5,7 @@ import { resolve } from 'path';
 import { AssetAccess } from '../../../asset';
 import { StorageFile } from '../../interface';
 import { StorageService } from '../../storage.service';
+import { File } from '@google-cloud/storage';
 
 export interface LocalStorageConfig {
   folder: string;
@@ -36,6 +37,14 @@ export class LocalStorageService extends StorageService {
       }));
   }
 
+  async getAll(access: AssetAccess): Promise<StorageFile> {
+    return fsPromises.readFile(this.getFullPath(access)).then((buffer) => ({
+      buffer,
+    }));
+  }
+  async getFiles(bucketName: string): Promise<File[]> {
+    return bucketName ? [] : [];
+  }
   async save(path: string, data: Buffer, access: AssetAccess): Promise<string> {
     const pathParts = path.split('/');
     if (pathParts.length > 1 && pathParts.length == 2) {

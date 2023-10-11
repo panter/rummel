@@ -1,0 +1,40 @@
+type Asset {
+  id: String!
+  name: String!
+  publicUrl: String!
+}
+
+type AssetUploadUrlResult {
+  publicUrl: String!
+  signedUploadUrl: String!
+}
+
+enum BucketName {
+  photos
+}
+
+"""
+A date string, such as 2007-12-03, compliant with the `full-date` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+type File {
+  encoding: String!
+  filename: String!
+  mimetype: String!
+  path: String!
+}
+
+type Mutation {
+  createAsset(bucketName: BucketName!, imageUrl: String!): AssetUploadUrlResult!
+  deleteAsset(bucket: BucketName!, imageUrl: String!): String!
+  updateAsset(bucket: BucketName!, imageUrl: String!): String!
+}
+
+type Query {
+  asset(bucketName: String!, id: String!): Asset
+  assets(bucketName: String!, id: String): [Asset!]!
+}
+
+"""Upload scalar"""
+scalar Upload

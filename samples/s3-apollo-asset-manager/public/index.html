@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sample Site</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        padding-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Hello! this is home page</h1>
+      <h3>Serving static HTML file using Node.js</h3>
+    </div>
+
+    <form
+      class="container"
+      action="/upload"
+      enctype="multipart/form-data"
+      method="post"
+    >
+      <div class="form-group">
+        <input type="file" class="form-control-file" name="file" />
+        <!-- <input type="text" name="access" value="private" hidden /> -->
+        <fieldset class="container my-3">
+          <legend>Select a maintenance drone:</legend>
+
+          <div>
+            <input
+              type="radio"
+              id="private"
+              name="access"
+              value="private"
+              checked
+            />
+            <label for="private">Private</label>
+          </div>
+
+          <div>
+            <input type="radio" id="public" name="access" value="public" />
+            <label for="public">Public</label>
+          </div>
+        </fieldset>
+        <input
+          type="text"
+          class="form-control"
+          name="tenant"
+          value="demo_tenant"
+          placeholder="Please enter a ten
+        "
+        />
+        <input type="submit" value="Submit" class="btn btn-default" />
+      </div>
+    </form>
+  </body>
+</html>
