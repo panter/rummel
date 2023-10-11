@@ -1,5 +1,6 @@
 {
   "name": "@rummel/s3-asset-manager-example",
+  "private": true,
   "main": "dist/main.js",
   "scripts": {
     "build": "npx tsc",
