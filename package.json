@@ -11,7 +11,6 @@
     "samples/*"
   ],
   "scripts": {
-    "release": "changeset publish",
     "build": "turbo run build",
     "build:lib": "turbo run build --filter='./libs/*'",
     "build:samples": "turbo run build --filter='./samples/*'",

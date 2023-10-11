@@ -7,7 +7,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "release": "yarn build && changeset publish",
+    "release": "changeset publish",
     "build": "tsc -p tsconfig.build.json",
     "dev": "yarn build --watch",
     "clean": "rimraf \"dist\"",

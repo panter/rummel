@@ -1,13 +1,12 @@
 {
   "name": "@panter/crud",
   "version": "0.0.3",
-  "private": false,
   "license": "MIT",
   "access": "public",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "release": "yarn build && changeset publish",
+    "release": "changeset publish",
     "build": "tsc -p tsconfig.build.json",
     "dev": "yarn build --watch",
     "clean": "rimraf \"dist\"",

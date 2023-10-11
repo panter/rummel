@@ -1,12 +1,11 @@
 {
   "name": "@panter/prisma-inputs",
-  "version": "0.0.2",
-  "private": false,
+  "version": "0.0.1",
   "access": "public",
   "license": "MIT",
   "main": "index.ts",
   "scripts": {
-    "release": "yarn build && changeset publish",
+    "release": "changeset publish",
     "clean": "rimraf \"dist\"",
     "lint": "eslint \"**/*.ts*\"",
     "test": "jest",
