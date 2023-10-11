@@ -1,0 +1,27 @@
+{
+  "name": "@rummel/asset-manager",
+  "version": "0.0.1",
+  "description": "CRUD manager for assets powered by Google Cloud Platform ",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo 'not inplemented'",
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "yarn build --watch",
+    "clean": "rimraf \"dist\"",
+    "lint": "eslint \"src/**/*.ts\"",
+    "lint:fix": "yarn lint --fix",
+    "lint:type-check": "tsc --noEmit"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/uuid": "^9.0.5",
+    "typescript": "^5.2.2",
+    "uuid": "^9.0.1"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.2.0",
+    "@panter/nestjs-utils": "*"
+  }
+}

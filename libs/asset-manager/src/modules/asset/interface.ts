@@ -1,8 +1,3 @@
-import { ExcludeMethods } from '../../../common';
-import { Asset } from './asset';
-
-export type AssetProperties = ExcludeMethods<Asset>;
-
 export enum AssetAccess {
   public = 'public',
   private = 'private',

@@ -1,5 +1,5 @@
-import { ApplicationException } from '../../../../../common';
 import { AssetAccess } from '../../../asset';
+import { ApplicationException } from '@panter/nestjs-utils';
 
 export class BucketsNotConfiguredException extends ApplicationException {
   readonly access: AssetAccess;

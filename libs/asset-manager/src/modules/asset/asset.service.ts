@@ -8,7 +8,7 @@ import {
   NewAssetFile,
 } from './interface';
 import { AssetNotFoundException } from './asset-not-found.exception';
-import { UnknownException } from '../../../common';
+import { UnknownException } from '@panter/nestjs-utils';
 
 export class AssetService<S extends AssetProvider> {
   protected readonly assetProvider: S;

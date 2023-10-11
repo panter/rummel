@@ -5,8 +5,8 @@ import { AssetAccess } from '../../../asset';
 import { StorageFile } from '../../interface';
 import { StorageService } from '../../storage.service';
 import { BucketsNotConfiguredException } from './buckets-not-configured.exception';
-import { InvalidConfigurationException } from '../../../../../common';
 import * as Buffer from 'buffer';
+import { InvalidConfigurationException } from '@panter/nestjs-utils';
 
 export class GcloudStorageService extends StorageService {
   private readonly storage: Storage;

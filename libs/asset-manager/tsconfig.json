@@ -1,0 +1,20 @@
+{
+  "extends": "@rummel/tsconfig/server-library.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "allowJs": false
+  },
+  "include": [
+    "./types.d.ts",
+    "./src/**/*.ts",
+    "./test/**/*.ts"
+  ],
+  "exclude": [
+    "dist"
+  ],
+  "typeRoots": [
+    "types.d.ts",
+    "node_modules/@types"
+  ]
+}

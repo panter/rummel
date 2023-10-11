@@ -1,4 +1,4 @@
-import { ApplicationException } from '../../../../../common';
+import { ApplicationException } from '@panter/nestjs-utils';
 
 export class BucketsNotFoundException extends ApplicationException {
   readonly buckets: string[];
