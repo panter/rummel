@@ -47,3 +47,5 @@ release:
     - apk add --no-cache git
     - yarn --frozen-lockfile
     - yarn changesets-gitlab
+  variables:
+    INPUT_PUBLISH: yarn release
