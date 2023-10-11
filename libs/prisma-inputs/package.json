@@ -1,7 +1,7 @@
 {
   "name": "@panter/prisma-inputs",
   "version": "0.0.2",
-  "private": true,
+  "private": false,
   "access": "public",
   "license": "MIT",
   "main": "index.ts",
