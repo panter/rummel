@@ -12,11 +12,24 @@ stages:
   - comment
   - release
 
-build:
+build-lib:
   stage: build
+  only: ["merge_requests", "main"]
   script:
     - yarn --immutable
-    - yarn build
+    - yarn build  --filter='./libs/*'
+  artifacts:
+    paths:
+      - libs/crud/dist
+      - libs/nestjs-utils/dist
+
+build-samples:
+  stage: build
+  only: ["merge_requests", "main"]
+  allow_failure: true
+  script:
+    - yarn --immutable
+    - yarn build  --filter='./samples/*'
   artifacts:
     paths:
       - libs/crud/dist
@@ -29,16 +42,31 @@ changeset-mr-comment:
     - yarn --immutable
     - yarn changesets-gitlab comment
 
-test:
+test-lib:
   stage: test
+  only: ["merge_requests", "main"]
   script:
     - yarn --immutable
-    - yarn test
-    - yarn lint
+    - yarn turbo run test --filter='./libs/*'
+    - yarn turbo run lint --filter='./libs/*'
   cache:
     paths:
       - node_modules/
       - .yarn
+
+test-samples:
+  stage: test
+  only: ["merge_requests", "main"]
+  allow_failure: true
+  script:
+    - yarn --immutable
+    - yarn turbo run test --filter='./samples/*'
+    - yarn turbo run lint --filter='./samples/*'
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
+
 
 release:
   stage: release
