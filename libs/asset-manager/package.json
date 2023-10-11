@@ -16,7 +16,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@rummel/eslint-config-custom": "*",
+    "@rummel/tsconfig": "*",
     "@types/uuid": "^9.0.5",
+    "eslint": "^8.50.0",
     "typescript": "^5.2.2",
     "uuid": "^9.0.1"
   },
