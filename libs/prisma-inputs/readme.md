@@ -90,7 +90,7 @@ import {
   relation,
   object,
   mapFromPrismaSchema,
-} from '@rummel/prisma-inputs';
+} from '@panter/prisma-inputs';
 
 // Create an input schema
 const addressCreateSchema: PrismaInputSchema<
