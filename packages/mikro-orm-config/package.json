@@ -2,6 +2,7 @@
   "name": "@rummel/mikro-orm-config",
   "version": "0.0.1",
   "main": "index.js",
+  "private": true,
   "license": "MIT",
   "dependencies": {
     "@mikro-orm/core": "5.8.6",
