@@ -10,11 +10,13 @@ import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
+import { CrudAuthorization, CrudResource } from '../../auth';
 
 export type IUpdateOneType<T> = {
   updateOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: AuthenticatedUser,
     data?: any,
     where?: any,
   ) => Promise<T>;
@@ -40,7 +42,7 @@ export function UpdateOneResolver<T>(
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args('data', { type: () => UpdateOneArg, nullable: true })
       data?: any,
       @Args('where', { type: () => EntityIdInput })
@@ -55,15 +57,21 @@ export function UpdateOneResolver<T>(
     }
   }
 
+  @CrudResource(classRef.name)
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: methodName })
     override async updateOne(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: AuthenticatedUser,
       data?: any,
       where?: EntityIdInput,
     ) {
+      CrudAuthorization.instance?.authorize?.(
+        'read',
+        classRef.name,
+        currentUser,
+      );
       if (onResolve) {
         return onResolve(info, currentUser, data, where);
       }
@@ -85,7 +93,7 @@ export const resolveUpdateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

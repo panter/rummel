@@ -20,20 +20,42 @@ import {
   AutocompleteFindOneResolver,
   AutocompleteUpdateOneResolver,
 } from './autocomplete.resolver';
+import { CRUDModule } from './crud.module';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { getCorsOrigins } from '@panter/nestjs-utils';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      playground: false,
-      plugins: [
-        ApolloServerPluginLandingPageLocalDefault({
-          includeCookies: true,
-        }),
-      ],
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        playground: false,
+        plugins: [
+          ApolloServerPluginLandingPageLocalDefault({
+            includeCookies: true,
+          }),
+        ],
+        cors: {
+          origin: getCorsOrigins(config),
+          credentials: true,
+        },
+        context: ({ req, res }) => ({ req, res }),
+      }),
     }),
     MikroOrmModule.forRoot(),
+    AuthenticationModule,
+    CRUDModule.forRootAsync({
+      authorizeCallback: (operation, resource, currentUser, data) => {
+        console.log(
+          `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.id}, data: ${data}`,
+        );
+        return true;
+      },
+    }),
   ],
   providers: [
     FinOneUserResolver,

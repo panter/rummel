@@ -29,6 +29,7 @@
     "@rummel/mikro-orm-config": "*",
     "@rummel/tsconfig": "*",
     "@testcontainers/postgresql": "^10.2.1",
+    "@types/cookie-parser": "^1.4.4",
     "@types/node": "^20.8.2",
     "@types/pluralize": "^0.0.31",
     "@types/supertest": "^2.0.14",
@@ -68,6 +69,7 @@
     "README.md"
   ],
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "pluralize": "^8.0.0"
   }
 }

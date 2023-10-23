@@ -15,6 +15,7 @@ import { findManyEntityArgs } from '../find-many-entity-args';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { ReferenceId } from '../generic-types';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
 
 const SCALAR_NAMES = [
   'String',
@@ -109,6 +110,7 @@ const oneReference = (
 
   @Resolver(() => classRef)
   class OneReferenceResolverClass extends OneAbstractResolver {}
+
   return OneReferenceResolverClass as Type<any>;
 };
 
@@ -120,6 +122,7 @@ const manyReference = <T>(
   crudInfo: CrudInfo,
 ) => {
   const FindManyArgs = findManyEntityArgs(referenceType);
+
   @Resolver(() => classRef, { isAbstract: true })
   class ManyAbstractResolver {
     constructor(protected readonly em: EntityManager) {}
@@ -131,14 +134,14 @@ const manyReference = <T>(
     [schemaName](
       @Parent() parent: any,
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs }) input: any,
     ) {
       const populate = getFieldsToPopulate(info, classRef) as string[];
 
       const crudInfos = getCrudInfosForType(classRef);
       const where =
-        gqlFilterToMikro<T>(input.where, crudInfos, currentUser) || {};
+        gqlFilterToMikro<T>(input.where, crudInfos, { currentUser }) || {};
 
       return parent[crudInfo.schemaName].matching({
         where,
@@ -152,5 +155,6 @@ const manyReference = <T>(
 
   @Resolver(() => classRef)
   class ManyReferenceResolverClass extends ManyAbstractResolver {}
+
   return ManyReferenceResolverClass as Type<any>;
 };

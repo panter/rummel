@@ -6,3 +6,7 @@ export interface FileUpload {
   encoding: string;
   createReadStream: () => ReadStream;
 }
+
+export interface AuthenticatedUser {
+  id: string;
+}

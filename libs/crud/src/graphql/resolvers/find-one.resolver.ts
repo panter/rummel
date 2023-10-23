@@ -7,11 +7,13 @@ import { FindOneEntityWhereArgs } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
+import { CrudAuthorization, CrudResource } from '../../auth';
 
 export interface IFindOneType<T> {
   findOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: AuthenticatedUser,
     whereArgs: FindOneEntityWhereArgs,
   ) => Promise<T | null | undefined>;
 }
@@ -26,7 +28,7 @@ export function FindOneResolver<T>(
         name?: string;
         onResolve?: (
           info: GraphQLResolveInfo,
-          currentUser: any,
+          currentUser: AuthenticatedUser,
           data: any,
         ) => Promise<any>;
       }
@@ -44,7 +46,7 @@ export function FindOneResolver<T>(
     })
     async findOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
@@ -56,6 +58,7 @@ export function FindOneResolver<T>(
     }
   }
 
+  @CrudResource(classRef.name)
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => classRef, {
@@ -64,9 +67,15 @@ export function FindOneResolver<T>(
     })
     async findOne(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: AuthenticatedUser,
       where: FindOneEntityWhereArgs,
     ) {
+      //TODO: how to check more granular permissions? like user.tenantId === resource.tenantId
+      CrudAuthorization.instance?.authorize?.(
+        'read',
+        classRef.name,
+        currentUser,
+      );
       if (onResolve) {
         return onResolve(info, currentUser, where);
       }
@@ -84,7 +93,11 @@ export const resolveFindOne = async <T extends Type>(
     info,
     em,
     currentUser,
-  }: { em: EntityManager; currentUser: any; info: GraphQLResolveInfo },
+  }: {
+    em: EntityManager;
+    currentUser: AuthenticatedUser;
+    info: GraphQLResolveInfo;
+  },
 ) => {
   const crudInfos = getCrudInfosForType(type);
 

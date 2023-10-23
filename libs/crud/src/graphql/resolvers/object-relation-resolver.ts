@@ -7,6 +7,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { findManyEntityArgs } from '../find-many-entity-args';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
 
 const getDesignType = (p: CrudInfo) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
@@ -45,7 +46,7 @@ export function ObjectRelationResolvers<T>(classRef: Type<T>): Type<any>[] {
         [crudInfo.schemaName](
           @Parent() parent: any,
           @Info() info: GraphQLResolveInfo,
-          @CurrentUser() currentUser: any,
+          @CurrentUser() currentUser: AuthenticatedUser,
           @Args({ type: () => FindManyArgs }) input: any,
         ) {
           const populate = getFieldsToPopulate(info, classRef) as string[];

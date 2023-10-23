@@ -3,10 +3,11 @@ import { Type } from '@nestjs/common';
 import 'reflect-metadata';
 // import { UserEntity } from '../../modules/user/models/user.entity';
 import { getTypeName } from './utils';
+import { AuthenticatedUser } from './types';
 
 export type InputResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: any;
+  currentUser: AuthenticatedUser;
   currentOrmData?: Entity;
   type: Type<Entity>;
 };

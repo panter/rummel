@@ -11,6 +11,7 @@ import {
   getCrudObjectOptions,
   InputResolverOptions,
 } from './crud-object.decorator';
+import { AuthenticatedUser } from './types';
 
 export function notNil<TValue>(
   value: TValue | null | undefined,
@@ -164,7 +165,11 @@ export const applyStaticWhereFieldResolver = <T = any>(
     currentUser,
     ormQuery,
     gqlWhere,
-  }: { currentUser: any; ormQuery: ObjectQuery<T>; gqlWhere: any },
+  }: {
+    currentUser: AuthenticatedUser;
+    ormQuery: ObjectQuery<T>;
+    gqlWhere: any;
+  },
 ) => {
   crudInfos.forEach((crudInfo) => {
     if (crudInfo.crudOptions?.staticWhereResolver) {
@@ -187,7 +192,7 @@ export const applyStaticInputFieldResolver = async <Entity>(
     rootOrmData,
   }: {
     em: EntityManager;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     ormData: object;
     gqlInput: object;
     rootOrmData?: object;

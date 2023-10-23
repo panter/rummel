@@ -70,6 +70,17 @@ type Autocomplete {
   value: String!
 }
 
+type AppUser {
+  id: ID!
+  email: String!
+  role: String!
+}
+
+type FinishOtpLoginResponse {
+  userId: String!
+  access_token: String!
+}
+
 type Query {
   person(where: EntityIdInput): Person
   people(where: PersonWhereInput, orderBy: [PersonOrderByInput!], skip: Int, take: Int): [Person!]!
@@ -77,6 +88,7 @@ type Query {
   autocomplete(where: EntityIdInput): Autocomplete
   autocompletes(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): [Autocomplete!]!
   autocompletesCount(where: AutocompleteWhereInput, orderBy: [AutocompleteOrderByInput!], skip: Int, take: Int): Int!
+  me: AppUser
 }
 
 input EntityIdInput {
@@ -176,6 +188,8 @@ type Mutation {
   createOneAutocomplete(data: AutocompleteCreateInput): Autocomplete!
   updateOneAutocomplete(data: AutocompleteUpdateInput, where: EntityIdInput!): Autocomplete!
   deleteOneAutocomplete(where: EntityIdInput): Autocomplete!
+  triggerOtpLogin(input: TriggerOtpLoginInput!): Boolean!
+  finishOtpLogin(input: FinishOtpLoginInput!): FinishOtpLoginResponse!
 }
 
 input PersonCreateInput {
@@ -230,4 +244,13 @@ input AutocompleteCreateInput {
 input AutocompleteUpdateInput {
   key: StringInput
   value: StringInput
+}
+
+input TriggerOtpLoginInput {
+  email: String!
+}
+
+input FinishOtpLoginInput {
+  email: String!
+  otp: String!
 }
