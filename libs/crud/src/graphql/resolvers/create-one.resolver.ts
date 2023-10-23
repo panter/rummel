@@ -6,23 +6,25 @@ import { GraphQLResolveInfo } from 'graphql';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
+import { CrudAuthorization, CrudResource } from '../../auth';
 
 export interface ICreateOneType<T> {
   createOne: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: AuthenticatedUser,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
 
+export interface ICreateOneOptions<T> {
+  name?: string;
+  onResolve?: ICreateOneType<T>['createOne'];
+}
+
 export function CreateOneResolver<T>(
   classRef: Type<T>,
-  {
-    name,
-    onResolve,
-  }:
-    | { name?: string; onResolve?: ICreateOneType<T>['createOne'] }
-    | undefined = {},
+  { name, onResolve }: ICreateOneOptions<T> | undefined = {},
 ): Type<ICreateOneType<T>> {
   const CreateOneArg = upsertInput(classRef);
 
@@ -33,7 +35,7 @@ export function CreateOneResolver<T>(
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
     async createOne(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args('data', {
         type: () => CreateOneArg,
         nullable: true,
@@ -49,10 +51,21 @@ export function CreateOneResolver<T>(
     }
   }
 
+  @CrudResource(classRef.name)
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
-    async createOne(info: GraphQLResolveInfo, currentUser: any, data?: any) {
+    async createOne(
+      info: GraphQLResolveInfo,
+      currentUser: AuthenticatedUser,
+      data?: any,
+    ) {
+      CrudAuthorization.instance?.authorize?.(
+        'create',
+        classRef.name,
+        currentUser,
+        data,
+      );
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
@@ -73,7 +86,7 @@ export const resolveCreateOne = async <T extends Type>(
     info,
   }: {
     persist: boolean;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     em: EntityManager;
     info: GraphQLResolveInfo;
   },

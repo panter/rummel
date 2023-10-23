@@ -5,6 +5,7 @@ import {
   CrudInfo,
   getCrudInfosForType,
 } from './utils';
+import { AuthenticatedUser } from './types';
 
 type AllObjectQueryType = ObjectQuery<any> | ObjectQuery<any>[] | undefined;
 const operators: {
@@ -21,7 +22,7 @@ const operators: {
     key: string,
     gqlWhere: any,
     crudInfos: CrudInfo[],
-    options: { parentKey?: string; currentUser: any },
+    options: { parentKey?: string; currentUser: AuthenticatedUser },
   ) => void;
 } = {
   OR: (obj, key, original, crudInfos, options) =>
@@ -49,7 +50,7 @@ export function gqlFilterToMikro<T = any>(
   crudInfos: CrudInfo[],
   options: {
     parentKey?: string;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     isRelation?: boolean;
   },
 ): ObjectQuery<T> | ObjectQuery<T>[] | undefined {

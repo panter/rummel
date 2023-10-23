@@ -8,6 +8,7 @@ import {
   CrudInfo,
   getCrudInfosForType,
 } from './utils';
+import { AuthenticatedUser } from './types';
 
 export const gqlUpsertKeyInputToOrm = async (
   gqlInput: any,
@@ -22,7 +23,7 @@ export const gqlUpsertKeyInputToOrm = async (
     skipInputResolver,
   }: {
     em: EntityManager;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     currentOrmData?: any;
     rootOrmData?: any;
     skipInputResolver?: boolean;
@@ -110,7 +111,7 @@ export const gqlUpsertInputToOrm = async <Entity>(
     currentOrmData,
     rootOrmData,
   }: {
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     em: EntityManager;
     currentOrmData?: any;
     rootOrmData?: any;
@@ -165,7 +166,7 @@ export const upsertMany = async (
     rootOrmData,
   }: {
     currentOrmData?: any;
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     em: EntityManager;
     rootOrmData?: any;
   },

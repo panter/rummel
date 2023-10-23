@@ -7,6 +7,7 @@ import { uniqBy } from 'lodash';
 import 'reflect-metadata';
 // import { UserEntity } from '../../modules/user/models/user.entity';
 import { CrudInfo, getPrototypeChain } from './utils';
+import { AuthenticatedUser } from './types';
 
 /**
  * The idea is to cache the options for each type.
@@ -30,14 +31,14 @@ export type WhereFieldResolver<Entity = any, GqlWhere = any> = (
   ormQuery: ObjectQuery<Entity>,
   gqlWhere: GqlWhere,
   options: {
-    currentUser: any;
+    currentUser: AuthenticatedUser;
     key: string | number | symbol;
   },
 ) => void;
 
 export type InputFieldResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: any;
+  currentUser: AuthenticatedUser;
   currentOrmData?: Entity;
   rootOrmData?: Entity;
   type: Type<Entity>;

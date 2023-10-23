@@ -8,14 +8,19 @@ import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { findManyEntityArgs } from '../find-many-entity-args';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import { AuthenticatedUser } from '../types';
+import { CrudAuthorization, CrudResource } from '../../auth';
 
 export interface IFindManyType<T> {
   findMany: (
     info: GraphQLResolveInfo,
-    currentUser: any,
+    currentUser: AuthenticatedUser,
     input: any,
   ) => Promise<T[]>;
-  findManyCount: (currentUser: any, input: any) => Promise<number>;
+  findManyCount: (
+    currentUser: AuthenticatedUser,
+    input: any,
+  ) => Promise<number>;
 }
 
 export function FindManyResolver<T>(
@@ -31,10 +36,13 @@ export function FindManyResolver<T>(
         nullable?: boolean;
         onResolve?: (
           info: GraphQLResolveInfo,
-          currentUser: any,
+          currentUser: AuthenticatedUser,
           data: any,
         ) => Promise<T[]>;
-        onCountResolve?: (currentUser: any, data: any) => Promise<number>;
+        onCountResolve?: (
+          currentUser: AuthenticatedUser,
+          data: any,
+        ) => Promise<number>;
       }
     | undefined = {},
 ): Type<IFindManyType<T>> {
@@ -51,7 +59,7 @@ export function FindManyResolver<T>(
     })
     async findMany(
       @Info() info: GraphQLResolveInfo,
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<T[]> {
@@ -66,7 +74,7 @@ export function FindManyResolver<T>(
       name: `${methodName}Count`,
     })
     async findManyCount(
-      @CurrentUser() currentUser: any,
+      @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<number> {
@@ -83,6 +91,7 @@ export function FindManyResolver<T>(
     }
   }
 
+  @CrudResource(classRef.name)
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => [classRef], {
@@ -90,9 +99,14 @@ export function FindManyResolver<T>(
     })
     override async findMany(
       info: GraphQLResolveInfo,
-      currentUser: any,
+      currentUser: AuthenticatedUser,
       input: any,
     ) {
+      CrudAuthorization.instance?.authorize?.(
+        'read',
+        classRef.name,
+        currentUser,
+      );
       if (onResolve) {
         return onResolve(info, currentUser, input);
       }
@@ -102,7 +116,12 @@ export function FindManyResolver<T>(
     @Query(() => Int, {
       name: `${methodName}Count`,
     })
-    override async findManyCount(currentUser: any, input: any) {
+    override async findManyCount(currentUser: AuthenticatedUser, input: any) {
+      CrudAuthorization.instance?.authorize?.(
+        'read',
+        classRef.name,
+        currentUser,
+      );
       if (onCountResolve) {
         return onCountResolve(currentUser, input);
       }
@@ -120,7 +139,11 @@ export const resolveFindMany = async <T extends Type>(
     info,
     em,
     currentUser,
-  }: { em: EntityManager; currentUser: any; info: GraphQLResolveInfo },
+  }: {
+    em: EntityManager;
+    currentUser: AuthenticatedUser;
+    info: GraphQLResolveInfo;
+  },
 ) => {
   const crudInfos = getCrudInfosForType(type);
 
