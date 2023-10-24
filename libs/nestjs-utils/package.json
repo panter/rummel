@@ -1,8 +1,7 @@
 {
   "name": "@panter/nestjs-utils",
   "version": "0.0.2",
-  "private": true,
-  "access": "public",
+  "private": false,
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,6 +17,14 @@
     "test:unit": "jest --config test/jest-unit.json --passWithNoTests",
     "test:integration": "jest --config test/jest-integration.json --passWithNoTests",
     "test:e2e": "jest --config test/jest-e2e.json --passWithNoTests"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "pluralize": "^8.0.0"
   },
   "devDependencies": {
     "@nestjs/apollo": "^12.0.9",
@@ -67,9 +74,5 @@
   "files": [
     "dist",
     "README.md"
-  ],
-  "dependencies": {
-    "cookie-parser": "^1.4.6",
-    "pluralize": "^8.0.0"
-  }
+  ]
 }
