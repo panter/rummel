@@ -16,13 +16,14 @@ yarn
 
 Libs are publish to npm and can be used in other projects.
 
-- Lib Directory: [s1-crud](./libs)
+- [Lib Directory:](./libs)
+
 ### Samples
 
 Samples are not published to npm and are used to show how to use the libs.
 They can be checked out into you project and used as a starting point.
 
-- Sample Directory: [s1-crud](./samples)
+- [Sample Directory:](./samples)
 
 ### Demo
 To start a demo with `@panter/crud` and `@panter/react-forms` run:
@@ -47,37 +48,17 @@ Packages Directory: [packages](./packages)
 ## Publish
 ### Publish Libraries
 
-- Npm packages are published from our local machines for now.
+This repo uses [Changeset](https://github.com/changesets/changesets) and [Changeset Gitlab](https://github.com/un-ts/changesets-gitlab) for changes documentation, changelog generation, and release management. The needed access tokens are stored in the CI/CD variables.
 
 __npm public:__
 - [prism-inputs](https://git.panter.ch/rummel/rummel/-/tree/main/libs/prisma-inputs)
 - [crud](https://git.panter.ch/rummel/rummel/-/tree/main/libs/crud)
 
 
+## Notes
+
+- [A patch](https://github.com/ds300/patch-packag) for [Changeset]https://github.com/atlassian/changesets) has been applied because of a [known issue in changeset](https://github.com/changesets/changesets/issues/906). As soon as the issue is fixed, the patch can be removed. -> https://git.panter.ch/rummel/rummel/-/issues/22
+
 ## Links
 - https://www.notion.so/panterch/Notes-bb32ae412c3949c1961eb1c75cb9f262?pvs=4
-
-
-## Deprecated Setup infos
-
-## Gitlab CI
-
-Add this to your `.yarnrm.yml` if you need to use the `@rummel` scope.
-
-```
-npmScopes:
-  rummel:
-    npmRegistryServer: https://git.panter.ch/api/v4/projects/1443/packages/npm
-    npmAlwaysAuth: true
-    npmAuthToken: ${GITLAB_AUTH_TOKEN}
-
-```
-
-### gitlab registry config
-
-To utilize the GitLab registry, ensure you've set up the environment variable named `GITLAB_AUTH_TOKEN`. This variable should be assigned your [GitLab personal access token](https://git.panter.ch/-/profile/personal_access_tokens), which must have the following scopes:
-
-- `read_api`
-- `read_registry`
-- `write_registry`
 

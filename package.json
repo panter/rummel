@@ -22,17 +22,17 @@
     "test:integration": "turbo run test:integration",
     "lint": "turbo run lint",
     "lint:type-check": "turbo run lint:type-check",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "postinstall": "patch-package --error-on-warn"
   },
   "devDependencies": {
     "@catladder/cli": "^1.122.0",
     "@catladder/pipeline": "^1.122.0",
+    "@changesets/cli": "^2.26.2",
     "changesets-gitlab": "^0.10.3",
     "concurrently": "^8.2.1",
+    "patch-package": "^8.0.0",
     "turbo": "^1.10.14"
   },
-  "packageManager": "yarn@3.4.1",
-  "dependencies": {
-    "@changesets/cli": "^2.26.2"
-  }
+  "packageManager": "yarn@3.4.1"
 }
