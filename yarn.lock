@@ -4910,6 +4910,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rummel/react-forms-ant@workspace:samples/react-forms-ant":
+  version: 0.0.0-use.local
+  resolution: "@rummel/react-forms-ant@workspace:samples/react-forms-ant"
+  dependencies:
+    eslint: ^8.50.0
+    eslint-config-custom: "*"
+    jest: 29.7.0
+    rimraf: ^5.0.5
+    tsconfig: "*"
+    typescript: ^5.2.2
+  peerDependencies:
+    react: 18.x
+  languageName: unknown
+  linkType: soft
+
 "@rummel/s1-crud@workspace:samples/s1-crud":
   version: 0.0.0-use.local
   resolution: "@rummel/s1-crud@workspace:samples/s1-crud"
@@ -9644,7 +9659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.52.0, eslint@npm:^8.52.0":
+"eslint@npm:8.52.0, eslint@npm:^8.50.0, eslint@npm:^8.52.0":
   version: 8.52.0
   resolution: "eslint@npm:8.52.0"
   dependencies:
