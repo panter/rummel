@@ -4,14 +4,19 @@
     "json",
     "ts"
   ],
-  "rootDir": "unit",
+  "rootDir": "../",
   "testRegex": ".*\\.spec\\.ts$",
   "transform": {
     "^.+\\.ts$": "ts-jest"
   },
-  "collectCoverageFrom": [
-    "**/*.ts"
+  "testPathIgnorePatterns": [
+    "/node_modules/",
+    "dist"
   ],
-  "coverageDirectory": "../coverage",
+  "collectCoverageFrom": [
+    "src/**/*.ts"
+  ],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage-unit",
   "testEnvironment": "node"
 }

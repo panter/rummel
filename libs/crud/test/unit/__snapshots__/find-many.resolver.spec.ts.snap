@@ -1,5 +1,8 @@
-export const FIND_MANY_USER_GQL_SCHEMA: string = `type User {
-  id: Float!
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FindManyResolver should generate graphql schema for FindManyUserResolver 1`] = `
+"type User {
+  id: String!
   name: String!
 }
 
@@ -12,16 +15,8 @@ input UserWhereInput {
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
-  id: IntFilter
+  id: StringFilter
   name: StringFilter
-}
-
-input IntFilter {
-  equals: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
 }
 
 input StringFilter {
@@ -50,4 +45,5 @@ input UserOrderByInput {
 enum SortOrder {
   asc
   desc
-}`;
+}"
+`;

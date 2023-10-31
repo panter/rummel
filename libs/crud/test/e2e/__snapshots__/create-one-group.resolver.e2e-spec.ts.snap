@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateOneGroup should create group 1`] = `
+{
+  "description": "yeah",
+  "founders": [
+    {
+      "name": "cro",
+    },
+    {
+      "name": "bbl",
+    },
+  ],
+  "name": "manul",
+}
+`;

@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DeleteOneResolver should generate graphql schema for DeleteOneUserResolver 1`] = `
+"type User {
+  id: String!
+  name: String!
+}
+
+type Mutation {
+  deleteOneUser(where: EntityIdInput): User!
+}
+
+input EntityIdInput {
+  id: String!
+}"
+`;

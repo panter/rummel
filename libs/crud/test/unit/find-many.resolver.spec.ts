@@ -3,11 +3,10 @@ import {
   GraphQLSchemaFactory,
   Resolver,
 } from '@nestjs/graphql';
-import { printSchema } from 'graphql/utilities';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '../fixtures/user.entity';
+import { printSchema } from 'graphql/utilities';
 import { FindManyResolver } from '../../src';
-import { FIND_MANY_USER_GQL_SCHEMA } from './fixtures/find-many.resolver.fixtures';
+import { User } from '../fixtures/user.entity';
 
 @Resolver(() => User)
 export class FindManyUserResolver extends FindManyResolver(User) {}
@@ -26,6 +25,6 @@ describe('FindManyResolver', () => {
     const schema = await gqlSchemaFactory.create([FindManyUserResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(FIND_MANY_USER_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 });

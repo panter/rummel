@@ -8,9 +8,12 @@ import { User } from '../fixtures/user.entity';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
 import { MikroORM } from '@mikro-orm/core';
-import { CreateOneUserResolver } from './create-one-user.resolver.e2e-spec';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, Provider } from '@nestjs/common';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { Group } from '../fixtures/group.entity';
+import { Company } from '../fixtures/company.entity';
+
+export const TEST_TIMEOUT = 60000;
 
 export interface TestContext {
   app: INestApplication;
@@ -18,20 +21,26 @@ export interface TestContext {
   orm: MikroORM<PostgreSqlDriver>;
 }
 
-export const beforeAllCallback = async (): Promise<TestContext> => {
-  const pgContainer = await new PostgreSqlContainer().start();
+export const beforeAllCallback = async (
+  providers: Provider[],
+): Promise<TestContext> => {
+  const pgContainer = await new PostgreSqlContainer()
+    .withStartupTimeout(TEST_TIMEOUT)
+    .start();
   const fixture = await Test.createTestingModule({
     imports: [
       MikroOrmModule.forRoot({
         type: 'postgresql',
         host: pgContainer.getHost(),
-        port: pgContainer.getMappedPort(5432),
+        port: pgContainer.getPort(),
         user: pgContainer.getUsername(),
         password: pgContainer.getPassword(),
         dbName: pgContainer.getDatabase(),
-        entities: [User],
+        entities: [User, Group, Company],
+        logger: (i) => i,
         migrations: {
           path: 'test/e2e/migrations',
+          snapshot: false,
         },
       }),
       GraphQLModule.forRoot({
@@ -42,17 +51,19 @@ export const beforeAllCallback = async (): Promise<TestContext> => {
         },
       }),
     ],
-    providers: [CreateOneUserResolver],
+    providers,
   }).compile();
   const app = fixture.createNestApplication({ bodyParser: true });
   const orm = app.get(MikroORM<PostgreSqlDriver>);
 
   await orm.getMigrator().up();
   const migrationNeeded = await orm.getMigrator().checkMigrationNeeded();
+
   if (migrationNeeded) {
     await orm.getMigrator().createMigration();
     await orm.getMigrator().up();
   }
+
   await app.init();
   return { app, pgContainer, orm };
 };

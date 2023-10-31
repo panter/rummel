@@ -1,33 +1,15 @@
-export const UPDATE_ONE_USER_GQL_SCHEMA: string = `type User {
-  id: Float!
-  name: String!
-}
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-type Mutation {
-  updateOneUser(data: UserUpdateInput, where: EntityIdInput!): User!
-}
-
-input UserUpdateInput {
-  name: StringInput
-}
-
-input StringInput {
-  set: String
-}
-
-input EntityIdInput {
+exports[`UpdateOneResolver should generate graphql schema for UpdateOneCompanyResolver 1`] = `
+"type User {
   id: String!
-}`;
-
-export const UPDATE_ONE_COMPANY_GQL_SCHEMA: string = `type User {
-  id: Float!
   name: String!
 }
 
 type Company {
-  id: Float!
+  id: String!
   name: String!
-  description: String!
+  description: String
   founder: User!
   ceo: User
   cto: User
@@ -73,15 +55,17 @@ input UserUpdateWithoutCompanyInput {
 
 input EntityIdInput {
   id: String!
-}`;
+}"
+`;
 
-export const UPDATE_ONE_GROUP_GQL_SCHEMA = `type User {
-  id: Float!
+exports[`UpdateOneResolver should generate graphql schema for UpdateOneGroupResolver 1`] = `
+"type User {
+  id: String!
   name: String!
 }
 
 type Group {
-  id: Float!
+  id: String!
   name: String!
   description: String!
   founders: [User!]!
@@ -134,4 +118,28 @@ input UserUpdateWithWhereUniqueWithoutGroupInput {
 
 input UserUpdateInput {
   name: StringInput
-}`;
+}"
+`;
+
+exports[`UpdateOneResolver should generate graphql schema for UpdateOneUserResolver 1`] = `
+"type User {
+  id: String!
+  name: String!
+}
+
+type Mutation {
+  updateOneUser(data: UserUpdateInput, where: EntityIdInput!): User!
+}
+
+input UserUpdateInput {
+  name: StringInput
+}
+
+input StringInput {
+  set: String
+}
+
+input EntityIdInput {
+  id: String!
+}"
+`;

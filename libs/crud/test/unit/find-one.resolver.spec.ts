@@ -3,11 +3,9 @@ import {
   GraphQLSchemaFactory,
   Resolver,
 } from '@nestjs/graphql';
-import { printSchema } from 'graphql/utilities';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '../fixtures/user.entity';
 import { FindOneResolver } from '../../src';
-import { FIND_ONE_USER_GQL_SCHEMA } from './fixtures/find-one.resolver.fixtures';
+import { User } from '../fixtures/user.entity';
 
 @Resolver(() => User)
 export class FindOneUserResolver extends FindOneResolver(User) {}

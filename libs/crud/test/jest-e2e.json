@@ -4,14 +4,19 @@
     "json",
     "ts"
   ],
-  "rootDir": ".",
+  "rootDir": "../",
+  "testRegex": ".*\\.e2e-spec\\.ts$",
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
   "testPathIgnorePatterns": [
     "/node_modules/",
     "dist"
   ],
-  "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
-  "transform": {
-    "^.+\\.ts$": "ts-jest"
-  }
+  "collectCoverageFrom": [
+    "src/**/*.ts"
+  ],
+  "collectCoverage": true,
+  "coverageDirectory": "coverage-e2e",
+  "testEnvironment": "node"
 }

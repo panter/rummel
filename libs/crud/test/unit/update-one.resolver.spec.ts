@@ -3,17 +3,12 @@ import {
   GraphQLSchemaFactory,
   Resolver,
 } from '@nestjs/graphql';
-import { printSchema } from 'graphql/utilities';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '../fixtures/user.entity';
+import { printSchema } from 'graphql/utilities';
 import { UpdateOneResolver } from '../../src';
-import {
-  UPDATE_ONE_COMPANY_GQL_SCHEMA,
-  UPDATE_ONE_GROUP_GQL_SCHEMA,
-  UPDATE_ONE_USER_GQL_SCHEMA,
-} from './fixtures/update-one.resolver.fixtures';
 import { Company } from '../fixtures/company.entity';
 import { Group } from '../fixtures/group.entity';
+import { User } from '../fixtures/user.entity';
 
 @Resolver(() => User)
 export class UpdateOneUserResolver extends UpdateOneResolver(User) {}
@@ -38,7 +33,7 @@ describe('UpdateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([UpdateOneUserResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(UPDATE_ONE_USER_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 
   it('should generate graphql schema for UpdateOneCompanyResolver', async () => {
@@ -46,7 +41,7 @@ describe('UpdateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([UpdateOneCompanyResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(UPDATE_ONE_COMPANY_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 
   it('should generate graphql schema for UpdateOneGroupResolver', async () => {
@@ -54,6 +49,6 @@ describe('UpdateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([UpdateOneGroupResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(UPDATE_ONE_GROUP_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 });
