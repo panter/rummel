@@ -1,9 +1,9 @@
-import { TextFormInput } from '../../forms/components/antd/input/TextFormInput';
-import { ExtractUseFormReturn } from '../../ui/form/hooks/usePrismaForms';
+import { ExtractUseFormReturn } from '@panter/react-forms';
 import {
   AutocompleteCreateResource,
   AutocompleteUpdateResource,
 } from '../resource';
+import { TextFormInput, useFormItem } from '@rummel/react-forms-ant';
 
 export type AutocompleteFormProps = {
   form: ExtractUseFormReturn<
@@ -13,7 +13,7 @@ export type AutocompleteFormProps = {
 };
 
 export const AutocompleteForm: React.FC<AutocompleteFormProps> = ({ form }) => {
-  const { formItem } = form;
+  const formItem = useFormItem({ resourceId: 'autocomplete', form });
   return (
     <div>
       <TextFormInput

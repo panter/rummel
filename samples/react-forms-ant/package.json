@@ -10,7 +10,7 @@
     "lint:type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "eslint": "^8.50.0",
+    "eslint": "^8.52.0",
     "eslint-config-custom": "*",
     "jest": "29.7.0",
     "rimraf": "^5.0.5",

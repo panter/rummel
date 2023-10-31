@@ -2,16 +2,15 @@
 
 const { i18n } = require('./next-i18next.config');
 
-const { GRAPHQL_ENDPOINT, ASSET_SERVER_ENDPOINT } = process.env;
+const { GRAPHQL_ENDPOINT } = process.env;
 
 // const isEnabled = ['prod', 'dev'].includes(ENV_SHORT);
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@panter/prisma-inputs"],
+  transpilePackages: ["@panter/prisma-inputs", "@panter/react-forms", "@rummel/react-forms-ant"],
   publicRuntimeConfig: {
-    GRAPHQL_ENDPOINT,
-    ASSET_SERVER_ENDPOINT,
+    GRAPHQL_ENDPOINT
   },
   compiler: {
     styledComponents: true,
@@ -26,7 +25,7 @@ const nextConfig = {
   // },
   images: {
     unoptimized: true,
-    domains: ['www.veloplus.ch', 'storage.googleapis.com', 'loremflickr.com', 'cdn.veloplus.ch'],
+    domains: ['storage.googleapis.com'],
   },
   i18n,
 };

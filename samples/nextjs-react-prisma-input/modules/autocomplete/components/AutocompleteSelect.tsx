@@ -5,13 +5,13 @@ import React from 'react';
 import { FieldPath, FieldValues } from 'react-hook-form';
 import styled from 'styled-components';
 import { graphql } from '../../../@generated';
+import { useAddAutocompleteValue } from '../hooks/useAddAutocompleteValue';
+import { useDeleteAutocompleteValue } from '../hooks/useDeleteAutocompleteValue';
 import {
   BaseFormInputProps,
   FormInputController,
   formBaseInputProps,
-} from '../../forms/components/antd/input/FormInputController';
-import { useAddAutocompleteValue } from '../hooks/useAddAutocompleteValue';
-import { useDeleteAutocompleteValue } from '../hooks/useDeleteAutocompleteValue';
+} from '@rummel/react-forms-ant';
 
 const Base = styled.div`
   width: 100%;
