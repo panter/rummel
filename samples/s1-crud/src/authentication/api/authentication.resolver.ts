@@ -49,7 +49,7 @@ export class AuthenticationResolver {
   async finishOtpLogin(
     @Args('input') { otp, email }: FinishOtpLoginInput,
     @Context('res') res: Response,
-    @Info() info: GraphQLResolveInfo,
+    @Info() _: GraphQLResolveInfo,
   ): Promise<FinishOtpLoginResponse> {
     const user = await this.authenticationService.finishOtpLogin(email, otp);
     const jwt = await this.authenticationService.generateAccessToken(user);

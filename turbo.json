@@ -39,6 +39,12 @@
       ]
     },
     "lint": {
+      "cache": false,
+      "dependsOn": [
+        "lint:type-check"
+      ]
+    },
+    "lint:type-check": {
       "cache": false
     },
     "clean": {

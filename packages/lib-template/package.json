@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/node": "^20.7.0",
     "@types/supertest": "^2.0.13",
-    "eslint": "^8.50.0",
+    "eslint": "^8.52.0",
     "eslint-config-custom": "*",
     "jest": "29.7.0",
     "rimraf": "^5.0.4",

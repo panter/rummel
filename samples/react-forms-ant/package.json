@@ -1,0 +1,22 @@
+{
+  "name": "@rummel/react-forms-ant",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rimraf \"dist\"",
+    "lint": "eslint \"**/*.ts*\"",
+    "lint:type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-custom": "*",
+    "jest": "29.7.0",
+    "rimraf": "^5.0.5",
+    "tsconfig": "*",
+    "typescript": "^5.2.2"
+  },
+  "peerDependencies": {
+    "react": "18.x"
+  }
+}
