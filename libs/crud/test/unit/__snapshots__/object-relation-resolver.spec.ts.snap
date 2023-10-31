@@ -1,10 +1,13 @@
-export const OBJECT_RELATIONS_GROUP_GQL_SCHEMA = `type User {
-  id: Float!
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ObjectRelationResolver should generate relation resolvers graphql schema for Group object 1`] = `
+"type User {
+  id: String!
   name: String!
 }
 
 type Group {
-  id: Float!
+  id: String!
   name: String!
   description: String!
   founders(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]!
@@ -16,16 +19,8 @@ input UserWhereInput {
   AND: [UserWhereInput!]
   OR: [UserWhereInput!]
   NOT: [UserWhereInput!]
-  id: IntFilter
+  id: StringFilter
   name: StringFilter
-}
-
-input IntFilter {
-  equals: Float
-  gt: Float
-  gte: Float
-  lt: Float
-  lte: Float
 }
 
 input StringFilter {
@@ -62,4 +57,5 @@ type Query {
 
 input EntityIdInput {
   id: String!
-}`;
+}"
+`;

@@ -1,11 +1,12 @@
 import {
+  Collection,
   Entity,
   ManyToMany,
-  ManyToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { v4 } from 'uuid';
 import { CrudField } from '../../src';
 import { User } from './user.entity';
 
@@ -14,11 +15,12 @@ import { User } from './user.entity';
 export class Group {
   @CrudField({ hideCreate: true, hideUpdate: true })
   @Field()
-  @PrimaryKey({ autoincrement: true })
-  id!: number;
+  @PrimaryKey({ type: 'uuid' })
+  id: string = v4();
 
   @CrudField({ hideUpdate: true })
   @Field()
+  @Property()
   name!: string;
 
   @Field()
@@ -28,12 +30,12 @@ export class Group {
   @CrudField({ hideUpdate: true })
   @Field(() => [User])
   @ManyToMany({ entity: () => User })
-  founders!: User[];
+  founders = new Collection<User>(this);
 
   @CrudField({ hideCreate: true })
   @Field(() => [User], { nullable: true })
   @ManyToMany({ entity: () => User, nullable: true })
-  coordinator?: User[];
+  coordinator = new Collection<User>(this);
 
   @CrudField({
     hideCreate: true,
@@ -41,5 +43,5 @@ export class Group {
   })
   @Field(() => [User], { nullable: true })
   @ManyToMany({ entity: () => User, nullable: true })
-  finance?: User[];
+  finance? = new Collection<User>(this);
 }

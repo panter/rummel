@@ -3,8 +3,8 @@ import {
   GraphQLSchemaFactory,
   Resolver,
 } from '@nestjs/graphql';
-import { printSchema } from 'graphql/utilities';
 import { Test, TestingModule } from '@nestjs/testing';
+import { printSchema } from 'graphql/utilities';
 import {
   CreateOneResolver,
   DeleteOneResolver,
@@ -13,9 +13,8 @@ import {
   ObjectRelationResolvers,
   UpdateOneResolver,
 } from '../../src';
-import { ALL_SUPPORTED_TYPES_GQL_SCHEMA } from './fixtures/all-supported-types.fixtures';
-import { Dummy } from './fixtures/all-types-shema.fixtures';
 import { Dummy2 } from './fixtures/all-types-schema2.fixtures';
+import { Dummy } from './fixtures/all-types-shema.fixtures';
 
 @Resolver(() => Dummy)
 export class CreateOneDummyResolver extends CreateOneResolver(Dummy) {}
@@ -57,6 +56,6 @@ describe('Graphql types', () => {
         skipCheck: true, //to avoid QueryRoot type must be provided error
       },
     );
-    expect(printSchema(schema)).toEqual(ALL_SUPPORTED_TYPES_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 });

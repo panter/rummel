@@ -1,5 +1,6 @@
-import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, ObjectType } from '@nestjs/graphql';
+import { v4 } from 'uuid';
 import { CrudField } from '../../src';
 import { User } from './user.entity';
 
@@ -8,16 +9,17 @@ import { User } from './user.entity';
 export class Company {
   @CrudField({ hideCreate: true, hideUpdate: true })
   @Field()
-  @PrimaryKey({ autoincrement: true })
-  id!: number;
+  @PrimaryKey({ type: 'uuid' })
+  id: string = v4();
 
   @CrudField({ hideUpdate: true })
   @Field()
   name!: string;
 
   @CrudField({ hideCreate: true })
-  @Field()
-  description!: string;
+  @Field({ nullable: true })
+  @Property({ nullable: true })
+  description?: string;
 
   @CrudField({ hideUpdate: true })
   @Field()

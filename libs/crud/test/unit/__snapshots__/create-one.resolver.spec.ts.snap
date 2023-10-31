@@ -1,25 +1,15 @@
-export const CREATE_ONE_USER_GQL_SCHEMA: string = `type User {
-  id: Float!
-  name: String!
-}
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-type Mutation {
-  createOneUser(data: UserCreateInput): User!
-}
-
-input UserCreateInput {
-  name: String
-}`;
-
-export const CREATE_ONE_COMPANY_GQL_SCHEMA: string = `type User {
-  id: Float!
+exports[`CreateOneResolver should generate graphql schema for CreateOneCompanyResolver 1`] = `
+"type User {
+  id: String!
   name: String!
 }
 
 type Company {
-  id: Float!
+  id: String!
   name: String!
-  description: String!
+  description: String
   founder: User!
   ceo: User
   cto: User
@@ -40,15 +30,17 @@ input UserConnectNestedOneWithoutCompanyInput {
 
 input ConnectRelationInput {
   id: String!
-}`;
+}"
+`;
 
-export const CREATE_ONE_GROUP_GQL_SCHEMA = `type User {
-  id: Float!
+exports[`CreateOneResolver should generate graphql schema for CreateOneGroupResolver 1`] = `
+"type User {
+  id: String!
   name: String!
 }
 
 type Group {
-  id: Float!
+  id: String!
   name: String!
   description: String!
   founders: [User!]!
@@ -77,4 +69,20 @@ input ConnectRelationInput {
 
 input EntityIdInput {
   id: String!
-}`;
+}"
+`;
+
+exports[`CreateOneResolver should generate graphql schema for CreateOneUserResolver 1`] = `
+"type User {
+  id: String!
+  name: String!
+}
+
+type Mutation {
+  createOneUser(data: UserCreateInput): User!
+}
+
+input UserCreateInput {
+  name: String
+}"
+`;

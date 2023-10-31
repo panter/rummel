@@ -1,5 +1,14 @@
 image: node:18-alpine
 
+services:
+ - name: docker:dind
+   command: ["--tls=false"]
+
+variables:
+  DOCKER_HOST: "tcp://docker:2375"
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+
 cache:
   - key: yarn-workspace
     paths:

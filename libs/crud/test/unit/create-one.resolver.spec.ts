@@ -3,17 +3,12 @@ import {
   GraphQLSchemaFactory,
   Resolver,
 } from '@nestjs/graphql';
-import { printSchema } from 'graphql/utilities';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '../fixtures/user.entity';
+import { printSchema } from 'graphql/utilities';
 import { CreateOneResolver } from '../../src';
-import {
-  CREATE_ONE_COMPANY_GQL_SCHEMA,
-  CREATE_ONE_GROUP_GQL_SCHEMA,
-  CREATE_ONE_USER_GQL_SCHEMA,
-} from './fixtures/create-one.resolver.fixtures';
 import { Company } from '../fixtures/company.entity';
 import { Group } from '../fixtures/group.entity';
+import { User } from '../fixtures/user.entity';
 
 @Resolver(() => User)
 export class CreateOneUserResolver extends CreateOneResolver(User) {}
@@ -38,7 +33,7 @@ describe('CreateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([CreateOneUserResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(CREATE_ONE_USER_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 
   it('should generate graphql schema for CreateOneCompanyResolver', async () => {
@@ -46,7 +41,7 @@ describe('CreateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([CreateOneCompanyResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(CREATE_ONE_COMPANY_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 
   it('should generate graphql schema for CreateOneGroupResolver', async () => {
@@ -54,6 +49,6 @@ describe('CreateOneResolver', () => {
     const schema = await gqlSchemaFactory.create([CreateOneGroupResolver], {
       skipCheck: true, //to avoid QueryRoot type must be provided error
     });
-    expect(printSchema(schema)).toEqual(CREATE_ONE_GROUP_GQL_SCHEMA);
+    expect(printSchema(schema)).toMatchSnapshot();
   });
 });

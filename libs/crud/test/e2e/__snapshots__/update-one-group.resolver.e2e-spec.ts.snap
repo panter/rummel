@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateOneGroup should update group 1`] = `
+{
+  "coordinator": [
+    {
+      "name": "psc",
+    },
+    {
+      "name": "maw",
+    },
+  ],
+  "description": "yeah",
+  "finance": [
+    {
+      "name": "psc",
+    },
+    {
+      "name": "rog",
+    },
+  ],
+  "founders": [
+    {
+      "name": "cro",
+    },
+    {
+      "name": "bbl",
+    },
+  ],
+  "name": "manul",
+}
+`;

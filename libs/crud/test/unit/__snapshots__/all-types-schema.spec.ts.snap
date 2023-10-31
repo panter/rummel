@@ -1,9 +1,7 @@
-export const ALL_SUPPORTED_TYPES_GQL_SCHEMA: string = `type Dummy2 {
-  idProp: ID!
-  dummyProp: Dummy!
-}
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
-type Dummy {
+exports[`Graphql types should generate graphql schema with all fields 1`] = `
+"type Dummy {
   idProp: ID!
   intProp: Int!
   floatProps: Float!
@@ -138,6 +136,11 @@ input DummyOrderByInput {
   manyToManyProp: Dummy2OrderByInput
 }
 
+type Dummy2 {
+  idProp: ID!
+  dummyProp: Dummy!
+}
+
 type Query {
   dummy(where: EntityIdInput): Dummy
   dummies(where: DummyWhereInput, orderBy: [DummyOrderByInput!], skip: Int, take: Int): [Dummy!]!
@@ -223,4 +226,5 @@ input BooleanInput {
 
 input DateInput {
   set: DateTime
-}`;
+}"
+`;
