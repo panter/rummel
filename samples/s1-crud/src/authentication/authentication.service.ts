@@ -80,7 +80,7 @@ export class AuthenticationService {
   private async loginOrRegisterUser(
     authorityId: string,
   ): Promise<UserIdentity> {
-    let user =
+    const user =
       await this.userIdentityProvider.getUserByAuthorityId(authorityId);
 
     if (user) {
