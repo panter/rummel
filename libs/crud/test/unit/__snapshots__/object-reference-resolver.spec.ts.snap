@@ -1,18 +1,37 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ObjectRelationResolver should generate relation resolvers graphql schema 1`] = `
-"type User {
+exports[`ObjectReferenceResolver should generate reference resolvers graphql schema 1`] = `
+"type ReferenceId {
+  id: String!
+}
+
+type User {
   id: String!
   name: String!
+}
+
+type Company {
+  id: String!
+  name: String!
+  description: String
+  founder: User!
+  ceo: User
+  cto: User
+  founderId: ReferenceId!
+  ceoId: ReferenceId
+  ctoId: ReferenceId
 }
 
 type Group {
   id: String!
   name: String!
   description: String!
-  founders(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]!
-  coordinator(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]
-  finance(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [User!]
+  founders: [User!]!
+  coordinator: [User!]
+  finance: [User!]
+  foundersIds(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [ReferenceId!]!
+  coordinatorIds(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [ReferenceId!]
+  financeIds(where: UserWhereInput, orderBy: [UserOrderByInput!], skip: Int, take: Int): [ReferenceId!]
 }
 
 input UserWhereInput {
@@ -49,15 +68,6 @@ input UserOrderByInput {
 enum SortOrder {
   asc
   desc
-}
-
-type Company {
-  id: String!
-  name: String!
-  description: String
-  founder: User!
-  ceo: User
-  cto: User
 }
 
 type Query {
