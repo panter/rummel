@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.7.0",
-    "@types/supertest": "^2.0.13",
+    "@types/supertest": "^2.0.15",
     "eslint": "^8.52.0",
     "eslint-config-custom": "*",
     "jest": "29.7.0",
@@ -22,6 +22,6 @@
     "supertest": "^6.3.3",
     "tsconfig": "^7.0.0",
     "tsconfig-paths": "4.2.0",
-    "typescript": "^5.1.6"
+    "typescript": "^5.2.2"
   }
 }

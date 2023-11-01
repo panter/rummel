@@ -2,10 +2,10 @@ import {
   commonServerSideTranslations,
   LOCALE,
 } from '../../../lib/serverSideTranslations';
-import { AutocompleteTable } from '../../../modules/autocomplete/components/AutocompleteTable';
+import { AutocompleteTablePrismaModal } from '../../../modules/autocomplete/components/AutocompleteTablePrismaModal';
 
 export default function AutocompleteAdmin() {
-  return <AutocompleteTable />;
+  return <AutocompleteTablePrismaModal />;
 }
 export const getServerSideProps = async ({ locale }: { locale: LOCALE }) => ({
   props: {

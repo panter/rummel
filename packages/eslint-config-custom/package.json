@@ -5,20 +5,20 @@
   "private": true,
   "license": "MIT",
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
+    "@typescript-eslint/eslint-plugin": "^6.9.1",
+    "@typescript-eslint/parser": "^6.9.1",
     "eslint-config-next": "^13.5.4",
     "eslint-config-prettier": "^8.10.0",
-    "eslint-config-turbo": "^1.10.14",
+    "eslint-config-turbo": "^1.10.16",
     "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-boundaries": "^3.4.0",
-    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-boundaries": "^3.4.1",
+    "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "7.33.2",
     "prettier": "^3.0.3"
   },
   "devDependencies": {
     "eslint": "8.52.0",
-    "next": "^13.5.4",
+    "next": "^13.5.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "typescript": "^5.2.2"

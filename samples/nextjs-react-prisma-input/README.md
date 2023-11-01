@@ -5,6 +5,7 @@ Example of a Next.js app with `@panter/react-form`.
 ## Getting Started
 
 - Start [s1-crud](../s1-crud)
+  - `yarn dev --filter=@rummel/s1-crud` -> http://localhost:3000/graphql
 - `yarn`
 - `yarn dev`
 - Open http://localhost:4010

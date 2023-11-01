@@ -1,11 +1,11 @@
 import { property } from '@panter/prisma-inputs';
-import { graphql } from '../../@generated';
-import { getFragment } from '../../lib/getFragment';
-import { prismaResource } from '../ui/form/hooks/usePrismaForms';
 import {
   PrismaSchemaFromGraphql,
   prismaInputBuilderFromGraphql,
-} from '../ui/form/utils/prismaInputBuilderFromGraphql';
+  prismaResource,
+} from '@panter/react-forms';
+import { graphql } from '../../@generated';
+import { getFragment } from '../../lib/getFragment';
 
 export const DeleteOneAutocompleteMutation = graphql(/* GraphQL */ `
   mutation DeleteOneAutocomplete($where: EntityIdInput!) {

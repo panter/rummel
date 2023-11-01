@@ -26,13 +26,13 @@
     "postinstall": "patch-package --error-on-warn"
   },
   "devDependencies": {
-    "@catladder/cli": "^1.122.0",
-    "@catladder/pipeline": "^1.122.0",
+    "@catladder/cli": "^1.126.0",
+    "@catladder/pipeline": "^1.126.0",
     "@changesets/cli": "^2.26.2",
     "changesets-gitlab": "^0.10.3",
-    "concurrently": "^8.2.1",
+    "concurrently": "^8.2.2",
     "patch-package": "^8.0.0",
-    "turbo": "^1.10.14"
+    "turbo": "^1.10.16"
   },
   "packageManager": "yarn@3.4.1"
 }

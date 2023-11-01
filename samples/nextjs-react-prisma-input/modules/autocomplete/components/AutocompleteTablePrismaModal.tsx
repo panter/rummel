@@ -7,8 +7,6 @@ import {
 } from '../../../@generated/graphql';
 import { Filter } from '../../filter/components/Filter';
 import { FilterPanel } from '../../filter/components/FilterComponents';
-import { GraphqlSchemaFormModal } from '../../forms/components/antd/GraphqlSchemaFormModal';
-import { useGraphqlSchemaFormModal } from '../../forms/hooks/useGraphqlSchemaFormModal';
 import { usePrismaManyTable } from '../../table/hooks/usePrismaManyTable';
 import { useFilteredAutocomplete } from '../hooks/useFilteredAutocomplete';
 import {
@@ -18,6 +16,8 @@ import {
   ManyAutocompleteQuery,
 } from '../resource';
 import { AutocompleteForm } from './AutocompleteForm';
+import { usePrismaFormModal } from '@panter/react-forms';
+import { GraphqlSchemaFormModal } from '@rummel/react-forms-ant';
 
 const useAutocompleteColumns = (props: {
   refresh: () => void;
@@ -25,7 +25,7 @@ const useAutocompleteColumns = (props: {
 }) => {
   const data = useFragment(AutocompleteFragment, props.dataFragment);
 
-  const [open, formModalProps] = useGraphqlSchemaFormModal({
+  const [open, formModalProps] = usePrismaFormModal({
     ...AutocompleteUpdateResource,
     onClose: props.refresh,
   });
@@ -60,9 +60,11 @@ const useAutocompleteColumns = (props: {
   return { columns, data, formModalProps };
 };
 
-export type AutocompleteTableProps = {};
+export type AutocompleteTablePrismaModalProps = {};
 
-export const AutocompleteTable: React.FC<AutocompleteTableProps> = () => {
+export const AutocompleteTablePrismaModal: React.FC<
+  AutocompleteTablePrismaModalProps
+> = () => {
   const tableOptions = usePrismaManyTable(
     ManyAutocompleteQuery,
     (data) => data.autocompletesCount,
@@ -85,7 +87,7 @@ export const AutocompleteTable: React.FC<AutocompleteTableProps> = () => {
     dataFragment: tableOptions.queryResult.data?.autocompletes,
   });
 
-  const [createOne, formModalPropsCreate] = useGraphqlSchemaFormModal({
+  const [createOne, formModalPropsCreate] = usePrismaFormModal({
     ...AutocompleteCreateResource,
     onClose: () => {
       tableOptions.queryResult.refetch();

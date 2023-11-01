@@ -3,10 +3,9 @@ import { FilterProperty, FilterShortcut } from './Filter';
 import { Input, Select } from 'antd';
 import { ReactElement, useState } from 'react';
 import { isArray, isBoolean, isEmpty, last } from 'lodash';
-
-import { NumberInput } from '../../forms/components/antd/input/NumberInput';
 import { notNil } from '../../ui/core/utils/arrays';
 import styled from 'styled-components';
+import { NumberInput } from '@rummel/react-forms-ant';
 
 const BorderlessSelect = styled(Select)`
   &&& {
@@ -172,6 +171,7 @@ export function NumberFilterItem<T extends string | number>({
 
   return (
     <NumberInput
+      formatValue={(n) => String(n)}
       onFocus={() => setActivated(true)}
       onBlur={(e: any) => {
         onChange?.(

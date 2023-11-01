@@ -1,5 +1,4 @@
 import '../lib/i18n';
-import 'react-image-gallery/styles/css/image-gallery.css';
 import '../styles/fonts.css';
 import '../utils/date';
 
