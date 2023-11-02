@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UpdateOneCompany should update company 1`] = `
+{
+  "ceo": {
+    "name": "psc",
+  },
+  "cto": {
+    "name": "rog",
+  },
+  "description": "yeah",
+  "founder": {
+    "name": "cro",
+  },
+  "name": "panter",
+}
+`;

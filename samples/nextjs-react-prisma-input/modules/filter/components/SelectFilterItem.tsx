@@ -1,11 +1,10 @@
-import { FilterItem, FilterItemLabel } from './FilterComponents';
-import { FilterProperty, FilterShortcut } from './Filter';
-import { Input, Select } from 'antd';
-import { ReactElement, useState } from 'react';
+import { Input, InputNumber, Select } from 'antd';
 import { isArray, isBoolean, isEmpty, last } from 'lodash';
-import { notNil } from '../../ui/core/utils/arrays';
+import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { NumberInput } from '@rummel/react-forms-ant';
+import { notNil } from '../../ui/core/utils/arrays';
+import { FilterProperty, FilterShortcut } from './Filter';
+import { FilterItem, FilterItemLabel } from './FilterComponents';
 
 const BorderlessSelect = styled(Select)`
   &&& {
@@ -170,8 +169,7 @@ export function NumberFilterItem<T extends string | number>({
   const [activated, setActivated] = useState(active);
 
   return (
-    <NumberInput
-      formatValue={(n) => String(n)}
+    <InputNumber
       onFocus={() => setActivated(true)}
       onBlur={(e: any) => {
         onChange?.(
@@ -182,9 +180,7 @@ export function NumberFilterItem<T extends string | number>({
         setActivated(false);
       }}
       autoFocus
-      defaultValue={value || undefined}
-      min={min}
-      max={max}
+      value={value}
     />
   );
 }

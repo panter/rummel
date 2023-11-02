@@ -5,9 +5,9 @@ import {
 } from '@nestjs/graphql';
 import { Test, TestingModule } from '@nestjs/testing';
 import { printSchema } from 'graphql/utilities';
-import { FindOneResolver, ObjectRelationResolvers } from '../../src';
-import { Group } from '../fixtures/group.entity';
+import { FindOneResolver, ObjectReferenceResolvers } from '../../src';
 import { Company } from '../fixtures/company.entity';
+import { Group } from '../fixtures/group.entity';
 
 @Resolver(() => Group)
 export class FindOneGroupResolver extends FindOneResolver(Group) {}
@@ -15,7 +15,7 @@ export class FindOneGroupResolver extends FindOneResolver(Group) {}
 @Resolver(() => Company)
 export class FindOneCompanyResolver extends FindOneResolver(Company) {}
 
-describe('ObjectRelationResolver', () => {
+describe('ObjectReferenceResolver', () => {
   let app: TestingModule;
 
   beforeEach(async () => {
@@ -24,14 +24,14 @@ describe('ObjectRelationResolver', () => {
     }).compile();
   });
 
-  it('should generate relation resolvers graphql schema', async () => {
+  it('should generate reference resolvers graphql schema', async () => {
     const gqlSchemaFactory = app.get(GraphQLSchemaFactory);
     const schema = await gqlSchemaFactory.create(
       [
         FindOneGroupResolver,
-        ...ObjectRelationResolvers(Group),
+        ...ObjectReferenceResolvers(Group),
         FindOneCompanyResolver,
-        ...ObjectRelationResolvers(Company),
+        ...ObjectReferenceResolvers(Company),
       ],
       {
         skipCheck: true, //to avoid QueryRoot type must be provided error

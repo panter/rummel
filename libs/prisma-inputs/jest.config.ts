@@ -13,6 +13,7 @@ const config: Config = {
     './builder.ts',
     './deepCompare.ts',
   ],
+  collectCoverage: true,
   coverageDirectory: './coverage',
   testEnvironment: 'node',
 };

@@ -14,6 +14,7 @@ export class Company {
 
   @CrudField({ hideUpdate: true })
   @Field()
+  @Property()
   name!: string;
 
   @CrudField({ hideCreate: true })
