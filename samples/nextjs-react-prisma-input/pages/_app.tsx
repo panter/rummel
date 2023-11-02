@@ -12,16 +12,14 @@ import { ApolloProvider } from '@apollo/client';
 import type { AppProps } from 'next/app';
 import { BasePageLayout } from '../modules/layout/components/BasePageLayout';
 import { ConfigProvider } from 'antd';
-import { FluidPageLayout } from '../modules/layout/components/FluidPageLayout';
 import GlobalStyles from '../config/GlobalStyles';
 import { apolloClient } from '../lib/apollo-client';
 import { appWithTranslation } from 'next-i18next';
 
-type LayoutRendererType = 'fluid' | 'default';
+type LayoutRendererType = 'default';
 
 const layoutRenderers: Record<LayoutRendererType, (p: ReactNode) => ReactNode> =
   {
-    fluid: (p: ReactNode) => <FluidPageLayout>{p}</FluidPageLayout>,
     default: (p: ReactNode) => <BasePageLayout>{p}</BasePageLayout>,
   };
 
@@ -32,7 +30,7 @@ const getPageRenderer = (layout: LayoutRendererType) => {
 function App({
   Component,
   pageProps,
-}: AppProps<{ layout: 'default' | 'fluid' }>) {
+}: AppProps<{ layout: LayoutRendererType }>) {
   const getBasePageLayout = getPageRenderer(pageProps.layout);
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);

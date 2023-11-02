@@ -1,7 +1,10 @@
-import { BasePageContent } from './BasePageContent';
-import { Container } from './Layouts';
-import { Header } from './Header';
 import React from 'react';
+import styled from 'styled-components';
+import { Container } from './Layouts';
+
+const BasePageContent = styled.div`
+  height: 100%;
+`;
 
 export const BasePageLayout: React.FC<{
   children?: React.ReactNode;
@@ -9,7 +12,6 @@ export const BasePageLayout: React.FC<{
 }> = ({ children, className }) => {
   return (
     <Container className={className}>
-      <Header />
       <BasePageContent>{children}</BasePageContent>
     </Container>
   );

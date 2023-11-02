@@ -15,7 +15,7 @@ export const AutocompleteForm: React.FC<AutocompleteFormProps> = ({ form }) => {
   return (
     <div>
       <input {...form.register('key')} />
-      <input {...form.register('key', { required: true })} />
+      <input {...form.register('value', { required: true })} />
     </div>
   );
 };

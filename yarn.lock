@@ -4489,6 +4489,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@panter/react-forms-ant@*, @panter/react-forms-ant@workspace:libs/react-forms-ant":
+  version: 0.0.0-use.local
+  resolution: "@panter/react-forms-ant@workspace:libs/react-forms-ant"
+  dependencies:
+    eslint: ^8.52.0
+    eslint-config-custom: "*"
+    jest: 29.7.0
+    rimraf: ^5.0.5
+    tsconfig: "*"
+    typescript: ^5.2.2
+  peerDependencies:
+    "@panter/prisma-inputs": 0.x
+    "@panter/react-forms": 0.x
+    react: 18.x
+  languageName: unknown
+  linkType: soft
+
 "@panter/react-forms@*, @panter/react-forms@workspace:libs/react-forms":
   version: 0.0.0-use.local
   resolution: "@panter/react-forms@workspace:libs/react-forms"
@@ -4949,8 +4966,8 @@ __metadata:
     "@graphql-codegen/typescript-apollo-client-helpers": ^3.0.0
     "@panter/prisma-inputs": "*"
     "@panter/react-forms": "*"
+    "@panter/react-forms-ant": "*"
     "@rummel/eslint-config-custom": "*"
-    "@rummel/react-forms-ant": "*"
     "@rummel/tsconfig": "*"
     "@types/apollo-upload-client": ^17.0.4
     "@types/jest": ^29.5.7
@@ -4988,21 +5005,6 @@ __metadata:
     tsconfig: "*"
     typescript: ^5.2.2
     uid: ^2.0.2
-  languageName: unknown
-  linkType: soft
-
-"@rummel/react-forms-ant@*, @rummel/react-forms-ant@workspace:samples/react-forms-ant":
-  version: 0.0.0-use.local
-  resolution: "@rummel/react-forms-ant@workspace:samples/react-forms-ant"
-  dependencies:
-    eslint: ^8.52.0
-    eslint-config-custom: "*"
-    jest: 29.7.0
-    rimraf: ^5.0.5
-    tsconfig: "*"
-    typescript: ^5.2.2
-  peerDependencies:
-    react: 18.x
   languageName: unknown
   linkType: soft
 

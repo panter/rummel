@@ -1,13 +1,16 @@
 {
-  "name": "@rummel/react-forms-ant",
+  "name": "@panter/react-forms-ant",
   "version": "0.0.1",
   "license": "MIT",
-  "private": true,
   "main": "src/index.ts",
   "scripts": {
     "clean": "rimraf \"dist\"",
     "lint": "eslint \"**/*.ts*\"",
     "lint:type-check": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "eslint": "^8.52.0",
@@ -18,6 +21,8 @@
     "typescript": "^5.2.2"
   },
   "peerDependencies": {
+    "@panter/prisma-inputs": "0.x",
+    "@panter/react-forms": "0.x",
     "react": "18.x"
   }
 }

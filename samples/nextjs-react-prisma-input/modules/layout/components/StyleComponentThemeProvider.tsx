@@ -1,7 +1,7 @@
 import { GlobalToken, theme } from 'antd';
 import { DefaultTheme, ThemeProvider } from 'styled-components';
 import { Inter } from 'next/font/google';
-import { BREAKPOINTS } from '../../core/mediaQuery';
+import { BREAKPOINTS } from '../../../lib/mediaQuery';
 
 const interFont = Inter({
   subsets: ['latin'],

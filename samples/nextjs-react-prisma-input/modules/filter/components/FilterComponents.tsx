@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { mediaQueries } from '../../core/mediaQuery';
+import { mediaQueries } from '../../../lib/mediaQuery';
 
 export const FilterPanel = styled.div`
   display: flex;

@@ -1,4 +1,4 @@
-import { BREAKPOINTS, mediaQueries } from '../../core/mediaQuery';
+import { BREAKPOINTS, mediaQueries } from '../../../lib/mediaQuery';
 import styled, { DefaultTheme } from 'styled-components';
 
 export const Container = styled.div`
@@ -47,14 +47,4 @@ export const Container = styled.div`
       width: ${BREAKPOINTS.lg}px;
       min-width: ${BREAKPOINTS.lg}px;
     `} */
-`;
-
-export const FluidContainer = styled(Container)`
-  width: 100vw;
-  min-width: 100vw;
-  max-width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
-  max-height: 100vh;
-  overflow: auto;
 `;
