@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CreateOneCompany should create company 1`] = `
+{
+  "description": null,
+  "founder": {
+    "name": "bbl",
+  },
+  "name": "manul",
+}
+`;

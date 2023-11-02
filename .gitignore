@@ -58,3 +58,10 @@ cloud_sql_proxy
 # turbo
 .turbo
 /libs/crud/test/e2e/migrations/
+
+# testing
+coverage
+coverage-unit
+coverage-e2e
+coverage-integration
+

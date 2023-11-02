@@ -1,8 +1,8 @@
 image: node:18-alpine
 
 services:
- - name: docker:dind
-   command: ["--tls=false"]
+  - name: docker:dind
+    command: ["--tls=false"]
 
 variables:
   DOCKER_HOST: "tcp://docker:2375"
@@ -58,6 +58,9 @@ test-lib:
     - yarn --immutable
     - yarn turbo run test --filter='./libs/*'
     - yarn turbo run lint --filter='./libs/*'
+  artifacts:
+    paths:
+      - libs/**/coverage*/
   cache:
     paths:
       - node_modules/
