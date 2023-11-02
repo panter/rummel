@@ -16,7 +16,7 @@ type PaginationOptions = {
   pageSize?: number;
 };
 
-export function usePrismaManyTable<TResult, TVariables>(
+export function usePrismaManyQuery<TResult, TVariables>(
   query: TypedDocumentNode<TResult, TVariables>,
   countFromQuery: (data: TResult) => number,
   initialVariables?: {

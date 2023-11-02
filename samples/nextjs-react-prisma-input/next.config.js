@@ -8,7 +8,7 @@ const { GRAPHQL_ENDPOINT } = process.env;
 
 const nextConfig = {
   reactStrictMode: true,
-  transpilePackages: ["@panter/prisma-inputs", "@panter/react-forms", "@rummel/react-forms-ant"],
+  transpilePackages: ["@panter/prisma-inputs", "@panter/react-forms", "@panter/react-forms-ant"],
   publicRuntimeConfig: {
     GRAPHQL_ENDPOINT
   },

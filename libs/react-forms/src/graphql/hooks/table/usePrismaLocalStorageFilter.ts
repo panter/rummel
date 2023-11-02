@@ -1,8 +1,7 @@
 import { useLocalStorage } from 'react-use';
-import { ExtractWhereVariable } from '../../table/hooks/usePrismaWhereVariable';
 import { TypedDocumentNode } from '@apollo/client';
-import { useFilter } from './useFilter';
-import { useRouter } from 'next/router';
+import { ExtractWhereVariable } from './usePrismaWhereVariableState';
+import { usePrismaFilter } from './usePrismaFilter';
 
 type BaseLocalStorageFilterProps<
   TData,
@@ -17,23 +16,7 @@ type BaseLocalStorageFilterProps<
   setWhere: (where: Where) => void;
 };
 
-export function useLocalStorageWithPathnameFilter<
-  TData,
-  TVariables extends { where?: any },
-  Filter,
-  Where = ExtractWhereVariable<TVariables>,
->({
-  ...filterProps
-}: BaseLocalStorageFilterProps<TData, TVariables, Filter, Where>) {
-  const router = useRouter();
-
-  return useLocalStorageFilter({
-    storageKey: router.pathname,
-    ...filterProps,
-  });
-}
-
-export function useLocalStorageFilter<
+export function usePrismaLocalStorageFilter<
   TData,
   TVariables extends { where?: any },
   Filter,
@@ -49,7 +32,7 @@ export function useLocalStorageFilter<
     filterProps.initialFilter || {},
   );
 
-  return useFilter({
+  return usePrismaFilter({
     ...filterProps,
     filter: storedFilter,
     setFilter: setStoredFilter,

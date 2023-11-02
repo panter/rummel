@@ -1,5 +1,10 @@
 import { EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Space, Table, TableColumnType } from 'antd';
+import { usePrismaFormModal } from '@panter/react-forms';
+import {
+  GraphqlSchemaFormModal,
+  useAntPrismaManyQuery,
+} from '@panter/react-forms-ant';
 import { FragmentType, useFragment } from '../../../@generated';
 import {
   AutocompleteFragment as AutocompleteFragmentType,
@@ -7,7 +12,6 @@ import {
 } from '../../../@generated/graphql';
 import { Filter } from '../../filter/components/Filter';
 import { FilterPanel } from '../../filter/components/FilterComponents';
-import { usePrismaManyTable } from '../../table/hooks/usePrismaManyTable';
 import { useFilteredAutocomplete } from '../hooks/useFilteredAutocomplete';
 import {
   AutocompleteCreateResource,
@@ -16,8 +20,6 @@ import {
   ManyAutocompleteQuery,
 } from '../resource';
 import { AutocompleteForm } from './AutocompleteForm';
-import { usePrismaFormModal } from '@panter/react-forms';
-import { GraphqlSchemaFormModal } from '@rummel/react-forms-ant';
 
 const useAutocompleteColumns = (props: {
   refresh: () => void;
@@ -65,7 +67,7 @@ export type AutocompleteTablePrismaModalProps = {};
 export const AutocompleteTablePrismaModal: React.FC<
   AutocompleteTablePrismaModalProps
 > = () => {
-  const tableOptions = usePrismaManyTable(
+  const tableOptions = useAntPrismaManyQuery(
     ManyAutocompleteQuery,
     (data) => data.autocompletesCount,
     {

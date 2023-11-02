@@ -19,7 +19,7 @@
     "@apollo/client": "^3.8.6",
     "@panter/prisma-inputs": "*",
     "@panter/react-forms": "*",
-    "@rummel/react-forms-ant": "*",
+    "@panter/react-forms-ant": "*",
     "antd": "^5.10.3",
     "apollo-upload-client": "^17.0.0",
     "dayjs": "^1.11.10",

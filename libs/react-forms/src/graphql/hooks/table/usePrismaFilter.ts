@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { ExtractWhereVariable } from '../../table/hooks/usePrismaWhereVariable';
 import { TypedDocumentNode } from '@apollo/client';
-export function useFilter<
+import { ExtractWhereVariable } from './usePrismaWhereVariableState';
+export function usePrismaFilter<
   TData,
   TVariables extends { where?: any },
   Filter,
@@ -21,7 +21,7 @@ export function useFilter<
   query: TypedDocumentNode<TData, TVariables>;
   setWhere: (where: Where) => void;
 }) {
-  const setFilterAndWhere = useCallback(
+  const applyFilter = useCallback(
     (filter: Partial<Filter>) => {
       if (!filter) {
         setFilter({});
@@ -40,8 +40,7 @@ export function useFilter<
       const where = filterToInput(filter);
       setWhere({ ...where });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return [filter, setFilterAndWhere] as const;
+  return [filter, applyFilter] as const;
 }

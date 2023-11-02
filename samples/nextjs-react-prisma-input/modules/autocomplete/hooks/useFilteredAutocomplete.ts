@@ -1,7 +1,9 @@
+import {
+  ExtractWhereVariableFromNode,
+  usePrismaLocalStorageFilter,
+} from '@panter/react-forms';
 import { FilterConfig } from '../../filter/components/Filter';
 import { useStringFilterProperty } from '../../filter/components/SelectFilterItem';
-import { useLocalStorageWithPathnameFilter } from '../../filter/hooks/useLocalStorageFilter';
-import { ExtractWhereVariableFromNode } from '../../table/hooks/usePrismaWhereVariable';
 import { ManyAutocompleteQuery } from '../resource';
 
 export type AutocompleteFilterModel = {
@@ -38,7 +40,8 @@ export function useFilteredAutocomplete({
     };
     return where;
   };
-  const [filter, setFilter] = useLocalStorageWithPathnameFilter({
+  const [filter, setFilter] = usePrismaLocalStorageFilter({
+    storageKey: 'autocomplete',
     defaultWhere: {},
     query: ManyAutocompleteQuery,
     filterToInput,

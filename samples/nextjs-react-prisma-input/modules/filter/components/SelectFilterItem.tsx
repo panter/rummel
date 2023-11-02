@@ -2,7 +2,7 @@ import { Input, InputNumber, Select } from 'antd';
 import { isArray, isBoolean, isEmpty, last } from 'lodash';
 import { ReactElement, useState } from 'react';
 import styled from 'styled-components';
-import { notNil } from '../../ui/core/utils/arrays';
+import { notNil } from '../../../lib/arrays';
 import { FilterProperty, FilterShortcut } from './Filter';
 import { FilterItem, FilterItemLabel } from './FilterComponents';
 

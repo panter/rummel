@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { AddNewFilter } from './AddNewFilter';
 import { PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { mediaQueries } from '../../core/mediaQuery';
+import { mediaQueries } from '../../../lib/mediaQuery';
 
 export type FilterShortcut = { label: string; action: () => void };
 
