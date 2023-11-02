@@ -14,7 +14,6 @@ export function Transactional() {
       if (!em) {
         throw new InvalidTransactionUsageException();
       }
-      //TODO: check if this is ok
       if (em.isInTransaction()) {
         return originalMethod.apply(this, args);
       }
@@ -24,7 +23,9 @@ export function Transactional() {
         await em.commit();
         return res;
       } catch (e) {
-        await em.rollback();
+        if (em.isInTransaction()) {
+          await em.rollback();
+        }
         throw e;
       }
     };
