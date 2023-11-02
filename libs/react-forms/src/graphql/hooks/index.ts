@@ -1,3 +1,4 @@
+export * from './table';
 export * from './modalTypes';
 export * from './useGenericMutation';
 export * from './useGraphqlFormModal';
