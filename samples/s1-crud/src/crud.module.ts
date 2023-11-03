@@ -1,14 +1,8 @@
-import {
-  DynamicModule,
-  Inject,
-  Logger,
-  Module,
-  OnModuleInit,
-} from '@nestjs/common';
+import { DynamicModule, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CrudAuthorization, CrudAuthorizeCallback } from '@panter/crud';
+import { CrudAuthorizationService, CrudAuthorizeCallback } from '@panter/crud';
 import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
-import { CRUD_RESOURCE } from '@panter/crud/dist/auth/crud-resource.decorator';
+import { EntityManager } from '@mikro-orm/postgresql';
 
 export interface CRUDModuleOptions {
   authorizeCallback?: CrudAuthorizeCallback;
@@ -27,49 +21,27 @@ export class CRUDModule implements OnModuleInit {
           provide: 'CONFIG_OPTIONS',
           useValue: options,
         },
+        {
+          provide: CrudAuthorizationService,
+          inject: [EntityManager, DiscoveryService],
+          useFactory: (em: EntityManager, discovery: DiscoveryService) => {
+            return new CrudAuthorizationService(
+              discovery,
+              em,
+              options.authorizeCallback,
+            );
+          },
+        },
       ],
-      exports: ['CONFIG_OPTIONS'],
+      exports: ['CONFIG_OPTIONS', CrudAuthorizationService],
     };
   }
 
   constructor(
-    @Inject('CONFIG_OPTIONS') private readonly options: CRUDModuleOptions,
-    private readonly discovery: DiscoveryService,
+    private readonly curdAuthorizationService: CrudAuthorizationService,
   ) {}
 
   onModuleInit() {
-    this.logger.log(
-      `Initializing CRUDModule, Authorization enabled: ${!!this.options
-        .authorizeCallback}`,
-    );
-
-    CrudAuthorization.initialize(this.options.authorizeCallback);
-    this.registerResources();
-    //todo: update resources in db ?
-    this.logger.log(`CRUDModule initialized successfully`);
-  }
-
-  private registerResources() {
-    const wrappers = this.discovery.getProviders();
-    const crudResources: string[] = wrappers
-      .filter(
-        (wrapper) =>
-          wrapper.metatype &&
-          Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype),
-      )
-      // .map((wrapper) => {
-      //   return {
-      //     name: Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype),
-      //     handler: wrapper.instance,
-      //   };
-      // })
-      .map((wrapper) => {
-        return Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype);
-      });
-    const uniqueCrudResources = [...new Set(crudResources)];
-    uniqueCrudResources.forEach((resource) => {
-      this.logger.log(`Registering CRUD resource '${resource}'`);
-    });
-    CrudAuthorization.registerResources(crudResources);
+    this.curdAuthorizationService.init();
   }
 }

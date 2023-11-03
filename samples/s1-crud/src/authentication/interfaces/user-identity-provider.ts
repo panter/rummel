@@ -5,12 +5,11 @@ export abstract class UserIdentityProvider<T extends UserIdentity> {
   // can be used to if service is only as auth "consumer"
   abstract getUserById(userId: string, extra?: any): Promise<T | null>;
 
-  abstract getUserByAuthorityId(
-    authorityId: string,
-    extra?: any,
-  ): Promise<T | null>;
+  abstract getUserByPersonalToken(personalToken: string): Promise<T | null>;
 
-  abstract createUserIdentity(authorityId: string): Promise<T>;
+  abstract getUserByNaturalKey(naturalKey: string, extra?: any): Promise<T | null>;
+
+  abstract createUserIdentity(naturalKey: string): Promise<T>;
 
   abstract save(user: T): Promise<void>;
 }

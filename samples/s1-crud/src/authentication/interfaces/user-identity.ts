@@ -7,5 +7,10 @@ export interface UserIdentity {
 
   markAsVerified(): void;
 
-  getUserAuthorityId(): string;
+  /**
+   * A unique, real-world identifier (e.g., email, phone number) used for authentication or user identification
+   */
+  getUserNaturalKey(): string;
+
+  getPersonalToken(): string | undefined;
 }

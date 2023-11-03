@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
+import { Module, UnauthorizedException } from '@nestjs/common';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import {
-  CreateOneUserResolver,
-  DeleteOneUserResolver,
-  FindManyUserResolver,
+  CreateOnePersonResolver,
+  DeleteOnePersonResolver,
+  FindManyPersonResolver,
   FinOneUserResolver,
-  UpdateOneUserResolver,
+  UpdateOnePersonResolver,
 } from './app.resolver';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
@@ -24,6 +24,9 @@ import { CRUDModule } from './crud.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { getCorsOrigins } from '@panter/nestjs-utils';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthorizationModule } from './authorization/authorization.module';
+import { AppAbility, PermissionAction } from './authorization/interfaces/types';
+import { subject } from '@casl/ability';
 
 @Module({
   imports: [
@@ -48,21 +51,32 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     }),
     MikroOrmModule.forRoot(),
     AuthenticationModule,
+    AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CRUDModule.forRootAsync({
-      authorizeCallback: (operation, resource, currentUser, data) => {
+      authorizeCallback: (operation, resource, currentUser, request, data) => {
+        //TODO: body has to be refactored to work in general
         console.log(
           `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.id}, data: ${data}`,
         );
+        const ability: AppAbility = request.ability;
+        if (
+          !ability.can(
+            operation as PermissionAction,
+            subject(resource, { id: data?.where.id }),
+          )
+        ) {
+          throw new UnauthorizedException();
+        }
         return true;
       },
     }),
   ],
   providers: [
     FinOneUserResolver,
-    FindManyUserResolver,
-    CreateOneUserResolver,
-    UpdateOneUserResolver,
-    DeleteOneUserResolver,
+    FindManyPersonResolver,
+    CreateOnePersonResolver,
+    UpdateOnePersonResolver,
+    DeleteOnePersonResolver,
     ...ObjectRelationResolvers(Person),
     AutocompleteFindOneResolver,
     AutocompleteFindManyResolver,

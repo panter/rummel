@@ -16,6 +16,11 @@ const config: Options = {
     // https://cloud.google.com/sql/docs/postgres/users#default-users
     disableForeignKeys: false,
   },
+  seeder: {
+    path: 'dist/**/seeders',
+    pathTs: 'seeders',
+    defaultSeeder: 'AppInitSeeder',
+  },
 };
 
 export default config;

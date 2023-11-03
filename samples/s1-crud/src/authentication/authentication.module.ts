@@ -4,8 +4,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { ConstantOtpAuthService } from './constant-otp-auth.service';
-import { OtpAuthService } from './interfaces/otp-auth-service';
+import { ConstantTokenAuthService } from './constant-token-auth.service';
+import { TokenAuthService } from './interfaces/token-auth-service';
 import { AuthenticationService } from './authentication.service';
 import { AuthenticationResolver } from './api/authentication.resolver';
 import { UserIdentityProvider } from './interfaces/user-identity-provider';
@@ -39,8 +39,8 @@ import { JwtStrategy } from './jwt.strategy';
       useClass: JwtAuthGuard,
     },
     {
-      provide: OtpAuthService,
-      useClass: ConstantOtpAuthService,
+      provide: TokenAuthService,
+      useClass: ConstantTokenAuthService,
     },
     {
       provide: UserIdentityProvider,

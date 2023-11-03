@@ -7,7 +7,7 @@ import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export interface ICreateOneType<T> {
   createOne: (
@@ -30,7 +30,10 @@ export function CreateOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements ICreateOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
     async createOne(
@@ -60,10 +63,11 @@ export function CreateOneResolver<T>(
       currentUser: AuthenticatedUser,
       data?: any,
     ) {
-      CrudAuthorization.instance?.authorize?.(
+      this.crudAuth?.authorize?.(
         'create',
         classRef.name,
         currentUser,
+        undefined,
         data,
       );
       if (onResolve) {

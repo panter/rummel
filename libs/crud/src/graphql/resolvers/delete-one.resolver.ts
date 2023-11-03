@@ -6,7 +6,7 @@ import { FindOneEntityWhereArgs } from '../generic-types';
 import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export interface IDeleteOneType<T> {
   deleteOne: (
@@ -27,7 +27,10 @@ export function DeleteOneResolver<T>(
 ): Type<IDeleteOneType<T>> {
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IDeleteOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
     async deleteOne(
@@ -52,10 +55,11 @@ export function DeleteOneResolver<T>(
       currentUser: AuthenticatedUser,
       data?: any,
     ) {
-      CrudAuthorization.instance?.authorize?.(
+      this.crudAuth?.authorize?.(
         'delete',
         classRef.name,
         currentUser,
+        undefined,
       );
       if (onResolve) {
         return onResolve(info, currentUser, data);

@@ -6,14 +6,19 @@ import { isArray, lowerFirst } from 'lodash';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export interface IFindOneType<T> {
   findOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    req: Request,
     whereArgs: FindOneEntityWhereArgs,
   ) => Promise<T | null | undefined>;
 }
@@ -38,7 +43,10 @@ export function FindOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Query(() => classRef, {
       name: methodName,
@@ -47,6 +55,7 @@ export function FindOneResolver<T>(
     async findOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() req: Request,
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
@@ -59,6 +68,8 @@ export function FindOneResolver<T>(
   }
 
   @CrudResource(classRef.name)
+  //TODO: move decorator to @rummel/crud
+  // @CheckPermissions([PermissionAction.READ, classRef.name])
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => classRef, {
@@ -68,18 +79,20 @@ export function FindOneResolver<T>(
     async findOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      req: Request,
       where: FindOneEntityWhereArgs,
     ) {
-      //TODO: how to check more granular permissions? like user.tenantId === resource.tenantId
-      CrudAuthorization.instance?.authorize?.(
+      this.crudAuth?.authorize?.(
         'read',
         classRef.name,
         currentUser,
+        req,
+        where,
       );
       if (onResolve) {
         return onResolve(info, currentUser, where);
       }
-      return super.findOne(info, currentUser, where);
+      return super.findOne(info, currentUser, req, where);
     }
   }
 

@@ -11,7 +11,7 @@ import { upsertInput } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
 import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export type IUpdateOneType<T> = {
   updateOne: (
@@ -37,7 +37,10 @@ export function UpdateOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IUpdateOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
@@ -67,11 +70,7 @@ export function UpdateOneResolver<T>(
       data?: any,
       where?: EntityIdInput,
     ) {
-      CrudAuthorization.instance?.authorize?.(
-        'read',
-        classRef.name,
-        currentUser,
-      );
+      this.crudAuth?.authorize?.('read', classRef.name, currentUser, undefined);
       if (onResolve) {
         return onResolve(info, currentUser, data, where);
       }

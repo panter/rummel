@@ -4,47 +4,41 @@ import { Response } from 'express';
 
 import { ConfigService } from '@nestjs/config';
 import { UserIdentityProvider } from './interfaces/user-identity-provider';
-import { OtpAuthService } from './interfaces/otp-auth-service';
+import { TokenAuthService } from './interfaces/token-auth-service';
 import { Transactional } from '@panter/nestjs-utils';
 import { UserIdentity } from './interfaces/user-identity';
-
-export type AuthenticationServiceOtpType = 'email' | 'phone';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     private readonly userIdentityProvider: UserIdentityProvider<UserIdentity>,
-    private readonly otpAuthService: OtpAuthService<UserIdentity>,
+    private readonly mfaAuthService: TokenAuthService<UserIdentity>,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
 
   @Transactional()
-  async triggerOtpLogin(authorityId: string): Promise<boolean> {
-    const user = await this.loginOrRegisterUser(authorityId);
+  async triggerMFALogin(naturalKey: string): Promise<boolean> {
+    const user = await this.loginOrRegisterUser(naturalKey);
     await this.userIdentityProvider.save(user);
-    await this.otpAuthService.sendOTP(user);
+    await this.mfaAuthService.sendToken(user);
     return true;
   }
 
   @Transactional()
-  async finishOtpLogin(
-    userIdentification: string,
-    otp: string,
-  ): Promise<UserIdentity> {
-    const user =
-      await this.userIdentityProvider.getUserByAuthorityId(userIdentification);
-    if (!user) {
-      throw new UnauthorizedException('User not found');
-    }
-    const isValid = await this.otpAuthService.verifyOTP(user, otp);
-    if (!isValid) {
-      await this.userIdentityProvider.save(user);
-      throw new UnauthorizedException('Invalid token');
-    }
-    user.markAsVerified();
-    await this.userIdentityProvider.save(user);
-    return user;
+  async loginWithPersonalToken(personalToken: string): Promise<UserIdentity> {
+    const user = await this.userIdentityProvider.getUserByPersonalToken(personalToken);
+    return this.loginUser(user, personalToken, (user, token) =>
+      this.mfaAuthService.validatePersonalToken(user, token),
+    );
+  }
+
+  @Transactional()
+  async finishMFALogin(naturalKey: string, token: string): Promise<UserIdentity> {
+    const user = await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
+    return this.loginUser(user, token, (user, token) =>
+      this.mfaAuthService.validateToken(user, token),
+    );
   }
 
   async generateAccessToken(user: UserIdentity): Promise<string> {
@@ -55,7 +49,7 @@ export class AuthenticationService {
         sub: user.id,
         tenantId: user.getTenantId(),
         role: user.getRole(),
-        userAuthorityId: user.getUserAuthorityId(),
+        userNaturalKey: user.getUserNaturalKey(),
       },
       { secret, expiresIn },
     );
@@ -77,18 +71,31 @@ export class AuthenticationService {
     });
   }
 
-  private async loginOrRegisterUser(
-    authorityId: string,
+  private async loginUser(
+    user: UserIdentity,
+    token: string,
+    tokenValidator: (user: UserIdentity, token: string) => Promise<boolean>,
   ): Promise<UserIdentity> {
-    const user =
-      await this.userIdentityProvider.getUserByAuthorityId(authorityId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const isTokenValid = await tokenValidator(user, token);
+    if (!isTokenValid) {
+      await this.userIdentityProvider.save(user);
+      throw new UnauthorizedException('Invalid token');
+    }
+    user.markAsVerified();
+    await this.userIdentityProvider.save(user);
+    return user;
+  }
+
+  private async loginOrRegisterUser(naturalKey: string): Promise<UserIdentity> {
+    const user = await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
 
     if (user) {
       return user;
-    } else if (
-      this.configService.getOrThrow('ENABLE_REGISTRATION') === 'true'
-    ) {
-      return this.userIdentityProvider.createUserIdentity(authorityId);
+    } else if (this.configService.getOrThrow('ENABLE_REGISTRATION') === 'true') {
+      return this.userIdentityProvider.createUserIdentity(naturalKey);
     }
     throw new UnauthorizedException('User not found');
   }

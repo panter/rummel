@@ -2,22 +2,21 @@ import {
   Args,
   Context,
   Field,
-  Info,
   Mutation,
   ObjectType,
   Query,
   Resolver,
 } from '@nestjs/graphql';
-import { FinishOtpLoginInput, TriggerOtpLoginInput } from './inputs';
+import { FinishMFALoginInput, TriggerMFALoginInput } from './inputs';
 import { AuthenticationService } from '../authentication.service';
-import { GraphQLResolveInfo } from 'graphql/type';
 import { IsNotEmpty } from 'class-validator';
 import { Response } from 'express';
 import { AutoPopulate, CurrentUser, Public } from '@panter/nestjs-utils';
-import { AppUser } from '../app-user.entity';
+import { AppUser } from '../../entities/app-user.entity';
+import { UserIdentity } from '../interfaces/user-identity';
 
 @ObjectType()
-export class FinishOtpLoginResponse {
+export class FinishLoginResponse {
   @Field()
   @IsNotEmpty()
   userId!: string;
@@ -31,8 +30,8 @@ export class FinishOtpLoginResponse {
 export class AuthenticationResolver {
   constructor(private authenticationService: AuthenticationService) {}
 
-  @AutoPopulate()
   @Query(() => AppUser, { nullable: true })
+  @AutoPopulate()
   me(@CurrentUser() user: AppUser) {
     if (!user) {
       return null;
@@ -41,17 +40,33 @@ export class AuthenticationResolver {
   }
 
   @Mutation(() => Boolean)
-  async triggerOtpLogin(@Args('input') { email }: TriggerOtpLoginInput) {
-    return this.authenticationService.triggerOtpLogin(email);
+  async triggerMFALogin(@Args('input') { naturalKey }: TriggerMFALoginInput) {
+    return this.authenticationService.triggerMFALogin(naturalKey);
   }
 
-  @Mutation(() => FinishOtpLoginResponse)
-  async finishOtpLogin(
-    @Args('input') { otp, email }: FinishOtpLoginInput,
+  @Mutation(() => FinishLoginResponse)
+  async finishMFALogin(
+    @Args('input') { token, naturalKey }: FinishMFALoginInput,
     @Context('res') res: Response,
-    @Info() _: GraphQLResolveInfo,
-  ): Promise<FinishOtpLoginResponse> {
-    const user = await this.authenticationService.finishOtpLogin(email, otp);
+  ): Promise<FinishLoginResponse> {
+    const user = await this.authenticationService.finishMFALogin(
+      naturalKey,
+      token,
+    );
+    return await this.finishLogin(user, res);
+  }
+
+  @Mutation(() => FinishLoginResponse)
+  async loginWithPersonalToken(
+    @Args('personalToken') personalToken: string,
+    @Context('res') res: Response,
+  ) {
+    const user =
+      await this.authenticationService.loginWithPersonalToken(personalToken);
+    return await this.finishLogin(user, res);
+  }
+
+  private async finishLogin(user: UserIdentity, res: Response) {
     const jwt = await this.authenticationService.generateAccessToken(user);
     this.authenticationService.setJwtTokenCookie(jwt, res);
     return {
