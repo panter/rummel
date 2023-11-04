@@ -49,9 +49,13 @@ export class CrudAuthorizationService {
 export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
 
 export type CrudAuthorizeCallback = (
-  operation: CrudOperation,
-  resource: string,
-  currentUser: AuthenticatedUser,
-  request: any,
-  data?: any,
+  request: CrudAuthorizationRequest,
 ) => boolean;
+
+export interface CrudAuthorizationRequest {
+  operation: CrudOperation;
+  resource: string;
+  currentUser: AuthenticatedUser;
+  request: Express.Request;
+  data?: any;
+}

@@ -5,7 +5,11 @@ import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
 import { CrudAuthorizationService, CrudResource } from '../../auth';
 
@@ -13,6 +17,7 @@ export interface ICreateOneType<T> {
   createOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -39,6 +44,7 @@ export function CreateOneResolver<T>(
     async createOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() request: Express.Request,
       @Args('data', {
         type: () => CreateOneArg,
         nullable: true,
@@ -61,15 +67,16 @@ export function CreateOneResolver<T>(
     async createOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      request: Express.Request,
       data?: any,
     ) {
-      this.crudAuth?.authorize?.(
-        'create',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'create',
+        resource: classRef.name,
         currentUser,
-        undefined,
+        request,
         data,
-      );
+      });
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }

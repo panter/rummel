@@ -18,7 +18,7 @@ export interface IFindOneType<T> {
   findOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
-    req: Request,
+    request: Express.Request,
     whereArgs: FindOneEntityWhereArgs,
   ) => Promise<T | null | undefined>;
 }
@@ -55,7 +55,7 @@ export function FindOneResolver<T>(
     async findOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
-      @CurrentRequest() req: Request,
+      @CurrentRequest() request: Express.Request,
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
@@ -79,20 +79,20 @@ export function FindOneResolver<T>(
     async findOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
-      req: Request,
+      request: Express.Request,
       where: FindOneEntityWhereArgs,
     ) {
-      this.crudAuth?.authorize?.(
-        'read',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'read',
+        resource: classRef.name,
         currentUser,
-        req,
-        where,
-      );
+        request,
+        data: where,
+      });
       if (onResolve) {
         return onResolve(info, currentUser, where);
       }
-      return super.findOne(info, currentUser, req, where);
+      return super.findOne(info, currentUser, request, where);
     }
   }
 

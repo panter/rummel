@@ -19,11 +19,12 @@ export interface IFindManyType<T> {
   findMany: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
-    req: Request,
+    request: Express.Request,
     input: any,
   ) => Promise<T[]>;
   findManyCount: (
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     input: any,
   ) => Promise<number>;
 }
@@ -42,10 +43,12 @@ export function FindManyResolver<T>(
         onResolve?: (
           info: GraphQLResolveInfo,
           currentUser: AuthenticatedUser,
+          request: Express.Request,
           data: any,
         ) => Promise<T[]>;
         onCountResolve?: (
           currentUser: AuthenticatedUser,
+          request: Express.Request,
           data: any,
         ) => Promise<number>;
       }
@@ -68,7 +71,7 @@ export function FindManyResolver<T>(
     async findMany(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
-      @CurrentRequest() req: Request,
+      @CurrentRequest() request: Express.Request,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<T[]> {
@@ -86,6 +89,7 @@ export function FindManyResolver<T>(
       @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
+      @CurrentRequest() request: Request,
     ): Promise<number> {
       const crudInfos = getCrudInfosForType(classRef);
 
@@ -111,31 +115,41 @@ export function FindManyResolver<T>(
     override async findMany(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
-      req: Request,
+      request: Express.Request,
       input: any,
     ) {
-      this.crudAuth?.authorize?.(
-        'read',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'read',
+        resource: classRef.name,
         currentUser,
-        req,
-        input,
-      );
+        request,
+        data: input,
+      });
       if (onResolve) {
-        return onResolve(info, currentUser, input);
+        return onResolve(info, currentUser, request, input);
       }
-      return super.findMany(info, currentUser, req, input);
+      return super.findMany(info, currentUser, request, input);
     }
 
     @Query(() => Int, {
       name: `${methodName}Count`,
     })
-    override async findManyCount(currentUser: AuthenticatedUser, input: any) {
-      this.crudAuth?.authorize?.('read', classRef.name, currentUser, undefined);
+    override async findManyCount(
+      currentUser: AuthenticatedUser,
+      request: Express.Request,
+      input: any,
+    ) {
+      this.crudAuth?.authorize?.({
+        operation: 'read',
+        resource: classRef.name,
+        currentUser,
+        request,
+        data: input,
+      });
       if (onCountResolve) {
-        return onCountResolve(currentUser, input);
+        return onCountResolve(currentUser, request, input);
       }
-      return super.findManyCount(currentUser, input);
+      return super.findManyCount(currentUser, request, input);
     }
   }
 

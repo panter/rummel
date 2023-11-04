@@ -4,7 +4,11 @@ import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
 import { CrudAuthorizationService, CrudResource } from '../../auth';
 
@@ -12,6 +16,7 @@ export interface IDeleteOneType<T> {
   deleteOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -36,6 +41,7 @@ export function DeleteOneResolver<T>(
     async deleteOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() request: Express.Request,
       @Args() data: FindOneEntityWhereArgs,
     ) {
       return resolveDeleteOne(classRef, data, {
@@ -53,18 +59,20 @@ export function DeleteOneResolver<T>(
     async deleteOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      request: Express.Request,
       data?: any,
     ) {
-      this.crudAuth?.authorize?.(
-        'delete',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'update',
+        resource: classRef.name,
         currentUser,
-        undefined,
-      );
+        request,
+        data,
+      });
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
-      return super.deleteOne(info, currentUser, data);
+      return super.deleteOne(info, currentUser, request, data);
     }
   }
 

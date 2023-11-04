@@ -53,14 +53,20 @@ import { subject } from '@casl/ability';
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CRUDModule.forRootAsync({
-      authorizeCallback: (operation, resource, currentUser, request, data) => {
+      authorizeCallback: ({
+        operation,
+        resource,
+        currentUser,
+        request,
+        data,
+      }) => {
         //TODO: body has to be refactored to work in general
         console.log(
           `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.id}, data: ${data}`,
         );
-        const ability: AppAbility = request.ability;
+        const ability: AppAbility = (<any>request).ability;
         if (
-          !ability.can(
+          !ability?.can(
             operation as PermissionAction,
             subject(resource, { id: data?.where.id }),
           )
