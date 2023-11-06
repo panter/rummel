@@ -87,7 +87,7 @@ export function UpdateOneResolver<T>(
       if (onResolve) {
         return onResolve(info, currentUser, data, where);
       }
-      return super.updateOne(info, currentUser, data, where);
+      return super.updateOne(info, currentUser, request, data, where);
     }
   }
 

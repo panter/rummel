@@ -80,7 +80,7 @@ export function CreateOneResolver<T>(
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
-      return super.createOne(info, currentUser, data);
+      return super.createOne(info, currentUser, request, data);
     }
   }
 
