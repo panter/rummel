@@ -1,5 +1,11 @@
 # @panter/nestjs-utils
 
+## 0.0.4
+
+### Patch Changes
+
+- 70899a1: add CurrentRequest decorator
+
 ## 0.0.3
 
 ### Patch Changes
