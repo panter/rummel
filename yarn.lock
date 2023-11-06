@@ -2353,10 +2353,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@eslint/eslintrc@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "@eslint/eslintrc@npm:2.1.3"
+  dependencies:
+    ajv: ^6.12.4
+    debug: ^4.3.2
+    espree: ^9.6.0
+    globals: ^13.19.0
+    ignore: ^5.2.0
+    import-fresh: ^3.2.1
+    js-yaml: ^4.1.0
+    minimatch: ^3.1.2
+    strip-json-comments: ^3.1.1
+  checksum: 5c6c3878192fe0ddffa9aff08b4e2f3bcc8f1c10d6449b7295a5f58b662019896deabfc19890455ffd7e60a5bd28d25d0eaefb2f78b2d230aae3879af92b89e5
+  languageName: node
+  linkType: hard
+
 "@eslint/js@npm:8.52.0":
   version: 8.52.0
   resolution: "@eslint/js@npm:8.52.0"
   checksum: 490893b8091a66415f4ac98b963d23eb287264ea3bd6af7ec788f0570705cf64fd6ab84b717785980f55e39d08ff5c7fde6d8e4391ccb507169370ce3a6d091a
+  languageName: node
+  linkType: hard
+
+"@eslint/js@npm:8.53.0":
+  version: 8.53.0
+  resolution: "@eslint/js@npm:8.53.0"
+  checksum: e0d5cfb0000aaee237c8e6d6d6e366faa60b1ef7f928ce17778373aa44d3b886368f6d5e1f97f913f0f16801aad016db8b8df78418c9d18825c15590328028af
   languageName: node
   linkType: hard
 
@@ -3714,6 +3738,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mikro-orm/cli@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/cli@npm:5.9.2"
+  dependencies:
+    "@jercle/yargonaut": 1.1.5
+    "@mikro-orm/core": 5.9.2
+    "@mikro-orm/knex": 5.9.2
+    fs-extra: 11.1.1
+    tsconfig-paths: 4.2.0
+    yargs: 17.7.2
+  peerDependencies:
+    "@mikro-orm/better-sqlite": ^5.0.0
+    "@mikro-orm/entity-generator": ^5.0.0
+    "@mikro-orm/mariadb": ^5.0.0
+    "@mikro-orm/migrations": ^5.0.0
+    "@mikro-orm/migrations-mongodb": ^5.0.0
+    "@mikro-orm/mongodb": ^5.0.0
+    "@mikro-orm/mysql": ^5.0.0
+    "@mikro-orm/postgresql": ^5.0.0
+    "@mikro-orm/seeder": ^5.0.0
+    "@mikro-orm/sqlite": ^5.0.0
+  peerDependenciesMeta:
+    "@mikro-orm/better-sqlite":
+      optional: true
+    "@mikro-orm/entity-generator":
+      optional: true
+    "@mikro-orm/mariadb":
+      optional: true
+    "@mikro-orm/migrations":
+      optional: true
+    "@mikro-orm/migrations-mongodb":
+      optional: true
+    "@mikro-orm/mongodb":
+      optional: true
+    "@mikro-orm/mysql":
+      optional: true
+    "@mikro-orm/postgresql":
+      optional: true
+    "@mikro-orm/seeder":
+      optional: true
+    "@mikro-orm/sqlite":
+      optional: true
+  bin:
+    mikro-orm: cli.js
+    mikro-orm-esm: esm.js
+  checksum: 98bb54803a63244b6d4a8e6b7f037c82d07bce9b57b6d57aef42d7c6da6a2ac8d87438c2b38642b045687425ba879b1b5ebd785192cb7059a38f1a0d7aa635fd
+  languageName: node
+  linkType: hard
+
 "@mikro-orm/core@npm:5.9.1":
   version: 5.9.1
   resolution: "@mikro-orm/core@npm:5.9.1"
@@ -3761,6 +3834,53 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mikro-orm/core@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/core@npm:5.9.2"
+  dependencies:
+    acorn-loose: 8.3.0
+    acorn-walk: 8.2.0
+    dotenv: 16.3.1
+    fs-extra: 11.1.1
+    globby: 11.1.0
+    mikro-orm: 5.9.2
+    reflect-metadata: 0.1.13
+  peerDependencies:
+    "@mikro-orm/better-sqlite": ^5.0.0
+    "@mikro-orm/entity-generator": ^5.0.0
+    "@mikro-orm/mariadb": ^5.0.0
+    "@mikro-orm/migrations": ^5.0.0
+    "@mikro-orm/migrations-mongodb": ^5.0.0
+    "@mikro-orm/mongodb": ^5.0.0
+    "@mikro-orm/mysql": ^5.0.0
+    "@mikro-orm/postgresql": ^5.0.0
+    "@mikro-orm/seeder": ^5.0.0
+    "@mikro-orm/sqlite": ^5.0.0
+  peerDependenciesMeta:
+    "@mikro-orm/better-sqlite":
+      optional: true
+    "@mikro-orm/entity-generator":
+      optional: true
+    "@mikro-orm/mariadb":
+      optional: true
+    "@mikro-orm/migrations":
+      optional: true
+    "@mikro-orm/migrations-mongodb":
+      optional: true
+    "@mikro-orm/mongodb":
+      optional: true
+    "@mikro-orm/mysql":
+      optional: true
+    "@mikro-orm/postgresql":
+      optional: true
+    "@mikro-orm/seeder":
+      optional: true
+    "@mikro-orm/sqlite":
+      optional: true
+  checksum: d4975a6739c2f2b08df675c7841ff368a908b101767b160d18cc5f136b8ef800d81908ee4ab9aaf990eced3a63dec02d379ba51ea45a73b937119cec2674bc92
+  languageName: node
+  linkType: hard
+
 "@mikro-orm/knex@npm:5.9.1":
   version: 5.9.1
   resolution: "@mikro-orm/knex@npm:5.9.1"
@@ -3799,17 +3919,55 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mikro-orm/migrations@npm:5.9.1":
-  version: 5.9.1
-  resolution: "@mikro-orm/migrations@npm:5.9.1"
+"@mikro-orm/knex@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/knex@npm:5.9.2"
   dependencies:
-    "@mikro-orm/knex": 5.9.1
+    fs-extra: 11.1.1
+    knex: 2.5.1
+    sqlstring: 2.3.3
+  peerDependencies:
+    "@mikro-orm/core": ^5.0.0
+    "@mikro-orm/entity-generator": ^5.0.0
+    "@mikro-orm/migrations": ^5.0.0
+    better-sqlite3: "*"
+    mssql: "*"
+    mysql: "*"
+    mysql2: "*"
+    pg: "*"
+    sqlite3: "*"
+  peerDependenciesMeta:
+    "@mikro-orm/entity-generator":
+      optional: true
+    "@mikro-orm/migrations":
+      optional: true
+    better-sqlite3:
+      optional: true
+    mssql:
+      optional: true
+    mysql:
+      optional: true
+    mysql2:
+      optional: true
+    pg:
+      optional: true
+    sqlite3:
+      optional: true
+  checksum: cdb9482160fe3194b1205d5ff53e983787539c8307bd10665ef2ddc82e06bf4b978708ae5d473f8acc0b4fedee551d350f82cc5aa3aba669cc1bbd19ad21f573
+  languageName: node
+  linkType: hard
+
+"@mikro-orm/migrations@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/migrations@npm:5.9.2"
+  dependencies:
+    "@mikro-orm/knex": 5.9.2
     fs-extra: 11.1.1
     knex: 2.5.1
     umzug: 3.3.1
   peerDependencies:
     "@mikro-orm/core": ^5.0.0
-  checksum: 64c43fea4dbdb73b115465b3385c33a0b676a300b2bc13252cc5445e35b145bd1f298e54df99e66ee2ceca5c64849855f281fe317f55b9b7f6cd91e407249c2e
+  checksum: dec7098e79edc7e9ac12588a90ef2a4e015c806782e499fb773701e4ad2208a99c82da09efea1d477a144a3ddd1e38c029df9f3b795afc4d605ca4b7a0818866
   languageName: node
   linkType: hard
 
@@ -3824,11 +3982,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mikro-orm/postgresql@npm:5.9.1":
-  version: 5.9.1
-  resolution: "@mikro-orm/postgresql@npm:5.9.1"
+"@mikro-orm/postgresql@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/postgresql@npm:5.9.2"
   dependencies:
-    "@mikro-orm/knex": 5.9.1
+    "@mikro-orm/knex": 5.9.2
     pg: 8.11.3
   peerDependencies:
     "@mikro-orm/core": ^5.0.0
@@ -3842,32 +4000,32 @@ __metadata:
       optional: true
     "@mikro-orm/seeder":
       optional: true
-  checksum: 7f27100082a97788144bc9f25be21b7136fd3c2e0efdc5b6547eaf511d5132f692a4bbf9698c2a17e61e2bd186babc004a6470ed6474839d7aa350422b765f50
+  checksum: 574a0d09a8fc300f9cf2d08e2b2d462f991a8efcf0eaba7d631ff1b43c5190ffb9c0a2b924ffd4eb472bda4e9fcf615a86dd8e099a1d8c330828a6044a05e0f3
   languageName: node
   linkType: hard
 
-"@mikro-orm/reflection@npm:5.9.1":
-  version: 5.9.1
-  resolution: "@mikro-orm/reflection@npm:5.9.1"
+"@mikro-orm/reflection@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/reflection@npm:5.9.2"
   dependencies:
     globby: 11.1.0
     ts-morph: 20.0.0
   peerDependencies:
     "@mikro-orm/core": ^5.0.0
-  checksum: d212b421154eb21ca16e5be38d75ec49199845471670dcd7c56c24c755f12612fc62fe678159d98e4b82c76c57ff283cdc6fdc7261d74137218f69a77a1f3576
+  checksum: 0ceceaa40e9ee721a1c9820f4ddc9389e5dbc40b1e73bbc292c533238dd23809705b51f23226a7e20092a94255e84c76b56cb65c4c752c30417be0b836a4ac66
   languageName: node
   linkType: hard
 
-"@mikro-orm/seeder@npm:5.9.1":
-  version: 5.9.1
-  resolution: "@mikro-orm/seeder@npm:5.9.1"
+"@mikro-orm/seeder@npm:5.9.2":
+  version: 5.9.2
+  resolution: "@mikro-orm/seeder@npm:5.9.2"
   dependencies:
     "@faker-js/faker": 7.6.0
     fs-extra: 11.1.1
     globby: 11.1.0
   peerDependencies:
     "@mikro-orm/core": ^5.0.0
-  checksum: 37004e405464fb5085f6c1f6f371a87e47dcff5da9512fb06842dae76e97e1d05af033ee2665293990a9955ee12d795df6cdbf36d92abba3505ed32c3f548e25
+  checksum: d876f031f476506c8c286afc1033826604cc1c93be9c4512db5db0e5124e113f002e6125671751d70e0bc8fb01d2eb29b91b63835889fd7824b92057efb88a0f
   languageName: node
   linkType: hard
 
@@ -3970,6 +4128,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/common@npm:^10.2.8":
+  version: 10.2.8
+  resolution: "@nestjs/common@npm:10.2.8"
+  dependencies:
+    iterare: 1.2.1
+    tslib: 2.6.2
+    uid: 2.0.2
+  peerDependencies:
+    class-transformer: "*"
+    class-validator: "*"
+    reflect-metadata: ^0.1.12
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    class-transformer:
+      optional: true
+    class-validator:
+      optional: true
+  checksum: f65760b68a6915f733242508174d2d71f153b20b54f8826fcb4c535a8c83ec81ce6f67da2f7fbaf7be7f6b80a8eb06439f2c69c23b980986ed1688a3ccde2779
+  languageName: node
+  linkType: hard
+
 "@nestjs/config@npm:^3.1.1":
   version: 3.1.1
   resolution: "@nestjs/config@npm:3.1.1"
@@ -4010,6 +4189,34 @@ __metadata:
     "@nestjs/websockets":
       optional: true
   checksum: 7e180d9eb014bb5867ef9476e414ab497a145f3966871155eac08da6b6a75709cae1bbf43bd74bc855316f565396457ccef224ad173a5c5614e4032c59cb9e3c
+  languageName: node
+  linkType: hard
+
+"@nestjs/core@npm:^10.2.8":
+  version: 10.2.8
+  resolution: "@nestjs/core@npm:10.2.8"
+  dependencies:
+    "@nuxtjs/opencollective": 0.3.2
+    fast-safe-stringify: 2.1.1
+    iterare: 1.2.1
+    path-to-regexp: 3.2.0
+    tslib: 2.6.2
+    uid: 2.0.2
+  peerDependencies:
+    "@nestjs/common": ^10.0.0
+    "@nestjs/microservices": ^10.0.0
+    "@nestjs/platform-express": ^10.0.0
+    "@nestjs/websockets": ^10.0.0
+    reflect-metadata: ^0.1.12
+    rxjs: ^7.1.0
+  peerDependenciesMeta:
+    "@nestjs/microservices":
+      optional: true
+    "@nestjs/platform-express":
+      optional: true
+    "@nestjs/websockets":
+      optional: true
+  checksum: bd75f4295da404fcb41effb66b781263b559b5ca0bc148d844d465f287a1f7402bdcc74293ec9df8ab2509c7deced08ed0b298acd29e9bc5c0bd630fe764d4d2
   languageName: node
   linkType: hard
 
@@ -4142,10 +4349,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nestjs/testing@npm:^10.2.8":
+  version: 10.2.8
+  resolution: "@nestjs/testing@npm:10.2.8"
+  dependencies:
+    tslib: 2.6.2
+  peerDependencies:
+    "@nestjs/common": ^10.0.0
+    "@nestjs/core": ^10.0.0
+    "@nestjs/microservices": ^10.0.0
+    "@nestjs/platform-express": ^10.0.0
+  peerDependenciesMeta:
+    "@nestjs/microservices":
+      optional: true
+    "@nestjs/platform-express":
+      optional: true
+  checksum: 6aef6ace4b7fca1ce7ad84e0de9778eb5e1c58be036a3201242bf71c322692f85fe90986f5f863c3fd3ce31cd1e41fdfc8aa4c31d3b7e5a1c8bb67a0e88286ff
+  languageName: node
+  linkType: hard
+
 "@next/env@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/env@npm:13.5.6"
   checksum: 5e8f3f6f987a15dad3cd7b2bcac64a6382c2ec372d95d0ce6ab295eb59c9731222017eebf71ff3005932de2571f7543bce7e5c6a8c90030207fb819404138dc2
+  languageName: node
+  linkType: hard
+
+"@next/env@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/env@npm:14.0.1"
+  checksum: 1fab6732f877c3702fce12396f16046f9b7a59c70b0d0b3db713995eed431706d12175530709d21c613682865ce82ef965a5719a43d6bc84142462a8ed558cda
   languageName: node
   linkType: hard
 
@@ -4158,18 +4391,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:13.5.4":
-  version: 13.5.4
-  resolution: "@next/eslint-plugin-next@npm:13.5.4"
+"@next/eslint-plugin-next@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/eslint-plugin-next@npm:14.0.1"
   dependencies:
     glob: 7.1.7
-  checksum: 17a502cec987768bfa99ee42d9072a9a3bdd32b32bde04bd97a04868b56252352a5c38b571ee5ee8f86ff4c27844984a3c737461ebd91d6ca32a2ce2bd5b8af2
+  checksum: 2bb3cd1035414a1cf645772297224bf50cb81947c2aae8a8c0caee20f2b8f1931dab0f16c0dabfb08eb61a247a0006b57d98dd81ae02558470808f1e22fa7665
   languageName: node
   linkType: hard
 
 "@next/swc-darwin-arm64@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/swc-darwin-arm64@npm:13.5.6"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@next/swc-darwin-arm64@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-darwin-arm64@npm:14.0.1"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
@@ -4181,9 +4421,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/swc-darwin-x64@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-darwin-x64@npm:14.0.1"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@next/swc-linux-arm64-gnu@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/swc-linux-arm64-gnu@npm:13.5.6"
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@next/swc-linux-arm64-gnu@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-linux-arm64-gnu@npm:14.0.1"
   conditions: os=linux & cpu=arm64 & libc=glibc
   languageName: node
   linkType: hard
@@ -4195,9 +4449,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/swc-linux-arm64-musl@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-linux-arm64-musl@npm:14.0.1"
+  conditions: os=linux & cpu=arm64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@next/swc-linux-x64-gnu@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/swc-linux-x64-gnu@npm:13.5.6"
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: hard
+
+"@next/swc-linux-x64-gnu@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-linux-x64-gnu@npm:14.0.1"
   conditions: os=linux & cpu=x64 & libc=glibc
   languageName: node
   linkType: hard
@@ -4209,9 +4477,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/swc-linux-x64-musl@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-linux-x64-musl@npm:14.0.1"
+  conditions: os=linux & cpu=x64 & libc=musl
+  languageName: node
+  linkType: hard
+
 "@next/swc-win32-arm64-msvc@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/swc-win32-arm64-msvc@npm:13.5.6"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@next/swc-win32-arm64-msvc@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-win32-arm64-msvc@npm:14.0.1"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
@@ -4223,9 +4505,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/swc-win32-ia32-msvc@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-win32-ia32-msvc@npm:14.0.1"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
 "@next/swc-win32-x64-msvc@npm:13.5.6":
   version: 13.5.6
   resolution: "@next/swc-win32-x64-msvc@npm:13.5.6"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@next/swc-win32-x64-msvc@npm:14.0.1":
+  version: 14.0.1
+  resolution: "@next/swc-win32-x64-msvc@npm:14.0.1"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -4291,22 +4587,22 @@ __metadata:
   resolution: "@panter/crud@workspace:libs/crud"
   dependencies:
     "@nestjs/apollo": ^12.0.9
-    "@nestjs/common": ^10.2.7
-    "@nestjs/core": ^10.2.7
+    "@nestjs/common": ^10.2.8
+    "@nestjs/core": ^10.2.8
     "@nestjs/graphql": ^12.0.9
-    "@nestjs/testing": ^10.2.7
+    "@nestjs/testing": ^10.2.8
     "@panter/nestjs-utils": "*"
     "@rummel/eslint-config-custom": "*"
     "@rummel/mikro-orm-config": "*"
     "@rummel/tsconfig": "*"
     "@testcontainers/postgresql": ^10.2.2
     "@types/lodash": ^4.14.200
-    "@types/node": ^20.8.2
-    "@types/pluralize": ^0.0.31
+    "@types/node": ^20.8.10
+    "@types/pluralize": ^0.0.32
     "@types/supertest": ^2.0.15
     class-transformer: ^0.5.1
     class-validator: ^0.14.0
-    eslint: ^8.52.0
+    eslint: ^8.53.0
     graphql: ^16.8.1
     graphql-scalars: ^1.22.4
     graphql-upload: 14.0.0
@@ -4694,15 +4990,15 @@ __metadata:
   dependencies:
     "@typescript-eslint/eslint-plugin": ^6.9.1
     "@typescript-eslint/parser": ^6.9.1
-    eslint: 8.52.0
-    eslint-config-next: ^13.5.4
-    eslint-config-prettier: ^8.10.0
+    eslint: 8.53.0
+    eslint-config-next: ^14.0.1
+    eslint-config-prettier: ^9.0.0
     eslint-config-turbo: ^1.10.16
     eslint-import-resolver-typescript: ^3.6.1
     eslint-plugin-boundaries: ^3.4.1
     eslint-plugin-prettier: ^5.0.1
     eslint-plugin-react: 7.33.2
-    next: ^13.5.6
+    next: ^14.0.1
     prettier: ^3.0.3
     react: 18.2.0
     react-dom: 18.2.0
@@ -4731,13 +5027,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rummel/mikro-orm-config@workspace:packages/mikro-orm-config"
   dependencies:
-    "@mikro-orm/cli": 5.9.1
-    "@mikro-orm/core": 5.9.1
-    "@mikro-orm/migrations": 5.9.1
+    "@mikro-orm/cli": 5.9.2
+    "@mikro-orm/core": 5.9.2
+    "@mikro-orm/migrations": 5.9.2
     "@mikro-orm/nestjs": 5.2.2
-    "@mikro-orm/postgresql": 5.9.1
-    "@mikro-orm/reflection": 5.9.1
-    "@mikro-orm/seeder": 5.9.1
+    "@mikro-orm/postgresql": 5.9.2
+    "@mikro-orm/reflection": 5.9.2
+    "@mikro-orm/seeder": 5.9.2
     "@mikro-orm/sql-highlighter": ^1.0.1
   languageName: unknown
   linkType: soft
@@ -5640,7 +5936,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:20.8.10, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.7.0, @types/node@npm:^20.8.2, @types/node@npm:^20.8.3":
+"@types/node@npm:*, @types/node@npm:20.8.10, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.7.0, @types/node@npm:^20.8.10, @types/node@npm:^20.8.2, @types/node@npm:^20.8.3":
   version: 20.8.10
   resolution: "@types/node@npm:20.8.10"
   dependencies:
@@ -5713,6 +6009,13 @@ __metadata:
   version: 0.0.31
   resolution: "@types/pluralize@npm:0.0.31"
   checksum: 950d52d8f6709cdb7001336942fba0a63bf54b45695391fc2244d03db69b0eb6f187f80519d74941f5ce1dfa900d3975f2ed52e98b1f63a79045f5c085832beb
+  languageName: node
+  linkType: hard
+
+"@types/pluralize@npm:^0.0.32":
+  version: 0.0.32
+  resolution: "@types/pluralize@npm:0.0.32"
+  checksum: 788aa2ad144a0e7b318d03bddfeefecd65e97793e0faad748c458538abd8d680bcc096fe1219567a7c19d41d23b74e45868d7d43a06a44135798eb8da09a1655
   languageName: node
   linkType: hard
 
@@ -9398,11 +9701,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:^13.5.4":
-  version: 13.5.4
-  resolution: "eslint-config-next@npm:13.5.4"
+"eslint-config-next@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "eslint-config-next@npm:14.0.1"
   dependencies:
-    "@next/eslint-plugin-next": 13.5.4
+    "@next/eslint-plugin-next": 14.0.1
     "@rushstack/eslint-patch": ^1.3.3
     "@typescript-eslint/parser": ^5.4.2 || ^6.0.0
     eslint-import-resolver-node: ^0.3.6
@@ -9417,11 +9720,11 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 6eba03fed5e460981ed3fc59cf40aa210ea1d69852e0facfc02ba2cf950ab4adf09a76f162ee142eb68a4322bb8c1f128d75018f00d0e959401a6441b45f96c0
+  checksum: c70d6b68a6d0f2293cc41d171b38bda04ebc3337148db9eac361582de20e0bb1037bf080bb1723bc6cdae14c4953e5fce271e564bfc444f077fd3a3b64c82cc0
   languageName: node
   linkType: hard
 
-"eslint-config-prettier@npm:^8.10.0, eslint-config-prettier@npm:^8.3.0":
+"eslint-config-prettier@npm:^8.3.0":
   version: 8.10.0
   resolution: "eslint-config-prettier@npm:8.10.0"
   peerDependencies:
@@ -9704,7 +10007,55 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:8.52.0, eslint@npm:^8.52.0":
+"eslint@npm:8.53.0, eslint@npm:^8.53.0":
+  version: 8.53.0
+  resolution: "eslint@npm:8.53.0"
+  dependencies:
+    "@eslint-community/eslint-utils": ^4.2.0
+    "@eslint-community/regexpp": ^4.6.1
+    "@eslint/eslintrc": ^2.1.3
+    "@eslint/js": 8.53.0
+    "@humanwhocodes/config-array": ^0.11.13
+    "@humanwhocodes/module-importer": ^1.0.1
+    "@nodelib/fs.walk": ^1.2.8
+    "@ungap/structured-clone": ^1.2.0
+    ajv: ^6.12.4
+    chalk: ^4.0.0
+    cross-spawn: ^7.0.2
+    debug: ^4.3.2
+    doctrine: ^3.0.0
+    escape-string-regexp: ^4.0.0
+    eslint-scope: ^7.2.2
+    eslint-visitor-keys: ^3.4.3
+    espree: ^9.6.1
+    esquery: ^1.4.2
+    esutils: ^2.0.2
+    fast-deep-equal: ^3.1.3
+    file-entry-cache: ^6.0.1
+    find-up: ^5.0.0
+    glob-parent: ^6.0.2
+    globals: ^13.19.0
+    graphemer: ^1.4.0
+    ignore: ^5.2.0
+    imurmurhash: ^0.1.4
+    is-glob: ^4.0.0
+    is-path-inside: ^3.0.3
+    js-yaml: ^4.1.0
+    json-stable-stringify-without-jsonify: ^1.0.1
+    levn: ^0.4.1
+    lodash.merge: ^4.6.2
+    minimatch: ^3.1.2
+    natural-compare: ^1.4.0
+    optionator: ^0.9.3
+    strip-ansi: ^6.0.1
+    text-table: ^0.2.0
+  bin:
+    eslint: bin/eslint.js
+  checksum: 2da808655c7aa4b33f8970ba30d96b453c3071cc4d6cd60d367163430677e32ff186b65270816b662d29139283138bff81f28dddeb2e73265495245a316ed02c
+  languageName: node
+  linkType: hard
+
+"eslint@npm:^8.52.0":
   version: 8.52.0
   resolution: "eslint@npm:8.52.0"
   dependencies:
@@ -13883,6 +14234,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mikro-orm@npm:5.9.2":
+  version: 5.9.2
+  resolution: "mikro-orm@npm:5.9.2"
+  checksum: c94ac299176564ff799e5c5e42e9fac80909304f19110741ae7908548931412a2d67835b7c6f9c6458558791f3e475d10e215d3bc15b76c29ff15345a183d691
+  languageName: node
+  linkType: hard
+
 "mime-db@npm:1.52.0, mime-db@npm:>= 1.43.0 < 2":
   version: 1.52.0
   resolution: "mime-db@npm:1.52.0"
@@ -14309,7 +14667,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:13.5.6, next@npm:^13.5.6":
+"next@npm:13.5.6":
   version: 13.5.6
   resolution: "next@npm:13.5.6"
   dependencies:
@@ -14361,6 +14719,61 @@ __metadata:
   bin:
     next: dist/bin/next
   checksum: c869b0014ae921ada3bf22301985027ec320aebcd6aa9c16e8afbded68bb8def5874cca034c680e8c351a79578f1e514971d02777f6f0a5a1d7290f25970ac0d
+  languageName: node
+  linkType: hard
+
+"next@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "next@npm:14.0.1"
+  dependencies:
+    "@next/env": 14.0.1
+    "@next/swc-darwin-arm64": 14.0.1
+    "@next/swc-darwin-x64": 14.0.1
+    "@next/swc-linux-arm64-gnu": 14.0.1
+    "@next/swc-linux-arm64-musl": 14.0.1
+    "@next/swc-linux-x64-gnu": 14.0.1
+    "@next/swc-linux-x64-musl": 14.0.1
+    "@next/swc-win32-arm64-msvc": 14.0.1
+    "@next/swc-win32-ia32-msvc": 14.0.1
+    "@next/swc-win32-x64-msvc": 14.0.1
+    "@swc/helpers": 0.5.2
+    busboy: 1.6.0
+    caniuse-lite: ^1.0.30001406
+    postcss: 8.4.31
+    styled-jsx: 5.1.1
+    watchpack: 2.4.0
+  peerDependencies:
+    "@opentelemetry/api": ^1.1.0
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    sass: ^1.3.0
+  dependenciesMeta:
+    "@next/swc-darwin-arm64":
+      optional: true
+    "@next/swc-darwin-x64":
+      optional: true
+    "@next/swc-linux-arm64-gnu":
+      optional: true
+    "@next/swc-linux-arm64-musl":
+      optional: true
+    "@next/swc-linux-x64-gnu":
+      optional: true
+    "@next/swc-linux-x64-musl":
+      optional: true
+    "@next/swc-win32-arm64-msvc":
+      optional: true
+    "@next/swc-win32-ia32-msvc":
+      optional: true
+    "@next/swc-win32-x64-msvc":
+      optional: true
+  peerDependenciesMeta:
+    "@opentelemetry/api":
+      optional: true
+    sass:
+      optional: true
+  bin:
+    next: dist/bin/next
+  checksum: d142407f47012eb57ba3932f91453960c79d7df2fef03ded581f32195b98a4378e13c49709f498a112d142109a8edd73f40357ee102a6bd4d7b1f76de9f0877a
   languageName: node
   linkType: hard
 

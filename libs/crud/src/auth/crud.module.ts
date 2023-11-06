@@ -1,20 +1,19 @@
-import { DynamicModule, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { CrudAuthorizationService, CrudAuthorizeCallback } from '@panter/crud';
 import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
 import { EntityManager } from '@mikro-orm/postgresql';
+import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
+import { CrudAuthorizeCallback } from './types';
+import { CrudAuthorizationService } from './crud-authorization.service';
 
-export interface CRUDModuleOptions {
+export interface CrudModuleOptions {
   authorizeCallback?: CrudAuthorizeCallback;
 }
 
 @Module({})
-export class CRUDModule implements OnModuleInit {
-  private logger = new Logger(CRUDModule.name);
-
-  static forRootAsync(options: CRUDModuleOptions): DynamicModule {
+export class CrudModule implements OnModuleInit {
+  static forRootAsync(options: CrudModuleOptions): DynamicModule {
     return {
-      module: CRUDModule,
+      module: CrudModule,
       imports: [ConfigModule, DiscoveryModule],
       providers: [
         {
@@ -27,7 +26,6 @@ export class CRUDModule implements OnModuleInit {
           useFactory: (em: EntityManager, discovery: DiscoveryService) => {
             return new CrudAuthorizationService(
               discovery,
-              em,
               options.authorizeCallback,
             );
           },

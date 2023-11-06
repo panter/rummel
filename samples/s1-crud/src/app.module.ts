@@ -20,13 +20,13 @@ import {
   AutocompleteFindOneResolver,
   AutocompleteUpdateOneResolver,
 } from './autocomplete.resolver';
-import { CRUDModule } from './crud.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { getCorsOrigins } from '@panter/nestjs-utils';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { AppAbility, PermissionAction } from './authorization/interfaces/types';
 import { subject } from '@casl/ability';
+import { CrudModule } from '@panter/crud/dist/auth/crud.module';
 
 @Module({
   imports: [
@@ -52,7 +52,7 @@ import { subject } from '@casl/ability';
     MikroOrmModule.forRoot(),
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
-    CRUDModule.forRootAsync({
+    CrudModule.forRootAsync({
       authorizeCallback: ({
         operation,
         resource,

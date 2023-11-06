@@ -1,8 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/postgresql';
-import { AuthenticatedUser } from '../graphql/types';
 import { CRUD_RESOURCE } from './crud-resource.decorator';
 import { DiscoveryService } from '@nestjs/core';
+import { CrudAuthorizeCallback } from './types';
 
 @Injectable()
 export class CrudAuthorizationService {
@@ -11,7 +10,6 @@ export class CrudAuthorizationService {
 
   constructor(
     private readonly discovery: DiscoveryService,
-    private readonly em: EntityManager,
     public readonly authorize?: CrudAuthorizeCallback,
   ) {
     this.authorize = authorize;
@@ -44,18 +42,4 @@ export class CrudAuthorizationService {
   registerResources(resources: string[]) {
     resources.forEach((resource) => this.registerResource(resource));
   }
-}
-
-export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
-
-export type CrudAuthorizeCallback = (
-  request: CrudAuthorizationRequest,
-) => boolean;
-
-export interface CrudAuthorizationRequest {
-  operation: CrudOperation;
-  resource: string;
-  currentUser: AuthenticatedUser;
-  request: Express.Request;
-  data?: any;
 }
