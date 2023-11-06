@@ -11,7 +11,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule } from '@nestjs/graphql';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { join } from 'path';
-import { ObjectRelationResolvers } from '@panter/crud';
+import { CrudModule, ObjectRelationResolvers } from '@panter/crud';
 import { Person } from './entities/person.entity';
 import {
   AutocompleteCreateOneResolver,
@@ -26,7 +26,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { AppAbility, PermissionAction } from './authorization/interfaces/types';
 import { subject } from '@casl/ability';
-import { CrudModule } from '@panter/crud/dist/auth/crud.module';
 
 @Module({
   imports: [
