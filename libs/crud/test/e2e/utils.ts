@@ -12,6 +12,7 @@ import { INestApplication, Provider } from '@nestjs/common';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Group } from '../fixtures/group.entity';
 import { Company } from '../fixtures/company.entity';
+import { CrudModule } from '../../src/auth/crud.module';
 
 export const TEST_TIMEOUT = 60000;
 
@@ -50,8 +51,13 @@ export const beforeAllCallback = async (
           skipCheck: true,
         },
       }),
+      CrudModule.forRootAsync({
+        authorizeCallback: () => {
+          return true;
+        },
+      }),
     ],
-    providers,
+    providers: [...providers],
   }).compile();
   const app = fixture.createNestApplication({ bodyParser: true });
   const orm = app.get(MikroORM<PostgreSqlDriver>);
@@ -69,6 +75,6 @@ export const beforeAllCallback = async (
 };
 
 export const afterAllCallback = async (context: TestContext) => {
-  await context.pgContainer.stop();
-  await context.app.close();
+  await context?.pgContainer?.stop();
+  await context?.app?.close();
 };

@@ -7,18 +7,24 @@ import pluralize from 'pluralize';
 import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { getCrudInfosForType } from '../utils';
 import { findManyEntityArgs } from '../find-many-entity-args';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export interface IFindManyType<T> {
   findMany: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     input: any,
   ) => Promise<T[]>;
   findManyCount: (
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     input: any,
   ) => Promise<number>;
 }
@@ -37,10 +43,12 @@ export function FindManyResolver<T>(
         onResolve?: (
           info: GraphQLResolveInfo,
           currentUser: AuthenticatedUser,
+          request: Express.Request,
           data: any,
         ) => Promise<T[]>;
         onCountResolve?: (
           currentUser: AuthenticatedUser,
+          request: Express.Request,
           data: any,
         ) => Promise<number>;
       }
@@ -52,7 +60,10 @@ export function FindManyResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindManyType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Query(() => [classRef], {
       name: methodName,
@@ -60,6 +71,7 @@ export function FindManyResolver<T>(
     async findMany(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() request: Express.Request,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<T[]> {
@@ -77,6 +89,7 @@ export function FindManyResolver<T>(
       @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
+      @CurrentRequest() request: Request,
     ): Promise<number> {
       const crudInfos = getCrudInfosForType(classRef);
 
@@ -92,6 +105,8 @@ export function FindManyResolver<T>(
   }
 
   @CrudResource(classRef.name)
+  //TODO: move decorator to @rummel/crud
+  // @CheckPermissions([PermissionAction.READ, classRef.name])
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => [classRef], {
@@ -100,32 +115,41 @@ export function FindManyResolver<T>(
     override async findMany(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      request: Express.Request,
       input: any,
     ) {
-      CrudAuthorization.instance?.authorize?.(
-        'read',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'read',
+        resource: classRef.name,
         currentUser,
-      );
+        request,
+        data: input,
+      });
       if (onResolve) {
-        return onResolve(info, currentUser, input);
+        return onResolve(info, currentUser, request, input);
       }
-      return super.findMany(info, currentUser, input);
+      return super.findMany(info, currentUser, request, input);
     }
 
     @Query(() => Int, {
       name: `${methodName}Count`,
     })
-    override async findManyCount(currentUser: AuthenticatedUser, input: any) {
-      CrudAuthorization.instance?.authorize?.(
-        'read',
-        classRef.name,
+    override async findManyCount(
+      currentUser: AuthenticatedUser,
+      request: Express.Request,
+      input: any,
+    ) {
+      this.crudAuth?.authorize?.({
+        operation: 'read',
+        resource: classRef.name,
         currentUser,
-      );
+        request,
+        data: input,
+      });
       if (onCountResolve) {
-        return onCountResolve(currentUser, input);
+        return onCountResolve(currentUser, request, input);
       }
-      return super.findManyCount(currentUser, input);
+      return super.findManyCount(currentUser, request, input);
     }
   }
 
