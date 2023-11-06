@@ -14,7 +14,7 @@
     "prepack": "npm run build",
     "test": "istanbul-merge --out coverage/coverage-final.json coverage-e2e/coverage-final.json coverage-unit/coverage-final.json && istanbul report --include coverage/coverage-final.json --dir coverage html",
     "test:unit": "jest --config test/jest-unit.json",
-    "test:e2e": "jest --config test/jest-e2e.json --maxWorkers=4"
+    "test:e2e": "jest --config test/jest-e2e.json"
   },
   "publishConfig": {
     "access": "public",
