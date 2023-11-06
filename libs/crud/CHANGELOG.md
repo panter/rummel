@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.1
+
+### Patch Changes
+
+- 39e0c72: export CrudModule
+
 ## 0.1.0
 
 ### Minor Changes
