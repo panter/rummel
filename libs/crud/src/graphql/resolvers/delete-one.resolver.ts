@@ -4,14 +4,19 @@ import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { FindOneEntityWhereArgs } from '../generic-types';
 import { applyStaticWhereFieldResolver, getCrudInfosForType } from '../utils';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export interface IDeleteOneType<T> {
   deleteOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     data?: any,
   ) => Promise<T | null | undefined>;
 }
@@ -27,12 +32,16 @@ export function DeleteOneResolver<T>(
 ): Type<IDeleteOneType<T>> {
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IDeleteOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
     async deleteOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() request: Express.Request,
       @Args() data: FindOneEntityWhereArgs,
     ) {
       return resolveDeleteOne(classRef, data, {
@@ -50,17 +59,20 @@ export function DeleteOneResolver<T>(
     async deleteOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      request: Express.Request,
       data?: any,
     ) {
-      CrudAuthorization.instance?.authorize?.(
-        'delete',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'update',
+        resource: classRef.name,
         currentUser,
-      );
+        request,
+        data,
+      });
       if (onResolve) {
         return onResolve(info, currentUser, data);
       }
-      return super.deleteOne(info, currentUser, data);
+      return super.deleteOne(info, currentUser, request, data);
     }
   }
 

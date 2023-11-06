@@ -9,14 +9,19 @@ import { gqlFilterToMikro } from '../gql-filter-to-mikro-orm';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { upsertInput } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
-import { CurrentUser, getFieldsToPopulate } from '@panter/nestjs-utils';
+import {
+  CurrentRequest,
+  CurrentUser,
+  getFieldsToPopulate,
+} from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorization, CrudResource } from '../../auth';
+import { CrudAuthorizationService, CrudResource } from '../../auth';
 
 export type IUpdateOneType<T> = {
   updateOne: (
     info: GraphQLResolveInfo,
     currentUser: AuthenticatedUser,
+    request: Express.Request,
     data?: any,
     where?: any,
   ) => Promise<T>;
@@ -37,12 +42,16 @@ export function UpdateOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IUpdateOneType<T> {
-    constructor(protected readonly em: EntityManager) {}
+    constructor(
+      protected readonly em: EntityManager,
+      protected readonly crudAuth: CrudAuthorizationService,
+    ) {}
 
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
+      @CurrentRequest() request: Express.Request,
       @Args('data', { type: () => UpdateOneArg, nullable: true })
       data?: any,
       @Args('where', { type: () => EntityIdInput })
@@ -64,18 +73,21 @@ export function UpdateOneResolver<T>(
     override async updateOne(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
+      request: Express.Request,
       data?: any,
       where?: EntityIdInput,
     ) {
-      CrudAuthorization.instance?.authorize?.(
-        'read',
-        classRef.name,
+      this.crudAuth?.authorize?.({
+        operation: 'update',
+        resource: classRef.name,
         currentUser,
-      );
+        request,
+        data,
+      });
       if (onResolve) {
         return onResolve(info, currentUser, data, where);
       }
-      return super.updateOne(info, currentUser, data, where);
+      return super.updateOne(info, currentUser, request, data, where);
     }
   }
 

@@ -7,18 +7,28 @@ import {
   UpdateOneResolver,
 } from '@panter/crud';
 import { Person } from './entities/person.entity';
+import { AppUser } from './entities/app-user.entity';
+import { CheckPermissions } from './authorization';
+import { PermissionAction } from './authorization/interfaces';
+
+/*
+ * to demonstrate casl authorization of reading only self
+ */
+@Resolver()
+@CheckPermissions([PermissionAction.READ, AppUser.name])
+export class FinOneUserResolver extends FindOneResolver(AppUser) {}
 
 @Resolver()
-export class FinOneUserResolver extends FindOneResolver(Person) {}
+export class FinOnePersonResolver extends FindOneResolver(Person) {}
 
 @Resolver()
-export class FindManyUserResolver extends FindManyResolver(Person) {}
+export class FindManyPersonResolver extends FindManyResolver(Person) {}
 
 @Resolver()
-export class CreateOneUserResolver extends CreateOneResolver(Person) {}
+export class CreateOnePersonResolver extends CreateOneResolver(Person) {}
 
 @Resolver()
-export class UpdateOneUserResolver extends UpdateOneResolver(Person) {}
+export class UpdateOnePersonResolver extends UpdateOneResolver(Person) {}
 
 @Resolver()
-export class DeleteOneUserResolver extends DeleteOneResolver(Person) {}
+export class DeleteOnePersonResolver extends DeleteOneResolver(Person) {}
