@@ -24,8 +24,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { getCorsOrigins } from '@panter/nestjs-utils';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
-import { AppAbility, PermissionAction } from './authorization/interfaces/types';
-import { subject } from '@casl/ability';
+import { UserAuthority } from './authorization';
 
 @Module({
   imports: [
@@ -51,24 +50,23 @@ import { subject } from '@casl/ability';
     MikroOrmModule.forRoot(),
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
-    CrudModule.forRootAsync({
+    CrudModule.forRootAsync<UserAuthority>({
       authorizeCallback: ({
         operation,
         resource,
         currentUser,
-        request,
         data,
         condition,
       }) => {
-        //TODO: body has to be refactored to work in general
         console.log(
-          `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.id}, data: ${data}`,
+          `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
         );
-        const ability: AppAbility = (<any>request).ability;
+        //example of find one
         if (
-          !ability?.can(
-            operation as PermissionAction,
-            subject(resource, { id: condition?.where.id }),
+          !currentUser.can(
+            operation,
+            resource,
+            condition ? { id: condition?.where.id } : undefined,
           )
         ) {
           throw new UnauthorizedException();

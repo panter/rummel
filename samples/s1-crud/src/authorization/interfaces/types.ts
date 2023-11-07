@@ -1,12 +1,14 @@
 import { Ability, InferSubjects } from '@casl/ability';
 
-export enum PermissionAction {
+export enum CrudPermissionAction {
   MANAGE = 'manage',
   CREATE = 'create',
   READ = 'read',
   UPDATE = 'update',
   DELETE = 'delete',
 }
+
+export type PermissionAction = CrudPermissionAction | string;
 
 export type PermissionSubjectType = any;
 export type AppAbility = Ability<[PermissionAction, PermissionSubjectType]>;

@@ -1,13 +1,12 @@
-import { AuthenticatedUser } from '../graphql/types';
 import { EntityManager } from '@mikro-orm/postgresql';
 
 export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
 
-export type CrudAuthorizeCallback = (
-  request: CrudAuthorizationRequest,
+export type CrudAuthorizeCallback<T = any> = (
+  request: CrudAuthorizationRequest<T>,
 ) => void | Promise<void>;
 
-export interface CrudAuthorizationRequest {
+export interface CrudAuthorizationRequest<T> {
   operation: CrudOperation;
   resource: string;
   /**
@@ -19,6 +18,6 @@ export interface CrudAuthorizationRequest {
    */
   condition?: any;
   request: Express.Request;
-  currentUser: AuthenticatedUser;
+  currentUser: T;
   em: EntityManager;
 }

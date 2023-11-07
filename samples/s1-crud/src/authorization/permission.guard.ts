@@ -27,7 +27,7 @@ export class PermissionsGuard implements CanActivate {
     if (!user) return false;
 
     const ability = await this.abilityFactory.createForUser(request?.user);
-    request.ability = ability;
+    user.ability = ability;
 
     return requiredPermissions.every((permission) =>
       this.isAllowed(ability, permission),

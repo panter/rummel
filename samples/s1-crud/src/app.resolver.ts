@@ -8,14 +8,13 @@ import {
 } from '@panter/crud';
 import { Person } from './entities/person.entity';
 import { AppUser } from './entities/app-user.entity';
-import { CheckPermissions } from './authorization';
-import { PermissionAction } from './authorization/interfaces';
+import { CheckPermissions, CrudPermissionAction } from './authorization';
 
 /*
  * to demonstrate casl authorization of reading only self
  */
 @Resolver()
-@CheckPermissions([PermissionAction.READ, AppUser.name])
+@CheckPermissions([CrudPermissionAction.READ, AppUser.name])
 export class FinOneUserResolver extends FindOneResolver(AppUser) {}
 
 @Resolver()
