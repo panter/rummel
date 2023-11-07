@@ -8,29 +8,54 @@ export class CrudAuthorizationService {
   private logger = new Logger(CrudAuthorizationService.name);
   public readonly resources: string[] = [];
 
+  /**
+   * Default authorization callback for all CRUD resources.
+   * This callback will be used if no authorization callback is set on the resource handler.
+   */
+  defaultAuthorizationCallback?: CrudAuthorizeCallback;
+
   constructor(
     private readonly discovery: DiscoveryService,
-    public readonly authorize?: CrudAuthorizeCallback,
+    defaultAuthorizationCallback?: CrudAuthorizeCallback,
   ) {
-    this.authorize = authorize;
+    this.defaultAuthorizationCallback = defaultAuthorizationCallback;
   }
 
   init() {
     const wrappers = this.discovery.getProviders();
-    const crudResources: string[] = wrappers
+    const crudResources = wrappers
       .filter(
         (wrapper) =>
           wrapper.metatype &&
           Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype),
       )
       .map((wrapper) => {
-        return Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype);
+        return {
+          name: Reflect.getMetadata(CRUD_RESOURCE, wrapper.metatype),
+          handler: wrapper.instance,
+        };
       });
-    const uniqueCrudResources = [...new Set(crudResources)];
+
+    const uniqueCrudResources = [...new Set(crudResources.map((r) => r.name))];
     uniqueCrudResources.forEach((resource) => {
-      this.logger.log(`Registering CRUD resource '${resource}'`);
+      this.logger.debug(`Registering CRUD resource '${resource}'`);
     });
-    this.registerResources(crudResources);
+    this.registerResources(uniqueCrudResources);
+
+    crudResources.forEach((resource) => {
+      if (
+        Object.prototype.hasOwnProperty.call(
+          resource.handler,
+          'authorizeCallback',
+        ) &&
+        resource.handler.authorizeCallback === undefined
+      ) {
+        this.logger.debug(
+          `Found CRUD resource '${resource.name}' handler '${resource.handler.constructor.name}' without authorization callback. Setting default.`,
+        );
+        resource.handler.authorizeCallback = this.defaultAuthorizationCallback;
+      }
+    });
   }
 
   registerResource(resource: string) {

@@ -2,7 +2,11 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 
 import { Permission } from './permission.entity';
-import { CaslPermission, UserAuthority, UserAuthorityProvider } from './interfaces';
+import {
+  CaslPermission,
+  UserAuthority,
+  UserAuthorityProvider,
+} from './interfaces';
 import { AppRole } from '../entities/role.entity';
 
 @Injectable()

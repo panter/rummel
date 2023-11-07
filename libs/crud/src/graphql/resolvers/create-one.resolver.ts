@@ -11,7 +11,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorizationService, CrudResource } from '../../auth';
+import { CrudResource } from '../../auth';
+import { CrudAuthorizeCallback } from '../../auth/types';
 
 export interface ICreateOneType<T> {
   createOne: (
@@ -25,20 +26,20 @@ export interface ICreateOneType<T> {
 export interface ICreateOneOptions<T> {
   name?: string;
   onResolve?: ICreateOneType<T>['createOne'];
+  authorizeCallback?: CrudAuthorizeCallback;
 }
 
 export function CreateOneResolver<T>(
   classRef: Type<T>,
-  { name, onResolve }: ICreateOneOptions<T> | undefined = {},
+  { name, onResolve, authorizeCallback }: ICreateOneOptions<T> | undefined = {},
 ): Type<ICreateOneType<T>> {
   const CreateOneArg = upsertInput(classRef);
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements ICreateOneType<T> {
-    constructor(
-      protected readonly em: EntityManager,
-      protected readonly crudAuth: CrudAuthorizationService,
-    ) {}
+    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+
+    constructor(protected readonly em: EntityManager) {}
 
     @Mutation(() => classRef, { name: name || `createOne${classRef.name}` })
     async createOne(
@@ -70,15 +71,16 @@ export function CreateOneResolver<T>(
       request: Express.Request,
       data?: any,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'create',
         resource: classRef.name,
         currentUser,
         request,
         data,
+        em: this.em,
       });
       if (onResolve) {
-        return onResolve(info, currentUser, data);
+        return onResolve(info, currentUser, request, data);
       }
       return super.createOne(info, currentUser, request, data);
     }

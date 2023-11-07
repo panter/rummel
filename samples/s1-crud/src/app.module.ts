@@ -58,6 +58,7 @@ import { subject } from '@casl/ability';
         currentUser,
         request,
         data,
+        condition,
       }) => {
         //TODO: body has to be refactored to work in general
         console.log(
@@ -67,12 +68,11 @@ import { subject } from '@casl/ability';
         if (
           !ability?.can(
             operation as PermissionAction,
-            subject(resource, { id: data?.where.id }),
+            subject(resource, { id: condition?.where.id }),
           )
         ) {
           throw new UnauthorizedException();
         }
-        return true;
       },
     }),
   ],

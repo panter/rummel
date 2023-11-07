@@ -1,5 +1,10 @@
 import { applyDecorators } from '@nestjs/common';
-import { Extensions, Field, FieldOptions, ReturnTypeFunc } from '@nestjs/graphql';
+import {
+  Extensions,
+  Field,
+  FieldOptions,
+  ReturnTypeFunc,
+} from '@nestjs/graphql';
 import { authorizedFieldMiddleware } from './authorized-field.middleware';
 
 type AuthorizedFieldOptions = FieldOptions & {
@@ -23,7 +28,9 @@ export function AuthorizedField(param?: AuthorizedFieldOptions) {
   };
 
   return applyDecorators(
-    returnTypeFunction ? Field(returnTypeFunction, fieldOptions) : Field(fieldOptions),
+    returnTypeFunction
+      ? Field(returnTypeFunction, fieldOptions)
+      : Field(fieldOptions),
     Extensions({ roles, checkOwner }),
   );
 }

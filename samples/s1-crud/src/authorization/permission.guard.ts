@@ -4,7 +4,10 @@ import { Reflector } from '@nestjs/core';
 import { CaslAbilityFactory } from './csal-ability.factory';
 
 import { getRequest } from '@panter/nestjs-utils';
-import { PERMISSION_CHECKER_KEY, RequiredPermission } from './permission.decorator';
+import {
+  PERMISSION_CHECKER_KEY,
+  RequiredPermission,
+} from './permission.decorator';
 import { AppAbility } from './interfaces/types';
 
 @Injectable()

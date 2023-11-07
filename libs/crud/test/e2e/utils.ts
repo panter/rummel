@@ -12,7 +12,7 @@ import { INestApplication, Provider } from '@nestjs/common';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Group } from '../fixtures/group.entity';
 import { Company } from '../fixtures/company.entity';
-import { CrudModule } from '../../src/auth/crud.module';
+import { CrudModule } from '../../src';
 
 export const TEST_TIMEOUT = 60000;
 
@@ -51,11 +51,7 @@ export const beforeAllCallback = async (
           skipCheck: true,
         },
       }),
-      CrudModule.forRootAsync({
-        authorizeCallback: () => {
-          return true;
-        },
-      }),
+      CrudModule.forRootAsync({}),
     ],
     providers: [...providers],
   }).compile();

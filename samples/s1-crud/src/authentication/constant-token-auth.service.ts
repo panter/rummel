@@ -22,13 +22,21 @@ export class ConstantTokenAuthService extends TokenAuthService<UserIdentity> {
     return;
   }
 
-  async validateToken(recipient: UserIdentity, token: string): Promise<boolean> {
+  async validateToken(
+    recipient: UserIdentity,
+    token: string,
+  ): Promise<boolean> {
     this.logger.debug(`Verifying OTP for ${recipient.id}. [${token}]`);
     return token === this.constantOtp;
   }
 
-  async validatePersonalToken(recipient: UserIdentity, token: string): Promise<boolean> {
-    this.logger.debug(`Verifying personal token for ${recipient.id}. [${token}]`);
+  async validatePersonalToken(
+    recipient: UserIdentity,
+    token: string,
+  ): Promise<boolean> {
+    this.logger.debug(
+      `Verifying personal token for ${recipient.id}. [${token}]`,
+    );
     return recipient.getPersonalToken() === token;
   }
 }

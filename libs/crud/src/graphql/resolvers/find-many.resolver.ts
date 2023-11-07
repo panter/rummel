@@ -13,7 +13,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorizationService, CrudResource } from '../../auth';
+import { CrudResource } from '../../auth';
+import { CrudAuthorizeCallback } from '../../auth/types';
 
 export interface IFindManyType<T> {
   findMany: (
@@ -36,6 +37,7 @@ export function FindManyResolver<T>(
     onResolve,
     onCountResolve,
     nullable,
+    authorizeCallback,
   }:
     | {
         name?: string;
@@ -51,6 +53,7 @@ export function FindManyResolver<T>(
           request: Express.Request,
           data: any,
         ) => Promise<number>;
+        authorizeCallback?: CrudAuthorizeCallback;
       }
     | undefined = {},
 ): Type<IFindManyType<T>> {
@@ -60,10 +63,9 @@ export function FindManyResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindManyType<T> {
-    constructor(
-      protected readonly em: EntityManager,
-      protected readonly crudAuth: CrudAuthorizationService,
-    ) {}
+    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+
+    constructor(protected readonly em: EntityManager) {}
 
     @Query(() => [classRef], {
       name: methodName,
@@ -105,8 +107,6 @@ export function FindManyResolver<T>(
   }
 
   @CrudResource(classRef.name)
-  //TODO: move decorator to @rummel/crud
-  // @CheckPermissions([PermissionAction.READ, classRef.name])
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => [classRef], {
@@ -118,12 +118,13 @@ export function FindManyResolver<T>(
       request: Express.Request,
       input: any,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'read',
         resource: classRef.name,
         currentUser,
         request,
         data: input,
+        em: this.em,
       });
       if (onResolve) {
         return onResolve(info, currentUser, request, input);
@@ -139,12 +140,13 @@ export function FindManyResolver<T>(
       request: Express.Request,
       input: any,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'read',
         resource: classRef.name,
         currentUser,
         request,
         data: input,
+        em: this.em,
       });
       if (onCountResolve) {
         return onCountResolve(currentUser, request, input);

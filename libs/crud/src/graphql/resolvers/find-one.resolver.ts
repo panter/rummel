@@ -12,7 +12,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorizationService, CrudResource } from '../../auth';
+import { CrudResource } from '../../auth';
+import { CrudAuthorizeCallback } from '../../auth/types';
 
 export interface IFindOneType<T> {
   findOne: (
@@ -28,6 +29,7 @@ export function FindOneResolver<T>(
   {
     name,
     onResolve,
+    authorizeCallback,
   }:
     | {
         name?: string;
@@ -36,6 +38,7 @@ export function FindOneResolver<T>(
           currentUser: AuthenticatedUser,
           data: any,
         ) => Promise<any>;
+        authorizeCallback?: CrudAuthorizeCallback;
       }
     | undefined = {},
 ): Type<IFindOneType<T>> {
@@ -43,10 +46,9 @@ export function FindOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindOneType<T> {
-    constructor(
-      protected readonly em: EntityManager,
-      protected readonly crudAuth: CrudAuthorizationService,
-    ) {}
+    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+
+    constructor(protected readonly em: EntityManager) {}
 
     @Query(() => classRef, {
       name: methodName,
@@ -68,8 +70,6 @@ export function FindOneResolver<T>(
   }
 
   @CrudResource(classRef.name)
-  //TODO: move decorator to @rummel/crud
-  // @CheckPermissions([PermissionAction.READ, classRef.name])
   @Resolver(() => classRef)
   class ConcreteResolver extends AbstractResolver {
     @Query(() => classRef, {
@@ -82,12 +82,13 @@ export function FindOneResolver<T>(
       request: Express.Request,
       where: FindOneEntityWhereArgs,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'read',
         resource: classRef.name,
         currentUser,
         request,
-        data: where,
+        condition: where,
+        em: this.em,
       });
       if (onResolve) {
         return onResolve(info, currentUser, where);

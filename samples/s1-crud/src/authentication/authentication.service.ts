@@ -27,15 +27,20 @@ export class AuthenticationService {
 
   @Transactional()
   async loginWithPersonalToken(personalToken: string): Promise<UserIdentity> {
-    const user = await this.userIdentityProvider.getUserByPersonalToken(personalToken);
+    const user =
+      await this.userIdentityProvider.getUserByPersonalToken(personalToken);
     return this.loginUser(user, personalToken, (user, token) =>
       this.mfaAuthService.validatePersonalToken(user, token),
     );
   }
 
   @Transactional()
-  async finishMFALogin(naturalKey: string, token: string): Promise<UserIdentity> {
-    const user = await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
+  async finishMFALogin(
+    naturalKey: string,
+    token: string,
+  ): Promise<UserIdentity> {
+    const user =
+      await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
     return this.loginUser(user, token, (user, token) =>
       this.mfaAuthService.validateToken(user, token),
     );
@@ -90,11 +95,14 @@ export class AuthenticationService {
   }
 
   private async loginOrRegisterUser(naturalKey: string): Promise<UserIdentity> {
-    const user = await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
+    const user =
+      await this.userIdentityProvider.getUserByNaturalKey(naturalKey);
 
     if (user) {
       return user;
-    } else if (this.configService.getOrThrow('ENABLE_REGISTRATION') === 'true') {
+    } else if (
+      this.configService.getOrThrow('ENABLE_REGISTRATION') === 'true'
+    ) {
       return this.userIdentityProvider.createUserIdentity(naturalKey);
     }
     throw new UnauthorizedException('User not found');
