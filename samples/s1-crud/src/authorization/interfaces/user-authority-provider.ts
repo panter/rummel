@@ -1,5 +1,6 @@
 import { CaslPermission } from './types';
+import { UserAuthority } from './user-authority';
 
 export abstract class UserAuthorityProvider {
-  abstract getUserPermissions(user: string): Promise<CaslPermission[]>;
+  abstract getUserPermissions(user: UserAuthority): Promise<CaslPermission[]>;
 }

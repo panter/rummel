@@ -3,10 +3,13 @@ import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { UserIdentity } from '../authentication/interfaces/user-identity';
 import { v4 } from 'uuid';
 import { AppRole } from './role.entity';
+import { PermissionAction, UserAuthority } from '../authorization';
+import { AppAbility } from '../authorization/interfaces/types';
+import { subject } from '@casl/ability';
 
 @ObjectType()
 @Entity()
-export class AppUser implements UserIdentity {
+export class AppUser implements UserIdentity, UserAuthority {
   @Field(() => ID, { description: 'Unique identifier of the entity' })
   @PrimaryKey({ type: 'uuid' })
   id: string = v4();
@@ -26,6 +29,9 @@ export class AppUser implements UserIdentity {
   @Property({ nullable: true, unique: true })
   personalToken?: string;
 
+  @HideField()
+  ability: AppAbility;
+
   getRole(): string {
     return this.role.name;
   }
@@ -43,4 +49,14 @@ export class AppUser implements UserIdentity {
   }
 
   markAsVerified(): void {}
+
+  can(action: PermissionAction, subjectName: string, condition?: any): boolean {
+    return condition
+      ? this.ability.can(action, subject(subjectName, condition))
+      : this.ability.can(action, subjectName);
+  }
+
+  getUserAuthorityId(): string {
+    return this.id;
+  }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CaslPermission,
   PermissionAction,
+  UserAuthority,
   UserAuthorityProvider,
 } from './interfaces';
 import { AppAbility, PermissionSubjectType } from './interfaces/types';
@@ -11,7 +12,7 @@ import { Ability, AbilityBuilder, AbilityClass } from '@casl/ability';
 export class CaslAbilityFactory {
   constructor(private readonly userAuthorityProvider: UserAuthorityProvider) {}
 
-  async createForUser(user: any): Promise<AppAbility> {
+  async createForUser(user: UserAuthority): Promise<AppAbility> {
     const { can, build } = new AbilityBuilder<
       Ability<[PermissionAction, PermissionSubjectType]>
     >(Ability as AbilityClass<AppAbility>);

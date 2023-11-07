@@ -5,13 +5,13 @@ import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { CrudAuthorizeCallback } from './types';
 import { CrudAuthorizationService } from './crud-authorization.service';
 
-export interface CrudModuleOptions {
-  authorizeCallback?: CrudAuthorizeCallback;
+export interface CrudModuleOptions<T> {
+  authorizeCallback?: CrudAuthorizeCallback<T>;
 }
 
 @Module({})
 export class CrudModule implements OnModuleInit {
-  static forRootAsync(options: CrudModuleOptions): DynamicModule {
+  static forRootAsync<T>(options: CrudModuleOptions<T>): DynamicModule {
     return {
       module: CrudModule,
       imports: [ConfigModule, DiscoveryModule],
