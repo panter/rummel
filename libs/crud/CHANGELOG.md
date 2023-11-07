@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.3
+
+### Patch Changes
+
+- 48a6ebd: Improved Authorization module types
+
 ## 0.1.2
 
 ### Patch Changes
