@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.2
+
+### Patch Changes
+
+- 02c9efd: Improved authorization API for CRUD resolvers
+
 ## 0.1.1
 
 ### Patch Changes
