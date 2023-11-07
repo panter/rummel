@@ -10,7 +10,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorizationService, CrudResource } from '../../auth';
+import { CrudResource } from '../../auth';
+import { CrudAuthorizeCallback } from '../../auth/types';
 
 export interface IDeleteOneType<T> {
   deleteOne: (
@@ -26,25 +27,29 @@ export function DeleteOneResolver<T>(
   {
     name,
     onResolve,
+    authorizeCallback,
   }:
-    | { name?: string; onResolve?: IDeleteOneType<T>['deleteOne'] }
+    | {
+        name?: string;
+        onResolve?: IDeleteOneType<T>['deleteOne'];
+        authorizeCallback?: CrudAuthorizeCallback;
+      }
     | undefined = {},
 ): Type<IDeleteOneType<T>> {
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IDeleteOneType<T> {
-    constructor(
-      protected readonly em: EntityManager,
-      protected readonly crudAuth: CrudAuthorizationService,
-    ) {}
+    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+
+    constructor(protected readonly em: EntityManager) {}
 
     @Mutation(() => classRef, { name: name || `deleteOne${classRef.name}` })
     async deleteOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
       @CurrentRequest() request: Express.Request,
-      @Args() data: FindOneEntityWhereArgs,
+      @Args() args: FindOneEntityWhereArgs,
     ) {
-      return resolveDeleteOne(classRef, data, {
+      return resolveDeleteOne(classRef, args, {
         info,
         currentUser,
         em: this.em,
@@ -60,19 +65,20 @@ export function DeleteOneResolver<T>(
       info: GraphQLResolveInfo,
       currentUser: AuthenticatedUser,
       request: Express.Request,
-      data?: any,
+      args?: any,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'update',
         resource: classRef.name,
         currentUser,
         request,
-        data,
+        condition: args,
+        em: this.em,
       });
       if (onResolve) {
-        return onResolve(info, currentUser, data);
+        return onResolve(info, currentUser, request, args);
       }
-      return super.deleteOne(info, currentUser, request, data);
+      return super.deleteOne(info, currentUser, request, args);
     }
   }
 
@@ -81,7 +87,7 @@ export function DeleteOneResolver<T>(
 
 export const resolveDeleteOne = async <T extends Type>(
   type: T,
-  data: any,
+  args: any,
   {
     currentUser,
     em,
@@ -93,11 +99,11 @@ export const resolveDeleteOne = async <T extends Type>(
   },
 ) => {
   const crudInfos = getCrudInfosForType(type);
-  const ormQuery = { id: data.where.id };
+  const ormQuery = { id: args.where.id };
   applyStaticWhereFieldResolver(crudInfos, {
     currentUser,
     ormQuery,
-    gqlWhere: data.where,
+    gqlWhere: args.where,
   });
   const entity = await em.findOneOrFail(type, ormQuery, {
     populate: getFieldsToPopulate(info, type),

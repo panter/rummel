@@ -1,4 +1,9 @@
-import { applyDecorators, CustomDecorator, SetMetadata, UseGuards } from '@nestjs/common';
+import {
+  applyDecorators,
+  CustomDecorator,
+  SetMetadata,
+  UseGuards,
+} from '@nestjs/common';
 
 import { PermissionsGuard } from './permission.guard';
 import { PermissionAction } from './interfaces';

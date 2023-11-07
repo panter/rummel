@@ -21,12 +21,16 @@ export const authorizedFieldMiddleware: FieldMiddleware = async (
   const checkOwner = extensions.checkOwner;
   const user = ctx.context.req.user;
   const userRole = user?.role?.name;
-  if ((!requiredRoles.length && !checkOwner) || userRole === 'ADMIN') return next();
+  if ((!requiredRoles.length && !checkOwner) || userRole === 'ADMIN')
+    return next();
 
   // silently return null for unauthenticated users
   if (!user) return null;
 
-  if (requiredRoles.length && !requiredRoles.some((role) => role === userRole)) {
+  if (
+    requiredRoles.length &&
+    !requiredRoles.some((role) => role === userRole)
+  ) {
     log(
       `Hiding field '${info.parentType.name}.${info.fieldName}' because user roles does not match requested roles [${requiredRoles}]`,
     );

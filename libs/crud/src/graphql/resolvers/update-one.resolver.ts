@@ -15,7 +15,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuthorizationService, CrudResource } from '../../auth';
+import { CrudResource } from '../../auth';
+import { CrudAuthorizeCallback } from '../../auth/types';
 
 export type IUpdateOneType<T> = {
   updateOne: (
@@ -32,8 +33,13 @@ export function UpdateOneResolver<T>(
   {
     name,
     onResolve,
+    authorizeCallback,
   }:
-    | { name?: string; onResolve?: IUpdateOneType<T>['updateOne'] }
+    | {
+        name?: string;
+        onResolve?: IUpdateOneType<T>['updateOne'];
+        authorizeCallback?: CrudAuthorizeCallback;
+      }
     | undefined = {},
 ): Type<IUpdateOneType<T>> {
   const UpdateOneArg = upsertInput(classRef, { isUpdate: true });
@@ -42,10 +48,9 @@ export function UpdateOneResolver<T>(
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IUpdateOneType<T> {
-    constructor(
-      protected readonly em: EntityManager,
-      protected readonly crudAuth: CrudAuthorizationService,
-    ) {}
+    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+
+    constructor(protected readonly em: EntityManager) {}
 
     @Mutation(() => classRef, { name: methodName })
     async updateOne(
@@ -77,15 +82,17 @@ export function UpdateOneResolver<T>(
       data?: any,
       where?: EntityIdInput,
     ) {
-      this.crudAuth?.authorize?.({
+      this.authorizeCallback?.({
         operation: 'update',
         resource: classRef.name,
         currentUser,
         request,
         data,
+        condition: where,
+        em: this.em,
       });
       if (onResolve) {
-        return onResolve(info, currentUser, data, where);
+        return onResolve(info, currentUser, request, data, where);
       }
       return super.updateOne(info, currentUser, request, data, where);
     }

@@ -3,10 +3,10 @@ import request from 'supertest';
 import { FindOneResolver } from '../../src';
 import { User } from '../fixtures/user.entity';
 import {
-  TEST_TIMEOUT,
-  TestContext,
   afterAllCallback,
   beforeAllCallback,
+  TEST_TIMEOUT,
+  TestContext,
 } from './utils';
 
 jest.useRealTimers();

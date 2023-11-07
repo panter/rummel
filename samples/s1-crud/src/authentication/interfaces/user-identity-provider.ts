@@ -7,7 +7,10 @@ export abstract class UserIdentityProvider<T extends UserIdentity> {
 
   abstract getUserByPersonalToken(personalToken: string): Promise<T | null>;
 
-  abstract getUserByNaturalKey(naturalKey: string, extra?: any): Promise<T | null>;
+  abstract getUserByNaturalKey(
+    naturalKey: string,
+    extra?: any,
+  ): Promise<T | null>;
 
   abstract createUserIdentity(naturalKey: string): Promise<T>;
 

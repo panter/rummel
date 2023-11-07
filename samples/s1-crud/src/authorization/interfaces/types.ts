@@ -20,4 +20,3 @@ export interface CaslPermission<C = any> {
   subject: InferSubjects<C> | 'all';
   condition?: PermissionCondition;
 }
-
