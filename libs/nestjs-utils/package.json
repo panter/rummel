@@ -13,9 +13,9 @@
     "lint:type-check": "tsc --noEmit",
     "prepack": "npm run build",
     "test": "yarn test:unit",
-    "test:unit": "jest --config test/jest-unit.json --passWithNoTests",
-    "test:integration": "jest --config test/jest-integration.json --passWithNoTests",
-    "test:e2e": "jest --config test/jest-e2e.json --passWithNoTests"
+    "test:unit": "jest --config jest-unit.json ",
+    "test:integration": "jest --config jest-integration.json --passWithNoTests",
+    "test:e2e": "jest --config jest-e2e.json --passWithNoTests"
   },
   "publishConfig": {
     "access": "public",
