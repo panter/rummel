@@ -18,6 +18,22 @@ type UerInputErrorExtensions = {
   fieldErrors: ErrorsMap;
 };
 
+/**
+ * Recursively format validation errors into a GraphQL error
+ * @param validationErrors - NestJS validation errors (class-validator)
+ * returns a GraphQL error - GraphQLError with validation errors in extensions
+ *
+ * Extensions are formatted as follows:
+ * ```
+ * {
+ *  code: 'BAD_USER_INPUT',
+ *  fieldErrors: {
+ *  field1: [
+ *    { constraint: 'constraint1', message: 'message1', context: { ... } },
+ *    { constraint: 'constraint2', message: 'message2', context: { ... } },
+ *  ],
+ * ```
+ */
 export const exceptionFactory = (validationErrors: ValidationError[]) => {
   const errorsFormatted: UerInputErrorExtensions = { fieldErrors: {} };
 
@@ -27,11 +43,9 @@ export const exceptionFactory = (validationErrors: ValidationError[]) => {
   ) => {
     errors.forEach(({ property, constraints, children, contexts }) => {
       if (children?.length === 0 && constraints) {
-        errorsFormattedMap[property] = {};
+        errorsFormattedMap[property] = [];
         Object.keys(constraints).forEach((constraint) => {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          errorsFormattedMap[property].push({
+          (errorsFormattedMap[property] as FieldErrors).push({
             constraint,
             message: constraints[constraint],
             context: contexts?.[constraint],

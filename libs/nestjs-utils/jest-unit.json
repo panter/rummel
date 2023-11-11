@@ -4,8 +4,8 @@
     "json",
     "ts"
   ],
-  "rootDir": "unit",
-  "testRegex": ".*\\.spec\\.ts$",
+  "rootDir": "./",
+  "testRegex": ".spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
