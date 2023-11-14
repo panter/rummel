@@ -7,6 +7,7 @@ import {
   TypedDocumentNode,
   useMutation,
   useQuery,
+  ApolloError,
 } from '@apollo/client';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
@@ -185,7 +186,7 @@ export type UseFormQueryProps<
   QVariables extends OperationVariables = OperationVariables,
 > = {
   onCompleted?: (data: QResult) => void;
-  query: TypedDocumentNode<QResult, QVariables>;
+  query?: TypedDocumentNode<QResult, QVariables>;
   variables?: QVariables;
   skipQuery?: boolean;
   validateResult?: (data: QResult, v?: QVariables | null) => Error | undefined;
@@ -207,7 +208,7 @@ export type FormQueryOptions<
 };
 
 /**
- * By providing a query to get the model the form should edit this hook return
+ * By providing a query (query return form model) this hook return
  * the loading states of the query to allow Drawer and Modals to act on it.
  *
  * "variables" should provide the query variables
@@ -220,22 +221,31 @@ export function useFormQuery<
   QData = any,
   QVariables extends OperationVariables = OperationVariables,
 >({
-  query,
+  query: initialQuery,
   variables,
   skipQuery,
   validateResult,
   onCompleted,
 }: UseFormQueryProps<QData, QVariables>): FormQueryOptions<QData, QVariables> {
-  const {
-    data: model,
-    loading: loadingModel,
-    error: loadingModelError,
-  } = useQuery(query, {
-    onCompleted,
-    variables,
-    skip: skipQuery,
-    fetchPolicy: 'network-only',
-  });
+  const query = useState<TypedDocumentNode<QData, QVariables> | undefined>(
+    initialQuery,
+  )?.[0];
+
+  let model: QData | undefined = undefined;
+  let loadingModel: boolean = false;
+  let loadingModelError: ApolloError | undefined = undefined;
+
+  if (query) {
+    const queryResult = useQuery(query, {
+      onCompleted,
+      variables,
+      skip: skipQuery,
+      fetchPolicy: 'network-only',
+    });
+    model = queryResult.data;
+    loadingModel = queryResult.loading;
+    loadingModelError = queryResult.error;
+  }
   const [error, setError] = useState<Error>();
 
   useEffect(() => {
