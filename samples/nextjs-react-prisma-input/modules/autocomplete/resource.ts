@@ -98,7 +98,6 @@ export const AutocompleteCreateResource = prismaResource({
   fragment: AutocompleteFragment,
   resourceId,
   schema: autocompleteSchema.createSchema,
-  query: OneAutocompleteQuery,
   mutation: CreateOneAutocompleteMutation,
   skipQuery: true,
   queryDataToModel: (data) =>
