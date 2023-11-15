@@ -67,7 +67,7 @@ export function FindManyResolver<T>(
     async findMany(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
-      @CurrentRequest() request: Express.Request,
+      @CurrentRequest() _request: Express.Request,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
     ): Promise<T[]> {
@@ -85,8 +85,7 @@ export function FindManyResolver<T>(
       @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      @CurrentRequest() request: Request,
+      @CurrentRequest() _request: Request,
     ): Promise<number> {
       const crudInfos = getCrudInfosForType(classRef);
 

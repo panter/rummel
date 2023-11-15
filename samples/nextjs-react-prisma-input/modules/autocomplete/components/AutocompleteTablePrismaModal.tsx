@@ -1,92 +1,28 @@
-import { EditOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Space, Table, TableColumnType } from 'antd';
-import { usePrismaFormModal } from '@panter/react-forms';
-import {
-  GraphqlSchemaFormModal,
-  useAntPrismaManyQuery,
-} from '@panter/react-forms-ant';
-import { FragmentType, useFragment } from '../../../@generated';
-import {
-  AutocompleteFragment as AutocompleteFragmentType,
-  SortOrder,
-} from '../../../@generated/graphql';
+import { PlusOutlined } from '@ant-design/icons';
+import { ExtractUseFormReturn, usePrismaFormModal } from '@panter/react-forms';
+import { PrismaFormModal } from '@panter/react-forms-ant';
+import { Button, Table } from 'antd';
+import { AutocompleteFragment as AutocompleteFragmentType } from '../../../@generated/graphql';
 import { Filter } from '../../filter/components/Filter';
 import { FilterPanel } from '../../filter/components/FilterComponents';
-import { useFilteredAutocomplete } from '../hooks/useFilteredAutocomplete';
+import { useAutocompleteColumns } from '../hooks/useAutocompleteColumns';
+import { useManyAutocompletes } from '../hooks/useManyAutocompletes';
 import {
   AutocompleteCreateResource,
-  AutocompleteFragment,
   AutocompleteUpdateResource,
-  ManyAutocompleteQuery,
 } from '../resource';
-import { AutocompleteForm } from './AutocompleteForm';
-
-const useAutocompleteColumns = (props: {
-  refresh: () => void;
-  dataFragment?: FragmentType<typeof AutocompleteFragment>[];
-}) => {
-  const data = useFragment(AutocompleteFragment, props.dataFragment);
-
-  const [open, formModalProps] = usePrismaFormModal({
-    ...AutocompleteUpdateResource,
-    onClose: props.refresh,
-  });
-
-  const columns: TableColumnType<AutocompleteFragmentType>[] = [
-    {
-      title: 'Key',
-      dataIndex: 'key',
-      key: 'key',
-      sorter: true,
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      key: 'value',
-      sorter: true,
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_, { id }) => (
-        <Space size="middle">
-          <Button
-            icon={<EditOutlined />}
-            onClick={() => open({ where: { id } }, false)}
-          />
-        </Space>
-      ),
-    },
-  ];
-
-  return { columns, data, formModalProps };
-};
 
 export type AutocompleteTablePrismaModalProps = Record<string, any>;
 
 export const AutocompleteTablePrismaModal: React.FC<
   AutocompleteTablePrismaModalProps
 > = () => {
-  const tableOptions = useAntPrismaManyQuery(
-    ManyAutocompleteQuery,
-    (data) => data.autocompletesCount,
-    {
-      take: 10,
-      orderBy: [{ key: SortOrder.Asc }],
-    },
-  );
+  const { filterConfig, filter, setFilter, tableOptions } =
+    useManyAutocompletes();
 
-  const { filterConfig, filter, setFilter } = useFilteredAutocomplete({
-    setWhere: tableOptions.setWhere,
-  });
-
-  const {
-    columns,
-    data,
-    formModalProps: formModalPropsUpdate,
-  } = useAutocompleteColumns({
-    refresh: tableOptions.queryResult.refetch,
-    dataFragment: tableOptions.queryResult.data?.autocompletes,
+  const [open, formModalPropsUpdate] = usePrismaFormModal({
+    ...AutocompleteUpdateResource,
+    onClose: () => tableOptions.queryResult.refetch(),
   });
 
   const [createOne, formModalPropsCreate] = usePrismaFormModal({
@@ -94,6 +30,12 @@ export const AutocompleteTablePrismaModal: React.FC<
     onClose: () => {
       tableOptions.queryResult.refetch();
     },
+  });
+
+  const { columns, data } = useAutocompleteColumns({
+    refresh: tableOptions.queryResult.refetch,
+    dataFragment: tableOptions.queryResult.data?.autocompletes,
+    onEdit: (d) => open({ where: { id: d.id } }),
   });
 
   return (
@@ -116,18 +58,32 @@ export const AutocompleteTablePrismaModal: React.FC<
         pagination={tableOptions.pagination}
         onChange={tableOptions.handleTableChange}
       />
-      <GraphqlSchemaFormModal
+      <PrismaFormModal
         {...formModalPropsUpdate}
         renderForm={({ schemaForm, queryInfo, readOnly }) => {
           return <AutocompleteForm form={schemaForm.form} />;
         }}
       />
-      <GraphqlSchemaFormModal
+      <PrismaFormModal
         {...formModalPropsCreate}
         renderForm={({ schemaForm, queryInfo, readOnly }) => {
           return <AutocompleteForm form={schemaForm.form} />;
         }}
       />
+    </div>
+  );
+};
+
+export const AutocompleteForm: React.FC<{
+  form: ExtractUseFormReturn<
+    typeof AutocompleteCreateResource,
+    typeof AutocompleteUpdateResource
+  >;
+}> = ({ form }) => {
+  return (
+    <div>
+      <input {...form.register('key')} />
+      <input {...form.register('value', { required: true })} />
     </div>
   );
 };

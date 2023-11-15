@@ -45,22 +45,6 @@ export const OneAutocompleteQuery = graphql(/* GraphQL */ `
   }
 `);
 
-export const ManyAutocompleteQuery = graphql(/* GraphQL */ `
-  query autocompletes(
-    $where: AutocompleteWhereInput
-    $orderBy: [AutocompleteOrderByInput!]
-    $take: Int
-    $skip: Int
-  ) {
-    autocompletes(where: $where, orderBy: $orderBy, take: $take, skip: $skip) {
-      id
-      ...Autocomplete
-    }
-
-    autocompletesCount(where: $where)
-  }
-`);
-
 export const AutocompleteFragment = graphql(/* GraphQL */ `
   fragment Autocomplete on Autocomplete {
     id

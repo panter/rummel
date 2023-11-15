@@ -150,7 +150,17 @@ export function useFormMutation<
   const doClose = useCallback(() => {
     onClose?.();
     mutationOptions.reset();
-    // form.reset({});
+    form.reset({} as any, {
+      keepValues: false,
+      keepDefaultValues: false,
+      keepDirty: false,
+      keepDirtyValues: false,
+      keepErrors: false,
+      keepIsValid: false,
+      keepIsSubmitSuccessful: false,
+      keepIsSubmitted: false,
+      keepTouched: false,
+    });
   }, [onClose, mutationOptions.reset]);
 
   const submit = form.handleSubmit((formModel) => {
@@ -246,8 +256,14 @@ export function useFormQuery<
     loadingModel = queryResult.loading;
     loadingModelError = queryResult.error;
   }
-  const [error, setError] = useState<Error>();
 
+  useEffect(() => {
+    if (!query) {
+      onCompleted?.({} as any);
+    }
+  }, [query]);
+
+  const [error, setError] = useState<Error>();
   useEffect(() => {
     if (notNil(model) && validateResult) {
       setError(validateResult(model, variables));
