@@ -12,8 +12,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudResource } from '../../auth';
-import { CrudAuthorizeCallback } from '../../auth/types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import { CrudResource } from '../../crud-resource.decorator';
 
 export interface IFindOneType<T> {
   findOne: (
@@ -24,29 +24,29 @@ export interface IFindOneType<T> {
   ) => Promise<T | null | undefined>;
 }
 
+export interface IFindOneOptions<T> {
+  name?: string;
+  nullable?: boolean;
+  onResolve?: IFindOneType<T>['findOne'];
+  authorizeCallback?: CrudAuthorizeCallback;
+  auditCallback?: CrudAuditCallback;
+}
+
 export function FindOneResolver<T>(
   classRef: Type<T>,
   {
     name,
     onResolve,
     authorizeCallback,
-  }:
-    | {
-        name?: string;
-        onResolve?: (
-          info: GraphQLResolveInfo,
-          currentUser: AuthenticatedUser,
-          data: any,
-        ) => Promise<any>;
-        authorizeCallback?: CrudAuthorizeCallback;
-      }
-    | undefined = {},
+    auditCallback,
+  }: IFindOneOptions<T> | undefined = {},
 ): Type<IFindOneType<T>> {
   const methodName = name ? name : lowerFirst(classRef.name);
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindOneType<T> {
     protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+    protected auditCallback?: CrudAuditCallback = auditCallback;
 
     constructor(protected readonly em: EntityManager) {}
 
@@ -90,8 +90,15 @@ export function FindOneResolver<T>(
         condition: where,
         em: this.em,
       });
+      this.auditCallback?.({
+        operation: 'read',
+        resource: classRef.name,
+        currentUser,
+        data: where,
+      });
+
       if (onResolve) {
-        return onResolve(info, currentUser, where);
+        return onResolve(info, currentUser, request, where);
       }
       return super.findOne(info, currentUser, request, where);
     }

@@ -10,8 +10,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudResource } from '../../auth';
-import { CrudAuthorizeCallback } from '../../auth/types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import { CrudResource } from '../../crud-resource.decorator';
 
 export interface IDeleteOneType<T> {
   deleteOne: (
@@ -22,23 +22,26 @@ export interface IDeleteOneType<T> {
   ) => Promise<T | null | undefined>;
 }
 
+export interface IDeleteOneOptions<T> {
+  name?: string;
+  onResolve?: IDeleteOneType<T>['deleteOne'];
+  authorizeCallback?: CrudAuthorizeCallback;
+  auditCallback?: CrudAuditCallback;
+}
+
 export function DeleteOneResolver<T>(
   classRef: Type<T>,
   {
     name,
     onResolve,
     authorizeCallback,
-  }:
-    | {
-        name?: string;
-        onResolve?: IDeleteOneType<T>['deleteOne'];
-        authorizeCallback?: CrudAuthorizeCallback;
-      }
-    | undefined = {},
+    auditCallback,
+  }: IDeleteOneOptions<T> | undefined = {},
 ): Type<IDeleteOneType<T>> {
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IDeleteOneType<T> {
     protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+    protected auditCallback?: CrudAuditCallback = auditCallback;
 
     constructor(protected readonly em: EntityManager) {}
 
@@ -74,6 +77,12 @@ export function DeleteOneResolver<T>(
         request,
         condition: args,
         em: this.em,
+      });
+      this.auditCallback?.({
+        operation: 'delete',
+        resource: classRef.name,
+        currentUser,
+        data: args,
       });
       if (onResolve) {
         return onResolve(info, currentUser, request, args);

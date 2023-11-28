@@ -6,6 +6,7 @@ import { AppRole } from './role.entity';
 import { PermissionAction, UserAuthority } from '../authorization';
 import { AppAbility } from '../authorization/interfaces/types';
 import { subject } from '@casl/ability';
+import { AuthorizationContextNotAvailableException } from '../authorization/authorization-context-not-available.exception';
 
 @ObjectType()
 @Entity()
@@ -51,6 +52,9 @@ export class AppUser implements UserIdentity, UserAuthority {
   markAsVerified(): void {}
 
   can(action: PermissionAction, subjectName: string, condition?: any): boolean {
+    if (!this.ability) {
+      throw new AuthorizationContextNotAvailableException();
+    }
     return condition
       ? this.ability.can(action, subject(subjectName, condition))
       : this.ability.can(action, subjectName);

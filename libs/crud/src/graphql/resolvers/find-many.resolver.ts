@@ -13,8 +13,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudResource } from '../../auth';
-import { CrudAuthorizeCallback } from '../../auth/types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import { CrudResource } from '../../crud-resource.decorator';
 
 export interface IFindManyType<T> {
   findMany: (
@@ -30,6 +30,15 @@ export interface IFindManyType<T> {
   ) => Promise<number>;
 }
 
+export interface IFindManyOptions<T> {
+  name?: string;
+  nullable?: boolean;
+  onResolve?: IFindManyType<T>['findMany'];
+  onCountResolve?: IFindManyType<T>['findManyCount'];
+  authorizeCallback?: CrudAuthorizeCallback;
+  auditCallback?: CrudAuditCallback;
+}
+
 export function FindManyResolver<T>(
   classRef: Type<T>,
   {
@@ -38,24 +47,8 @@ export function FindManyResolver<T>(
     onCountResolve,
     nullable,
     authorizeCallback,
-  }:
-    | {
-        name?: string;
-        nullable?: boolean;
-        onResolve?: (
-          info: GraphQLResolveInfo,
-          currentUser: AuthenticatedUser,
-          request: Express.Request,
-          data: any,
-        ) => Promise<T[]>;
-        onCountResolve?: (
-          currentUser: AuthenticatedUser,
-          request: Express.Request,
-          data: any,
-        ) => Promise<number>;
-        authorizeCallback?: CrudAuthorizeCallback;
-      }
-    | undefined = {},
+    auditCallback,
+  }: IFindManyOptions<T> | undefined = {},
 ): Type<IFindManyType<T>> {
   const FindManyArgs = findManyEntityArgs(classRef);
 
@@ -64,6 +57,7 @@ export function FindManyResolver<T>(
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IFindManyType<T> {
     protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+    protected auditCallback?: CrudAuditCallback = auditCallback;
 
     constructor(protected readonly em: EntityManager) {}
 
@@ -125,6 +119,12 @@ export function FindManyResolver<T>(
         request,
         data: input,
         em: this.em,
+      });
+      this.auditCallback?.({
+        operation: 'read',
+        resource: classRef.name,
+        currentUser,
+        data: input,
       });
       if (onResolve) {
         return onResolve(info, currentUser, request, input);

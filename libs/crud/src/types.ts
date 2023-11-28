@@ -6,6 +6,10 @@ export type CrudAuthorizeCallback<T = any> = (
   request: CrudAuthorizationRequest<T>,
 ) => void | Promise<void>;
 
+export type CrudAuditCallback<T = any> = (
+  request: CrudAuditRequest<T>,
+) => void | Promise<void>;
+
 export interface CrudAuthorizationRequest<T> {
   operation: CrudOperation;
   resource: string;
@@ -20,4 +24,11 @@ export interface CrudAuthorizationRequest<T> {
   request: Express.Request;
   currentUser: T;
   em: EntityManager;
+}
+
+export interface CrudAuditRequest<T> {
+  currentUser: T;
+  operation: CrudOperation;
+  resource: string;
+  data?: any;
 }

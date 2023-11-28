@@ -15,8 +15,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudResource } from '../../auth';
-import { CrudAuthorizeCallback } from '../../auth/types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import { CrudResource } from '../../crud-resource.decorator';
 
 export type IUpdateOneType<T> = {
   updateOne: (
@@ -28,19 +28,21 @@ export type IUpdateOneType<T> = {
   ) => Promise<T>;
 };
 
+export interface IUpdateOneOptions<T> {
+  name?: string;
+  onResolve?: IUpdateOneType<T>['updateOne'];
+  authorizeCallback?: CrudAuthorizeCallback;
+  auditCallback?: CrudAuditCallback;
+}
+
 export function UpdateOneResolver<T>(
   classRef: Type<T>,
   {
     name,
     onResolve,
     authorizeCallback,
-  }:
-    | {
-        name?: string;
-        onResolve?: IUpdateOneType<T>['updateOne'];
-        authorizeCallback?: CrudAuthorizeCallback;
-      }
-    | undefined = {},
+    auditCallback,
+  }: IUpdateOneOptions<T> | undefined = {},
 ): Type<IUpdateOneType<T>> {
   const UpdateOneArg = upsertInput(classRef, { isUpdate: true });
 
@@ -49,6 +51,7 @@ export function UpdateOneResolver<T>(
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements IUpdateOneType<T> {
     protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+    protected auditCallback?: CrudAuditCallback = auditCallback;
 
     constructor(protected readonly em: EntityManager) {}
 
@@ -90,6 +93,12 @@ export function UpdateOneResolver<T>(
         data,
         condition: where,
         em: this.em,
+      });
+      this.auditCallback?.({
+        operation: 'update',
+        resource: classRef.name,
+        currentUser,
+        data,
       });
       if (onResolve) {
         return onResolve(info, currentUser, request, data, where);
