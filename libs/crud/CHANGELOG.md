@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.4
+
+### Patch Changes
+
+- f68681c: add audit callback
+
 ## 0.1.3
 
 ### Patch Changes
