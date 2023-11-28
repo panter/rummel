@@ -53,12 +53,12 @@ import { UserAuthority } from './authorization';
     CrudModule.forRootAsync<UserAuthority>({
       auditCallback: ({ operation, resource, currentUser, data }) => {
         console.log(
-          `[AUTH] operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
+          `[AUDIT] operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
         );
       },
       authorizeCallback: ({ operation, resource, currentUser, data }) => {
         console.log(
-          `[AUDIT] operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
+          `[AUTH] operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
         );
         //example of find one
         // if (
