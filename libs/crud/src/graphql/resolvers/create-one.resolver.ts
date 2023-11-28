@@ -11,8 +11,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudResource } from '../../auth';
-import { CrudAuthorizeCallback } from '../../auth/types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import { CrudResource } from '../../crud-resource.decorator';
 
 export interface ICreateOneType<T> {
   createOne: (
@@ -27,17 +27,24 @@ export interface ICreateOneOptions<T> {
   name?: string;
   onResolve?: ICreateOneType<T>['createOne'];
   authorizeCallback?: CrudAuthorizeCallback;
+  auditCallback?: CrudAuditCallback;
 }
 
 export function CreateOneResolver<T>(
   classRef: Type<T>,
-  { name, onResolve, authorizeCallback }: ICreateOneOptions<T> | undefined = {},
+  {
+    name,
+    onResolve,
+    authorizeCallback,
+    auditCallback,
+  }: ICreateOneOptions<T> | undefined = {},
 ): Type<ICreateOneType<T>> {
   const CreateOneArg = upsertInput(classRef);
 
   @Resolver(() => classRef, { isAbstract: true })
   abstract class AbstractResolver implements ICreateOneType<T> {
     protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
+    protected auditCallback?: CrudAuditCallback = auditCallback;
 
     constructor(protected readonly em: EntityManager) {}
 
@@ -78,6 +85,12 @@ export function CreateOneResolver<T>(
         request,
         data,
         em: this.em,
+      });
+      this.auditCallback?.({
+        operation: 'create',
+        resource: classRef.name,
+        currentUser,
+        data,
       });
       if (onResolve) {
         return onResolve(info, currentUser, request, data);

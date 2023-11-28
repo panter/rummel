@@ -1,12 +1,12 @@
 import { ConfigModule } from '@nestjs/config';
 import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
-import { EntityManager } from '@mikro-orm/postgresql';
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
-import { CrudAuthorizeCallback } from './types';
-import { CrudAuthorizationService } from './crud-authorization.service';
+import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
+import { CrudService } from './crud.service';
 
 export interface CrudModuleOptions<T> {
   authorizeCallback?: CrudAuthorizeCallback<T>;
+  auditCallback?: CrudAuditCallback<T>;
 }
 
 @Module({})
@@ -21,23 +21,18 @@ export class CrudModule implements OnModuleInit {
           useValue: options,
         },
         {
-          provide: CrudAuthorizationService,
-          inject: [EntityManager, DiscoveryService],
-          useFactory: (em: EntityManager, discovery: DiscoveryService) => {
-            return new CrudAuthorizationService(
-              discovery,
-              options.authorizeCallback,
-            );
+          provide: CrudService,
+          inject: [DiscoveryService],
+          useFactory: (discovery: DiscoveryService) => {
+            return new CrudService(discovery, options);
           },
         },
       ],
-      exports: ['CONFIG_OPTIONS', CrudAuthorizationService],
+      exports: ['CONFIG_OPTIONS', CrudService],
     };
   }
 
-  constructor(
-    private readonly curdAuthorizationService: CrudAuthorizationService,
-  ) {}
+  constructor(private readonly curdAuthorizationService: CrudService) {}
 
   onModuleInit() {
     this.curdAuthorizationService.init();

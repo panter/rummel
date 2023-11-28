@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CRUD_RESOURCE } from './crud-resource.decorator';
 import { DiscoveryService } from '@nestjs/core';
-import { CrudAuthorizeCallback } from './types';
+import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
+import { CrudModuleOptions } from './crud.module';
 
 @Injectable()
-export class CrudAuthorizationService {
-  private logger = new Logger(CrudAuthorizationService.name);
+export class CrudService {
+  private logger = new Logger(CrudService.name);
   public readonly resources: string[] = [];
 
   /**
@@ -14,11 +15,18 @@ export class CrudAuthorizationService {
    */
   defaultAuthorizationCallback?: CrudAuthorizeCallback;
 
+  /**
+   * Default audit callback for all CRUD resources.
+   * This callback will be used if no audit callback is set on the resource handler.
+   */
+  defaultAuditCallback?: CrudAuditCallback;
+
   constructor(
     private readonly discovery: DiscoveryService,
-    defaultAuthorizationCallback?: CrudAuthorizeCallback,
+    { authorizeCallback, auditCallback }: CrudModuleOptions<any>,
   ) {
-    this.defaultAuthorizationCallback = defaultAuthorizationCallback;
+    this.defaultAuthorizationCallback = authorizeCallback;
+    this.defaultAuditCallback = auditCallback;
   }
 
   init() {
@@ -54,6 +62,19 @@ export class CrudAuthorizationService {
           `Found CRUD resource '${resource.name}' handler '${resource.handler.constructor.name}' without authorization callback. Setting default.`,
         );
         resource.handler.authorizeCallback = this.defaultAuthorizationCallback;
+      }
+
+      if (
+        Object.prototype.hasOwnProperty.call(
+          resource.handler,
+          'auditCallback',
+        ) &&
+        resource.handler.auditCallback === undefined
+      ) {
+        this.logger.debug(
+          `Found CRUD resource '${resource.name}' handler '${resource.handler.constructor.name}' without audit callback. Setting default.`,
+        );
+        resource.handler.auditCallback = this.defaultAuditCallback;
       }
     });
   }
