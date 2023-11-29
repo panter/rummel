@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.5
+
+### Patch Changes
+
+- e68432b: fix forRootAsync signature
+
 ## 0.1.4
 
 ### Patch Changes
