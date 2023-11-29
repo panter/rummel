@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.1.6
+
+### Patch Changes
+
+- da0a52c: pass entity id to audit callback
+
 ## 0.1.5
 
 ### Patch Changes
