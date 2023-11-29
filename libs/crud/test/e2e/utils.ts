@@ -13,6 +13,7 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { Group } from '../fixtures/group.entity';
 import { Company } from '../fixtures/company.entity';
 import { CrudModule } from '../../src';
+import { UserAuthority } from '@rummel/s1-crud/dist/src/authorization';
 
 export const TEST_TIMEOUT = 60000;
 
@@ -51,7 +52,11 @@ export const beforeAllCallback = async (
           skipCheck: true,
         },
       }),
-      CrudModule.forRootAsync({}),
+      CrudModule.forRootAsync<UserAuthority>({
+        useFactory: () => {
+          return {};
+        },
+      }),
     ],
     providers: [...providers],
   }).compile();
