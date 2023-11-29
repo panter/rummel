@@ -1,32 +1,36 @@
 import { ConfigModule } from '@nestjs/config';
-import { DiscoveryModule, DiscoveryService } from '@nestjs/core';
+import { DiscoveryModule } from '@nestjs/core';
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
 import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
 import { CrudService } from './crud.service';
+import { ModuleAsyncOptions } from '@panter/nestjs-utils';
 
 export interface CrudModuleOptions<T> {
   authorizeCallback?: CrudAuthorizeCallback<T>;
   auditCallback?: CrudAuditCallback<T>;
 }
 
+export type CrudModuleAsyncOptions<T> = ModuleAsyncOptions<
+  CrudModuleOptions<T>
+>;
+
 @Module({})
 export class CrudModule implements OnModuleInit {
-  static forRootAsync<T>(options: CrudModuleOptions<T>): DynamicModule {
+  static async forRootAsync<T>({
+    inject,
+    imports,
+    useFactory,
+  }: CrudModuleAsyncOptions<T>): Promise<DynamicModule> {
     return {
       module: CrudModule,
-      imports: [ConfigModule, DiscoveryModule],
+      imports: [...(imports || []), ConfigModule, DiscoveryModule],
       providers: [
         {
           provide: 'CONFIG_OPTIONS',
-          useValue: options,
+          useFactory: async (...args: any[]) => await useFactory(...args),
+          inject: inject || [],
         },
-        {
-          provide: CrudService,
-          inject: [DiscoveryService],
-          useFactory: (discovery: DiscoveryService) => {
-            return new CrudService(discovery, options);
-          },
-        },
+        CrudService,
       ],
       exports: ['CONFIG_OPTIONS', CrudService],
     };

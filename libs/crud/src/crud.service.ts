@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CRUD_RESOURCE } from './crud-resource.decorator';
 import { DiscoveryService } from '@nestjs/core';
 import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
@@ -23,6 +23,7 @@ export class CrudService {
 
   constructor(
     private readonly discovery: DiscoveryService,
+    @Inject('CONFIG_OPTIONS')
     { authorizeCallback, auditCallback }: CrudModuleOptions<any>,
   ) {
     this.defaultAuthorizationCallback = authorizeCallback;
