@@ -94,16 +94,22 @@ export function UpdateOneResolver<T>(
         condition: where,
         em: this.em,
       });
+      let result;
+      if (onResolve) {
+        result = await onResolve(info, currentUser, request, data, where);
+      } else {
+        result = await super.updateOne(info, currentUser, request, data, where);
+      }
       this.auditCallback?.({
         operation: 'update',
         resource: classRef.name,
         currentUser,
-        data,
+        data: {
+          ...data,
+          id: result?.id,
+        },
       });
-      if (onResolve) {
-        return onResolve(info, currentUser, request, data, where);
-      }
-      return super.updateOne(info, currentUser, request, data, where);
+      return result;
     }
   }
 

@@ -78,16 +78,21 @@ export function DeleteOneResolver<T>(
         condition: args,
         em: this.em,
       });
+      let result;
+      if (onResolve) {
+        result = await onResolve(info, currentUser, request, args);
+      } else {
+        result = await super.deleteOne(info, currentUser, request, args);
+      }
       this.auditCallback?.({
         operation: 'delete',
         resource: classRef.name,
         currentUser,
-        data: args,
+        data: {
+          id: result?.id,
+        },
       });
-      if (onResolve) {
-        return onResolve(info, currentUser, request, args);
-      }
-      return super.deleteOne(info, currentUser, request, args);
+      return result;
     }
   }
 

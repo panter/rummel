@@ -86,16 +86,23 @@ export function CreateOneResolver<T>(
         data,
         em: this.em,
       });
+
+      let result;
+      if (onResolve) {
+        result = await onResolve(info, currentUser, request, data);
+      } else {
+        result = await super.createOne(info, currentUser, request, data);
+      }
       this.auditCallback?.({
         operation: 'create',
         resource: classRef.name,
         currentUser,
-        data,
+        data: {
+          ...data,
+          id: result?.id,
+        },
       });
-      if (onResolve) {
-        return onResolve(info, currentUser, request, data);
-      }
-      return super.createOne(info, currentUser, request, data);
+      return result;
     }
   }
 
