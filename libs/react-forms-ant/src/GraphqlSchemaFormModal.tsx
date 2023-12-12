@@ -1,9 +1,8 @@
 import { OperationVariables } from '@apollo/client';
 import { FieldValues } from 'react-hook-form';
 import { PrismaInputArgs } from '@panter/prisma-inputs';
-import { usePrismaForm } from '@panter/react-forms';
-import { useTranslation } from 'react-i18next';
-import { PrismaFormModalProps } from '@panter/react-forms';
+import { PrismaFormModalProps, usePrismaForm } from '@panter/react-forms';
+import { useTranslation } from 'next-i18next';
 import { FormModal } from './FormModal';
 
 export const GraphqlSchemaFormModal = <

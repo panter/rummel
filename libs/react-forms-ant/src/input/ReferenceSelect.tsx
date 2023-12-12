@@ -151,7 +151,7 @@ export function ReferenceSelect<
         style={{ width: '100%' }}
         onSearch={doSearch}
         notFoundContent={
-          searching ? t('common:common.loadingData') : t('common:common.noData')
+          searching ? t('common.loadingData') : t('common.noData')
         }
         onChange={(id, a) => {
           if (!onChange) {

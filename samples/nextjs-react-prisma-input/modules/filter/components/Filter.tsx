@@ -2,7 +2,7 @@ import React, { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { AddNewFilter } from './AddNewFilter';
 import { PlusOutlined } from '@ant-design/icons';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import { mediaQueries } from '../../../lib/mediaQuery';
 
 export type FilterShortcut = { label: string; action: () => void };
@@ -122,7 +122,7 @@ export function Filter<T>({
           }}
         >
           {!allActiveFilters.length ? (
-            <AddFirstFilter>{t('common:common.addFilter')}</AddFirstFilter>
+            <AddFirstFilter>{t('common.addFilter')}</AddFirstFilter>
           ) : (
             <div style={{ paddingBottom: '6px' }}>
               <PlusOutlined />

@@ -1,7 +1,7 @@
 import { BaseFormOptions } from '@panter/react-forms';
 import { Button, Row, Space } from 'antd';
 import React, { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from 'next-i18next';
 import styled from 'styled-components';
 
 const Base = styled.div``;

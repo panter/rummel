@@ -42,6 +42,7 @@ const FormLabel = styled.label<{ $empty?: boolean; $type: MessageTypes }>`
 
 const FormInputMessage = styled.div<{ $type: MessageTypes }>`
   font-size: 12px;
+
   &::after {
     content: ' ';
     white-space: pre;
@@ -97,6 +98,7 @@ export type FormInputProps = {
   required?: Message | ValidationRule<boolean>;
   children: React.ReactNode;
 };
+
 export function FormInput({
   style,
   className,
@@ -139,4 +141,4 @@ export function FormInput({
 }
 
 export const formInputI18nProp = (name: string, resourceId?: string) =>
-  `common:resources.${resourceId || 'default'}.fields.${name}`;
+  `resources.${resourceId || 'default'}.fields.${name}`;

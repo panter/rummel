@@ -1,5 +1,5 @@
 import commonDe from '../public/locales/de/common.json';
-import commonEn from '../public/locales/de/common.json';
+import commonEn from '../public/locales/en/common.json';
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
