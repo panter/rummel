@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf ./next",
     "dev": "next dev -p 4010",
-    "build": "yarn translation:generate:types && yarn graphql:generate && next build",
+    "build": "next build",
     "start": "next start",
     "lint": "tsc --noEmit && eslint .",
     "lint:fix": "yarn lint --fix",
