@@ -13,7 +13,6 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n  query AutocompleteSelect($where: AutocompleteWhereInput) {\n    autocompletes(where: $where) {\n      id\n      value\n    }\n  }\n": types.AutocompleteSelectDocument,
     "\n  mutation DeleteOneAutocomplete($where: EntityIdInput!) {\n    deleteOneAutocomplete(where: $where) {\n      id\n    }\n  }\n": types.DeleteOneAutocompleteDocument,
     "\n  mutation CreateOneAutocomplete($data: AutocompleteCreateInput!) {\n    createOneAutocomplete(data: $data) {\n      id\n      ...Autocomplete\n    }\n  }\n": types.CreateOneAutocompleteDocument,
     "\n  mutation UpdateOneAutocomplete(\n    $where: EntityIdInput!\n    $data: AutocompleteUpdateInput!\n  ) {\n    updateOneAutocomplete(where: $where, data: $data) {\n      id\n      ...Autocomplete\n    }\n  }\n": types.UpdateOneAutocompleteDocument,
@@ -36,10 +35,6 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query AutocompleteSelect($where: AutocompleteWhereInput) {\n    autocompletes(where: $where) {\n      id\n      value\n    }\n  }\n"): (typeof documents)["\n  query AutocompleteSelect($where: AutocompleteWhereInput) {\n    autocompletes(where: $where) {\n      id\n      value\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
