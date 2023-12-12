@@ -1,5 +1,11 @@
 # @panter/react-forms-ant
 
+## 0.0.3
+
+### Patch Changes
+
+- f811ce1: fix translations config
+
 ## 0.0.2
 
 ### Patch Changes
