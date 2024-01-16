@@ -4,7 +4,7 @@ import {
   FormInputController,
 } from './FormInputController';
 import { FieldPath, FieldValues } from 'react-hook-form';
-
+import { TextAreaProps } from 'antd/es/input/TextArea';
 import { Input } from 'antd';
 
 const { TextArea } = Input;
@@ -15,6 +15,7 @@ type TextAreaFormInputProp<
   readOnly?: boolean;
   disabled?: boolean;
   rows?: number;
+  inputProps: TextAreaProps;
 };
 
 export function TextAreaFormInput<
@@ -24,6 +25,7 @@ export function TextAreaFormInput<
   readOnly,
   disabled,
   rows,
+  inputProps,
   ...props
 }: TextAreaFormInputProp<TFieldValues, TName>) {
   const baseFormInputProps = formBaseInputProps(props);
@@ -33,6 +35,7 @@ export function TextAreaFormInput<
       render={({ field }) => (
         <TextArea
           rows={rows || 4}
+          {...inputProps}
           {...field}
           readOnly={readOnly}
           disabled={disabled}
