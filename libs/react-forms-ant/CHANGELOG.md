@@ -1,5 +1,11 @@
 # @panter/react-forms-ant
 
+## 0.0.5
+
+### Patch Changes
+
+- 052fd00: fix: make inputPros for textArea optional
+
 ## 0.0.4
 
 ### Patch Changes
