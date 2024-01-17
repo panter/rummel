@@ -1,5 +1,11 @@
 # @panter/react-forms-ant
 
+## 0.0.4
+
+### Patch Changes
+
+- 4382ac4: chore: enable passing input props to TextArea
+
 ## 0.0.3
 
 ### Patch Changes
