@@ -54,6 +54,14 @@ __npm public:__
 - [prism-inputs](https://git.panter.ch/rummel/rummel/-/tree/main/libs/prisma-inputs)
 - [crud](https://git.panter.ch/rummel/rummel/-/tree/main/libs/crud)
 
+#### Usage
+To publish a new version, follow these steps to generate a new changeset. It is recommended to create the changeset based on your last commit before initiating the final merge request.
+
+Run `changeset` in a root of project and follow steps in terminal.
+
+Select the modified packages that you wish to include in the new version by marking them with the **spacebar**, then proceed to next step by pressing **enter**. Choose the version you intend to create; for minor updates, focus on patches (0.0.X). Provide a summary - recommended to use conventional commit messages from your changes and confirm.
+
+Once completed, you will find a new Markdown file in the `.changeset` directory. Push this record along with your changes. Following a successful merge, this action will trigger in main pipeline new merge request with updating changelog and package.json while publishing a new versions. Merge it and your process is now complete.
 
 ## Notes
 
