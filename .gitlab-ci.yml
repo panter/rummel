@@ -17,11 +17,8 @@ cache:
 
 stages:
   - build
-#  tmp disabled due to:
-# Could not find a working container runtime strategy
-# const pgContainer = await new PostgreSqlContainer()
-#  - test
-  - comme'nt
+  - test
+  - comment
   - release
 
 build-lib:
@@ -54,20 +51,23 @@ build-samples:
 #     - yarn --immutable
 #     - yarn changesets-gitlab comment
 
-test-lib:
-  stage: test
-  only: ["merge_requests", "main"]
-  script:
-    - yarn --immutable
-    - yarn turbo run test --filter='./libs/*'
-    - yarn turbo run lint --filter='./libs/*'
-  artifacts:
-    paths:
-      - libs/**/coverage*/
-  cache:
-    paths:
-      - node_modules/
-      - .yarn
+#  tmp disabled due to:
+# Could not find a working container runtime strategy
+# const pgContainer = await new PostgreSqlContainer()'
+#test-lib:
+#  stage: test
+#  only: ["merge_requests", "main"]
+#  script:
+#    - yarn --immutable
+#    - yarn turbo run test --filter='./libs/*'
+#    - yarn turbo run lint --filter='./libs/*'
+#  artifacts:
+#    paths:
+#      - libs/**/coverage*/
+#  cache:
+#    paths:
+#      - node_modules/
+#      - .yarn
 
 test-samples:
   stage: test
