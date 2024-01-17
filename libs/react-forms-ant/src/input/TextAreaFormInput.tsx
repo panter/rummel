@@ -15,7 +15,7 @@ type TextAreaFormInputProp<
   readOnly?: boolean;
   disabled?: boolean;
   rows?: number;
-  inputProps: TextAreaProps;
+  inputProps?: TextAreaProps;
 };
 
 export function TextAreaFormInput<
