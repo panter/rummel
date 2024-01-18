@@ -1,4 +1,9 @@
-import { TypedDocumentNode, useQuery } from '@apollo/client';
+import {
+  TypedDocumentNode,
+  useQuery,
+  QueryHookOptions,
+  OperationVariables,
+} from '@apollo/client';
 import { isEmpty } from 'lodash';
 import { useMemo, useState } from 'react';
 import {
@@ -27,6 +32,7 @@ export function usePrismaManyQuery<TResult, TVariables>(
     skip?: boolean;
     skipOnEmptyFilter?: boolean;
   },
+  queryOptions?: QueryHookOptions<TResult>,
 ) {
   const [where, setWhere] = usePrismaWhereVariable(
     query,
@@ -55,6 +61,7 @@ export function usePrismaManyQuery<TResult, TVariables>(
       initialVariables?.skip ||
       (initialVariables?.skipOnEmptyFilter && isEmpty(where)),
     fetchPolicy: 'cache-and-network',
+    ...queryOptions,
   });
 
   const totalCount = queryResult?.data ? countFromQuery(queryResult.data) : 0;
