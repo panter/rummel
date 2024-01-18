@@ -1,4 +1,8 @@
-import { TypedDocumentNode } from '@apollo/client';
+import {
+  TypedDocumentNode,
+  QueryHookOptions,
+  OperationVariables,
+} from '@apollo/client';
 import { isArray } from 'lodash';
 import { useCallback, useMemo } from 'react';
 import { TablePaginationConfig } from 'antd';
@@ -23,7 +27,10 @@ const transformToObject = (input: string, value: string) => {
   return result as any;
 };
 
-export function useAntPrismaManyQuery<TResult, TVariables>(
+export function useAntPrismaManyQuery<
+  TResult,
+  TVariables extends OperationVariables,
+>(
   query: TypedDocumentNode<TResult, TVariables>,
   countFromQuery: (data: TResult) => number,
   initialVariables?: {
@@ -34,6 +41,7 @@ export function useAntPrismaManyQuery<TResult, TVariables>(
     skip?: boolean;
     skipOnEmptyFilter?: boolean;
   },
+  queryOptions?: QueryHookOptions<TResult>,
 ) {
   const {
     setOrderBy,
@@ -46,7 +54,7 @@ export function useAntPrismaManyQuery<TResult, TVariables>(
     pagination,
     setTake,
     take,
-  } = usePrismaManyQuery(query, countFromQuery, initialVariables);
+  } = usePrismaManyQuery(query, countFromQuery, initialVariables, queryOptions);
 
   const handleOrderByChange = useCallback(
     (sorter: SorterResult<TResult>) => {
