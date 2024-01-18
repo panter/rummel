@@ -1,6 +1,6 @@
 {
   "name": "@panter/react-forms-ant",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "peerDependencies": {
     "@panter/prisma-inputs": "0.x",
-    "@panter/react-forms": "0.x",
+    "@panter/react-forms": "0.0.3",
     "react": "18.x"
   }
 }
