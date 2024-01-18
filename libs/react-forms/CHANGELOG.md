@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.3
+
+### Patch Changes
+
+- b627639: feat: enable overriding or extending queryOptions for manyQuery
+
 ## 0.0.2
 
 ### Patch Changes
