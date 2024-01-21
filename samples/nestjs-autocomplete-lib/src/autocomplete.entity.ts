@@ -6,14 +6,11 @@ import {
 } from '@mikro-orm/core';
 import { Field, HideField, ID, ObjectType } from '@nestjs/graphql';
 import { AutocompleteRepository } from './autocomplete.repository';
-import { CrudObject } from '../../../libs/crud/src/graphql/crud-object.decorator';
 import { v4 } from 'uuid';
 
 @ObjectType()
-@CrudObject()
 @Entity({
   tableName: 'autocomplete',
-  customRepository: () => AutocompleteRepository,
 })
 export class Autocomplete {
   @HideField()

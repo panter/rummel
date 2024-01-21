@@ -10,7 +10,6 @@ import { PostalCodeRepository } from './postal-code.repository';
 @ObjectType()
 @Entity({
   tableName: 'postal_code',
-  customRepository: () => PostalCodeRepository,
 })
 export class PostalCode {
   @HideField()
