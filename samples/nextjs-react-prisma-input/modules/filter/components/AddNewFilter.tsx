@@ -7,6 +7,7 @@ const NewFilter = styled.div`
   display: flex;
   min-width: 100px;
   cursor: pointer;
+
   ::before {
     content: ' ';
     display: inline;
@@ -16,7 +17,7 @@ const NewFilter = styled.div`
 const Base = styled.div``;
 
 export const AddNewFilter: React.FC<{
-  style?: {};
+  style?: Record<string, any>;
   className?: string;
   fullFilter: FullFilterProperty[];
   onNew: (p?: FullFilterProperty) => void;

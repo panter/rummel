@@ -1,4 +1,5 @@
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import { BaseThemedCssFunction, css, DefaultTheme } from 'styled-components';
 
 export const BREAKPOINTS = {

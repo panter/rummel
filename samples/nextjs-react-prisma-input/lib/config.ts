@@ -15,7 +15,7 @@ export class PublicRuntimeConfig {
   // noinspection JSUnusedLocalSymbols
   private constructor() {}
 
-  static get<T extends any = string>(
+  static get<T = string>(
     variableName: string,
     defaultValue?: T,
   ): T | undefined {
@@ -27,7 +27,7 @@ export class PublicRuntimeConfig {
     return this.config[variableName] || defaultValue;
   }
 
-  static getOrThrow<T extends any = string>(variableName: string): T {
+  static getOrThrow<T = string>(variableName: string): T {
     const value = this.get<T>(variableName);
     if (!value) {
       throw new Error(`Mandatory env variable '${variableName}' was not found`);

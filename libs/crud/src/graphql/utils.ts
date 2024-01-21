@@ -1,5 +1,4 @@
-import { ObjectQuery } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, ObjectQuery } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { GqlTypeReference } from '@nestjs/graphql';
 import { TypeOptions } from '@nestjs/graphql/dist/interfaces/type-options.interface';

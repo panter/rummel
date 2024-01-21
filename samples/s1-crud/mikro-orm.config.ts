@@ -1,7 +1,9 @@
-import { Options } from '@mikro-orm/postgresql';
+import { Options, PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { SeedManager } from '@mikro-orm/seeder';
+import { Migrator } from '@mikro-orm/migrations';
 
 const config: Options = {
-  type: 'postgresql',
+  driver: PostgreSqlDriver,
   host: 'localhost',
   port: 5432,
   dbName: 's1-crud',
@@ -10,6 +12,7 @@ const config: Options = {
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
   debug: false,
+  extensions: [Migrator, SeedManager],
   migrations: {
     snapshot: false,
     // disable foreign keys for migrations, to avoid problems with cloud sql

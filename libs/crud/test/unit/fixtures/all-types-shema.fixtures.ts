@@ -13,7 +13,7 @@ import {
   ManyToMany,
   OneToMany,
   Property,
-} from '@mikro-orm/core';
+} from '@mikro-orm/postgresql';
 import { Dummy2 } from './all-types-schema2.fixtures';
 import { CrudField } from '../../../src';
 

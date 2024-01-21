@@ -15,7 +15,7 @@ type ApplicationThemeProviderProps = {
 
 export const ApplicationThemeProvider: React.FC<
   ApplicationThemeProviderProps
-> = ({ children, mounted }) => {
+> = ({ children }) => {
   if (typeof window !== 'undefined') {
     window.onload = () => {
       document.getElementById('holderStyle')!.remove();

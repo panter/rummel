@@ -4,7 +4,6 @@ import {
   Entity,
   ManyToMany,
   PrimaryKey,
-  PrimaryKeyType,
   Property,
 } from '@mikro-orm/core';
 import { get } from 'lodash';
@@ -14,8 +13,6 @@ import { PermissionCondition } from './interfaces/types';
 @ObjectType()
 @Entity({ tableName: 'permission' })
 export class Permission {
-  [PrimaryKeyType]?: [string, string];
-
   @Field()
   @PrimaryKey()
   action: string;
