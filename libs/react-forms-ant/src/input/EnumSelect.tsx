@@ -70,8 +70,8 @@ const defaultOptions = (
       i18nPrefix && keys[key]
         ? t(`${i18nPrefix}.${key.toLowerCase()}`)
         : keys[key]
-        ? keys[key]
-        : key;
+          ? keys[key]
+          : key;
     return {
       value: keys[key] || key,
       label,

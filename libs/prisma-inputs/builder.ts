@@ -35,14 +35,14 @@ export type DeepIntersect<T, U> = {
       ? Array<DeepIntersect<TI, UI>>
       : T[P] | U[P]
     : T[P] extends ReadonlyArray<infer TI>
-    ? U[P] extends ReadonlyArray<infer UI>
-      ? ReadonlyArray<DeepIntersect<TI, UI>>
-      : T[P] | U[P]
-    : T[P] extends object
-    ? U[P] extends object
-      ? DeepIntersect<T[P], U[P]>
-      : T[P] | U[P]
-    : T[P] | U[P];
+      ? U[P] extends ReadonlyArray<infer UI>
+        ? ReadonlyArray<DeepIntersect<TI, UI>>
+        : T[P] | U[P]
+      : T[P] extends object
+        ? U[P] extends object
+          ? DeepIntersect<T[P], U[P]>
+          : T[P] | U[P]
+        : T[P] | U[P];
 };
 
 /**
@@ -176,13 +176,13 @@ export const prismaSchemaBuilder = <
     create: customSchemas?.create
       ? customSchemas?.create
       : createSchema
-      ? () => createSchema
-      : (undefined as any as () => PrismaInputSchema<PrismaCreateInput>),
+        ? () => createSchema
+        : (undefined as any as () => PrismaInputSchema<PrismaCreateInput>),
     update: customSchemas?.update
       ? customSchemas?.update
       : updateSchema
-      ? () => updateSchema
-      : (undefined as any as () => PrismaInputSchema<PrismaUpdateInput>),
+        ? () => updateSchema
+        : (undefined as any as () => PrismaInputSchema<PrismaUpdateInput>),
   });
 
   return {

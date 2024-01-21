@@ -42,8 +42,8 @@ type ExtractPrismaInputFromOne<C, U> = PrismaInput<
   C extends Record<any, any>
     ? C | undefined
     : U extends Record<any, any>
-    ? U | undefined
-    : never
+      ? U | undefined
+      : never
 >;
 
 type ExtractManyReferenceType<T> = T extends { connect?: (infer C)[] }
@@ -65,8 +65,8 @@ export type PrismaInputReferences<T> = {
   [K in keyof T as T[K] extends GenericPrismaManyConnect | undefined | null
     ? PrismaInputReferenceManyKeys<K>
     : T[K] extends GenericPrismaOneConnect | undefined | null
-    ? PrismaInputReferenceOneKeys<K>
-    : never]: T[K] extends { connect?: infer U } | undefined | null
+      ? PrismaInputReferenceOneKeys<K>
+      : never]: T[K] extends { connect?: infer U } | undefined | null
     ? { connect?: U }
     : never;
 };
@@ -188,21 +188,21 @@ export type PrismaInputSchemaProperty<
       ExtractManyRelationUpdateDataType<U> | undefined
     >
   : Input extends { create?: infer C; update?: infer U }
-  ? OneRelationMapper<
-      Input,
-      Model,
-      C extends unknown ? C | undefined : C | undefined,
-      U extends unknown ? U | undefined : U | undefined
-    >
-  : Input extends { connect?: (infer C)[] | null }
-  ? ManyReferenceMapper<Input, Model[], Partial<C> | undefined>
-  : Input extends { connect?: infer C }
-  ? OneReferenceMapper<Input, Model, Partial<C> | undefined>
-  : Input extends PropertyTypes
-  ? PropertyMapper<Input>
-  : Input extends { set?: infer S }
-  ? PropertyMapper<Partial<S>>
-  : never;
+    ? OneRelationMapper<
+        Input,
+        Model,
+        C extends unknown ? C | undefined : C | undefined,
+        U extends unknown ? U | undefined : U | undefined
+      >
+    : Input extends { connect?: (infer C)[] | null }
+      ? ManyReferenceMapper<Input, Model[], Partial<C> | undefined>
+      : Input extends { connect?: infer C }
+        ? OneReferenceMapper<Input, Model, Partial<C> | undefined>
+        : Input extends PropertyTypes
+          ? PropertyMapper<Input>
+          : Input extends { set?: infer S }
+            ? PropertyMapper<Partial<S>>
+            : never;
 
 /**
  * Represents a type that defines the structure and mapping behavior of a Prisma input schema.
@@ -250,18 +250,18 @@ export type InferPrismaModelProperty<Input> = Input extends {
 }
   ? U
   : Input extends { create?: (infer C)[] | null; update?: (infer U)[] | null }
-  ?
-      | InferPrismaModel<Partial<ExtractPrismaInputFromMany<C, U>>>[]
-      | undefined
-      | null
-  : Input extends { create?: infer C; update?: infer U }
-  ?
-      | InferPrismaModel<Partial<ExtractPrismaInputFromOne<C, U>>>
-      | undefined
-      | null
-  : Input extends { connect?: infer C }
-  ? C
-  : Input;
+    ?
+        | InferPrismaModel<Partial<ExtractPrismaInputFromMany<C, U>>>[]
+        | undefined
+        | null
+    : Input extends { create?: infer C; update?: infer U }
+      ?
+          | InferPrismaModel<Partial<ExtractPrismaInputFromOne<C, U>>>
+          | undefined
+          | null
+      : Input extends { connect?: infer C }
+        ? C
+        : Input;
 
 /**
  * Represents a type that infers the structure of a Prisma model based on a given Prisma input.

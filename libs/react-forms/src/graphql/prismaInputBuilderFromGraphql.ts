@@ -1,12 +1,10 @@
 import { TypedDocumentNode } from '@apollo/client';
 import { InferSchema, prismaSchemaBuilder } from '@panter/prisma-inputs';
 
-type ExtractDataFromMutation<T> = T extends TypedDocumentNode<
-  unknown,
-  infer TVariables
->
-  ? ExtractDataFromMutationVariable<TVariables>
-  : never;
+type ExtractDataFromMutation<T> =
+  T extends TypedDocumentNode<unknown, infer TVariables>
+    ? ExtractDataFromMutationVariable<TVariables>
+    : never;
 
 type ExtractDataFromMutationVariable<TVariable> = TVariable extends {
   data: infer TData;

@@ -24,8 +24,8 @@ const FormLabel = styled.label<{ $empty?: boolean; $type: MessageTypes }>`
           $type === 'error'
             ? theme.antd.colorErrorText
             : $type === 'warning'
-            ? theme.antd.colorWarningText
-            : theme.antd.colorInfoText
+              ? theme.antd.colorWarningText
+              : theme.antd.colorInfoText
         };`;
   }}
 
@@ -61,8 +61,8 @@ const FormInputMessage = styled.div<{ $type: MessageTypes }>`
       $type === 'error'
         ? theme.antd.colorErrorText
         : $type === 'warning'
-        ? theme.antd.colorWarningText
-        : theme.antd.colorInfoText
+          ? theme.antd.colorWarningText
+          : theme.antd.colorInfoText
     };`;
   }}
 `;
@@ -118,10 +118,10 @@ export function FormInput({
   const labelNode = noLabel
     ? undefined
     : label
-    ? label
-    : name
-    ? t(formInputI18nProp(name, resourceId) as any)
-    : '';
+      ? label
+      : name
+        ? t(formInputI18nProp(name, resourceId) as any)
+        : '';
   const emptyLabel = label === 'empty';
 
   return (

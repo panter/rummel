@@ -171,10 +171,10 @@ export function ReferenceSelect<
           isArray(value)
             ? value.map(({ id }) => id)
             : value
-            ? {
-                value: value.id,
-              }
-            : undefined
+              ? {
+                  value: value.id,
+                }
+              : undefined
         }
         showArrow={false}
       />

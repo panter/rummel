@@ -23,16 +23,17 @@ type PrismaInputFormModel<T> = InferPrismaModel<PrismaInputReferences<T> & T>;
 
 type FormModel<F, I> = DeepIntersect<F, PrismaInputFormModel<I>>;
 
-export type ExtractFormModel<T> = T extends PrismaFormProps<
-  infer QData,
-  infer QVariables,
-  infer MData,
-  infer MVariables,
-  infer FModel,
-  infer SchemaInput
->
-  ? FModel
-  : never;
+export type ExtractFormModel<T> =
+  T extends PrismaFormProps<
+    infer QData,
+    infer QVariables,
+    infer MData,
+    infer MVariables,
+    infer FModel,
+    infer SchemaInput
+  >
+    ? FModel
+    : never;
 
 export type ExtractUseFormReturn<T, U = never> = U extends never
   ? UseFormMutationReturn<ExtractFormModel<T>>
@@ -158,8 +159,8 @@ export const prismaResource = <
   FModelMode extends 'query'
     ? FModel
     : FModelMode extends 'mutation'
-    ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
-    : FormModel<FModel, PrismaInputArgs<MVariables>>,
+      ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
+      : FormModel<FModel, PrismaInputArgs<MVariables>>,
   SchemaInput
 >): {
   formModelType?: FModelMode;
@@ -171,8 +172,8 @@ export const prismaResource = <
   FModelMode extends 'query'
     ? FModel
     : FModelMode extends 'mutation'
-    ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
-    : FormModel<FModel, PrismaInputArgs<MVariables>>,
+      ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
+      : FormModel<FModel, PrismaInputArgs<MVariables>>,
   SchemaInput
 > => {
   return graphqlSchemaFormProps;
