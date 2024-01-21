@@ -60,7 +60,7 @@ export const AddFirstFilter = styled.div`
 `;
 
 export interface FilterProps<T> {
-  style?: {};
+  style?: Record<string, any>;
   className?: string;
   filterConfig: FilterConfig<T>;
   filter: T;

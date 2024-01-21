@@ -24,10 +24,10 @@ export const manyRelationInput = <T>(
     !options?.hideCreate && !options?.hideUpdate
       ? 'ConnectCreateUpdate'
       : !options?.hideCreate
-      ? 'ConnectCreate'
-      : !options?.hideUpdate
-      ? 'ConnectUpdate'
-      : 'Connect';
+        ? 'ConnectCreate'
+        : !options?.hideUpdate
+          ? 'ConnectUpdate'
+          : 'Connect';
   const name = `${typeName}${operationsName}NestedMany${withoutTypeName}Input`;
 
   if (typesCache[name]) {

@@ -62,7 +62,7 @@ const useAutocompleteColumns = (props: {
   return { columns, data, formModalProps };
 };
 
-export type AutocompleteTablePrismaModalProps = {};
+export type AutocompleteTablePrismaModalProps = Record<string, any>;
 
 export const AutocompleteTablePrismaModal: React.FC<
   AutocompleteTablePrismaModalProps

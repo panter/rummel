@@ -1,5 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/postgresql';
 
 import { Dummy } from './all-types-shema.fixtures';
 

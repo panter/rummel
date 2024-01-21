@@ -7,19 +7,21 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { User } from '../fixtures/user.entity';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver } from '@nestjs/apollo';
-import { MikroORM } from '@mikro-orm/core';
-import { INestApplication, Provider } from '@nestjs/common';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { INestApplication, Provider } from '@nestjs/common';
 import { Group } from '../fixtures/group.entity';
 import { Company } from '../fixtures/company.entity';
 import { CrudModule } from '../../src';
+import { Migrator } from '@mikro-orm/migrations';
+import { SeedManager } from '@mikro-orm/seeder';
+import { MikroORM } from '@mikro-orm/core';
 
 export const TEST_TIMEOUT = 60000;
 
 export interface TestContext {
   app: INestApplication;
   pgContainer: StartedPostgreSqlContainer;
-  orm: MikroORM<PostgreSqlDriver>;
+  orm: MikroORM;
 }
 
 export const beforeAllCallback = async (
@@ -31,12 +33,13 @@ export const beforeAllCallback = async (
   const fixture = await Test.createTestingModule({
     imports: [
       MikroOrmModule.forRoot({
-        type: 'postgresql',
+        driver: PostgreSqlDriver,
         host: pgContainer.getHost(),
         port: pgContainer.getPort(),
         user: pgContainer.getUsername(),
         password: pgContainer.getPassword(),
         dbName: pgContainer.getDatabase(),
+        extensions: [Migrator, SeedManager],
         entities: [User, Group, Company],
         logger: (i) => i,
         migrations: {
@@ -60,7 +63,7 @@ export const beforeAllCallback = async (
     providers: [...providers],
   }).compile();
   const app = fixture.createNestApplication({ bodyParser: true });
-  const orm = app.get(MikroORM<PostgreSqlDriver>);
+  const orm = app.get(MikroORM);
 
   await orm.getMigrator().up();
   const migrationNeeded = await orm.getMigrator().checkMigrationNeeded();
@@ -71,10 +74,11 @@ export const beforeAllCallback = async (
   }
 
   await app.init();
-  return { app, pgContainer, orm };
+  return { app, pgContainer, orm: orm as any };
 };
 
 export const afterAllCallback = async (context: TestContext) => {
-  await context?.pgContainer?.stop();
+  await context?.orm?.close(true);
   await context?.app?.close();
+  await context?.pgContainer?.stop();
 };

@@ -1,39 +1,38 @@
 module.exports = {
+  extends: ['../../.eslintrc.js', 'next'],
   env: {
     browser: true,
     es6: true,
-    node: true
+    node: true,
   },
-  extends: [
-    'next',
-    'eslint:recommended',
-    'plugin:prettier/recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-  ],
-  parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaFeatures: {
-      jsx: true
+      jsx: true,
     },
-    ecmaVersion: 2018,
-    sourceType: 'module'
   },
-  plugins: ['@typescript-eslint'],
   rules: {
     'no-console': ['error', { allow: ['error'] }],
     'prefer-template': 1,
-    'no-unused-vars': 0,
     'import/no-anonymous-default-export': 0,
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn', // or "error"
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
     'prettier/prettier': [
       'error',
       {
-        endOfLine: 'auto'
-      }
-    ]
+        endOfLine: 'auto',
+      },
+    ],
   },
   settings: {
     react: {
-      version: 'detect' // Tells eslint-plugin-react to automatically detect the version of React to use
-    }
-  }
+      version: 'detect', // Tells eslint-plugin-react to automatically detect the version of React to use
+    },
+  },
 };

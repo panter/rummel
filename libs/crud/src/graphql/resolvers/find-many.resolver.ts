@@ -85,6 +85,7 @@ export function FindManyResolver<T>(
       @CurrentUser() currentUser: AuthenticatedUser,
       @Args({ type: () => FindManyArgs, nullable })
       input: any,
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       @CurrentRequest() request: Request,
     ): Promise<number> {
       const crudInfos = getCrudInfosForType(classRef);

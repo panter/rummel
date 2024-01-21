@@ -1,5 +1,4 @@
-import { wrap } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import { GraphQLResolveInfo } from 'graphql';

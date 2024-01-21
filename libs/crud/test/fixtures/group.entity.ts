@@ -4,7 +4,7 @@ import {
   ManyToMany,
   PrimaryKey,
   Property,
-} from '@mikro-orm/core';
+} from '@mikro-orm/postgresql';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { v4 } from 'uuid';
 import { CrudField } from '../../src';

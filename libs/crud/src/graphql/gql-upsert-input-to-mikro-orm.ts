@@ -195,8 +195,8 @@ export const upsertMany = async (
       ormData[key] = currentOrmData?.[key]?.getItems
         ? currentOrmData?.[key]?.getItems()
         : isArray(currentOrmData?.[key])
-        ? currentOrmData?.[key]
-        : [];
+          ? currentOrmData?.[key]
+          : [];
     } catch (e) {
       // TODO: please use crudInfo to detect if it is a one or many relation
       ormData[key] = [];

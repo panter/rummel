@@ -1,4 +1,4 @@
-import { ApolloClient, ApolloLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 import generatedIntrospection from '../@generated/fragment-matcher';
 import { StrictTypedTypePolicies } from '../@generated/type-policies';

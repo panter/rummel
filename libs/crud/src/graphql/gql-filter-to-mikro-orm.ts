@@ -1,4 +1,4 @@
-import { ObjectQuery } from '@mikro-orm/core';
+import { ObjectQuery } from '@mikro-orm/postgresql';
 // import { UserEntity } from '../../modules/user/models/user.entity';
 import {
   applyStaticWhereFieldResolver,
