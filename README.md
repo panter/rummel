@@ -46,6 +46,14 @@ for the workspace.
 
 Packages Directory: [packages](./packages)
 
+### Consistent dependency versions
+To keep the dependency versions consistent across all packages, we use [syncpack](https://github.com/JamieMason/syncpack).
+
+Whenver you added or updated a new dependency, you need to run `yarn syncpack:fix-mismatches` allign all the version again.
+
+- `syncpack:fix-mismatches` - fix all mismatches
+- `syncpack:update` - update libs
+
 ## Publish
 
 ### Publish Libraries

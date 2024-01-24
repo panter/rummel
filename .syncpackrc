@@ -1,0 +1,11 @@
+{
+  "versionGroups": [
+    {
+      "dependencies": [
+        "@rummel/*",
+        "@panter/*"
+      ],
+      "isIgnored": true
+    }
+  ]
+}
