@@ -24,6 +24,9 @@ export class IntFilter {
 
   @Field(() => Number, { nullable: true })
   lte?: number;
+
+  @Field(() => Number, { nullable: true })
+  ne?: number;
 }
 
 @InputType()
@@ -42,6 +45,9 @@ export class DateTimeFilter {
 
   @Field(() => Date, { nullable: true })
   lte?: string;
+
+  @Field(() => Date, { nullable: true })
+  ne?: string;
 }
 
 @InputType()
@@ -72,6 +78,9 @@ export class StringFilter {
 
   @Field(() => String, { nullable: true })
   fulltext?: string;
+
+  @Field(() => String, { nullable: true })
+  ne?: string;
 
   // TODO: we currently do not support this, we overall irgnore props named "mode"
   @Field(() => SringQueryMode, { nullable: true })
@@ -122,6 +131,9 @@ export const enumFilter = (e: any) => {
 
     @Field(() => e, { nullable: true })
     fulltext?: string;
+
+    @Field(() => e, { nullable: true })
+    ne?: string;
 
     // TODO: we currently do not support this, we overall irgnore props named "mode"
     @Field(() => SringQueryMode, { nullable: true })

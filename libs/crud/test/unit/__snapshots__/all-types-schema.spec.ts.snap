@@ -42,6 +42,7 @@ input StringFilter {
   lt: String
   lte: String
   fulltext: String
+  ne: String
   mode: SringQueryMode
 }
 
@@ -86,6 +87,7 @@ input IntFilter {
   gte: Float
   lt: Float
   lte: Float
+  ne: Float
 }
 
 input DummyEnumEnumFilter {
@@ -98,6 +100,7 @@ input DummyEnumEnumFilter {
   lt: DummyEnum
   lte: DummyEnum
   fulltext: DummyEnum
+  ne: DummyEnum
   mode: SringQueryMode
 }
 
@@ -111,6 +114,7 @@ input DateTimeFilter {
   gte: DateTime
   lt: DateTime
   lte: DateTime
+  ne: DateTime
 }
 
 input Dummy2OrderByInput {

@@ -42,6 +42,7 @@ const operators: {
   gte: (obj, key, original) => (obj[`$${key}`] = original[key]),
   lt: (obj, key, original) => (obj[`$${key}`] = original[key]),
   lte: (obj, key, original) => (obj[`$${key}`] = original[key]),
+  ne: (obj, key, original) => (obj[`$${key}`] = original[key]),
   fulltext: (obj, key, original) => (obj[`$${key}`] = original[key]),
 };
 
