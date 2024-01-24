@@ -28,6 +28,7 @@ import { UserAuthority } from './authorization';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       imports: [ConfigModule],
