@@ -7,7 +7,7 @@
     "clean": "rimraf \"dist\"",
     "lint": "eslint \"**/*.ts*\"",
     "lint:type-check": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:watch": "jest --watch"
   },
   "publishConfig": {
