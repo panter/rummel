@@ -52,6 +52,7 @@ input StringFilter {
   lt: String
   lte: String
   fulltext: String
+  ne: String
   mode: SringQueryMode
 }
 

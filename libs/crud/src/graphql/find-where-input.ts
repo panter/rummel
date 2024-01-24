@@ -36,7 +36,10 @@ const getFilterDesignType = (p: CrudInfo) => {
     (designType as any).name === 'Float'
   ) {
     return IntFilter;
-  } else if ((designType as any).name === 'Date') {
+  } else if (
+    (designType as any).name === 'Date' ||
+    (designType as any).name === 'DateTime'
+  ) {
     return DateTimeFilter;
   } else if (p.options.isArray) {
     return whereInput(designType as Type);
