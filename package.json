@@ -24,6 +24,8 @@
     "lint": "turbo run lint",
     "lint:type-check": "turbo run lint:type-check",
     "clean": "turbo run clean",
+    "syncpack:fix-mismatches": "syncpack fix-mismatches",
+    "syncpack:update": "syncpack update",
     "postinstall": "patch-package --error-on-warn"
   },
   "devDependencies": {
@@ -31,6 +33,7 @@
     "changesets-gitlab": "0.10.3",
     "concurrently": "^8.2.2",
     "patch-package": "^8.0.0",
+    "syncpack": "^12.3.0",
     "turbo": "^1.11.3"
   }
 }
