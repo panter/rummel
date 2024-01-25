@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { v4 } from 'uuid';
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { GraphQLJSON } from 'graphql-scalars';
 import { CrudField } from '@panter/crud';
 import { Address } from './address.entity';
 import { Organisation } from './organisation.entity';
@@ -31,4 +32,8 @@ export class Person {
   @Field(() => Organisation, { nullable: true })
   @ManyToOne(() => Organisation, { nullable: true })
   organisation?: Organisation;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  @Property({ type: 'json', nullable: true })
+  meta?: { foo: string; bar: number };
 }

@@ -10,7 +10,9 @@ const getSortOrderDesignType = (p: CrudInfo) => {
     return;
   }
   const designType = p.typeFn();
-  if (
+  if ((designType as any).name === 'JSON') {
+    return;
+  } else if (
     (designType as any).name === 'String' ||
     (designType as any).name === 'ID' ||
     (designType as any).name === 'Number' ||
