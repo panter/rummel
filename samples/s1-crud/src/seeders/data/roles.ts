@@ -12,6 +12,7 @@ export const roles = [
   },
   {
     name: 'User',
+    isDefault: true,
     permissions: [
       {
         action: 'read',

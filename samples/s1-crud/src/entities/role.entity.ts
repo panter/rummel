@@ -4,8 +4,9 @@ import {
   ManyToMany,
   OneToMany,
   PrimaryKey,
+  Property,
 } from '@mikro-orm/core';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, HideField, ID, ObjectType } from '@nestjs/graphql';
 import { Permission } from '../authorization';
 import { AppUser } from './app-user.entity';
 
@@ -23,6 +24,13 @@ export class AppRole {
 
   @OneToMany(() => AppUser, (u) => u.role)
   users = new Collection<AppUser>(this);
+
+  /**
+   * Whether this role is the default role for new users.
+   */
+  @HideField()
+  @Property({ default: false })
+  isDefault = false;
 
   constructor(name: string) {
     this.name = name;

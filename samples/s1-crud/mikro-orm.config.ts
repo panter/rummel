@@ -1,6 +1,7 @@
 import { Options, PostgreSqlDriver } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 import { Migrator } from '@mikro-orm/migrations';
+import { AppInitSeeder } from './src/seeders/AppInitSeeder';
 
 const config: Options = {
   driver: PostgreSqlDriver,
@@ -21,8 +22,8 @@ const config: Options = {
   },
   seeder: {
     path: 'dist/**/seeders',
-    pathTs: 'seeders',
-    defaultSeeder: 'AppInitSeeder',
+    pathTs: 'src/seeders',
+    defaultSeeder: AppInitSeeder.name,
   },
 };
 

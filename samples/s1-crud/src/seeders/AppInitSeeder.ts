@@ -38,6 +38,7 @@ export class AppInitSeeder extends Seeder {
     for (const rawRole of data.roles) {
       const role = em.create(AppRole, {
         name: rawRole.name,
+        isDefault: rawRole.isDefault,
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         permissions: rawRole.permissions.map((rawPermission) => {

@@ -4,6 +4,7 @@ import { EntityManager } from '@mikro-orm/postgresql';
 import { Transactional } from '@panter/nestjs-utils';
 import { ConfigService } from '@nestjs/config';
 import { AppUser } from '../entities/app-user.entity';
+import { AppRole } from '../entities/role.entity';
 
 @Injectable()
 export class AppUserIdentityProvider extends UserIdentityProvider<AppUser> {
@@ -35,8 +36,10 @@ export class AppUserIdentityProvider extends UserIdentityProvider<AppUser> {
 
   @Transactional()
   async createUserIdentity(naturalKey: string) {
+    const role = await this.em.findOneOrFail(AppRole, { isDefault: true });
     const user = this.em.create(AppUser, {
       [this.userNaturalKeyProperty]: naturalKey,
+      role,
     });
     this.em.persist(user);
     return user;
