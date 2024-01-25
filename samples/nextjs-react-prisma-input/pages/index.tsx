@@ -1,4 +1,7 @@
-import { gotoListOfAutocompletes } from '../lib/locations';
+import {
+  gotoAutocompletesGraphqlModal,
+  gotoAutocompletesPrismaModal,
+} from '../lib/locations';
 import {
   LOCALE,
   commonServerSideTranslations,
@@ -9,7 +12,16 @@ import Link from 'next/link';
 
 const linksData = [
   {
-    title: <Link {...gotoListOfAutocompletes()}>Autocompletes</Link>,
+    title: (
+      <Link {...gotoAutocompletesPrismaModal()}>Autocomplete Prisma Modal</Link>
+    ),
+  },
+  {
+    title: (
+      <Link {...gotoAutocompletesGraphqlModal()}>
+        Autocomplete Graphql Modal
+      </Link>
+    ),
   },
 ];
 

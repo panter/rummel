@@ -5,7 +5,7 @@ import { PrismaFormModalProps, usePrismaForm } from '@panter/react-forms';
 import { useTranslation } from 'next-i18next';
 import { FormModal } from './FormModal';
 
-export const GraphqlSchemaFormModal = <
+export const PrismaFormModal = <
   QData extends FieldValues,
   QVariables extends OperationVariables,
   MData extends FieldValues,

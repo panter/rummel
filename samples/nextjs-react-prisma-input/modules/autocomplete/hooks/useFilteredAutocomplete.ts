@@ -4,7 +4,7 @@ import {
 } from '@panter/react-forms';
 import { FilterConfig } from '../../filter/components/Filter';
 import { useStringFilterProperty } from '../../filter/components/SelectFilterItem';
-import { ManyAutocompleteQuery } from '../resource';
+import { ManyAutocompleteQuery } from './useManyAutocompletes';
 
 export type AutocompleteFilterModel = {
   key?: string | null;

@@ -10,6 +10,5 @@ export default function AutocompleteAdmin() {
 export const getServerSideProps = async ({ locale }: { locale: LOCALE }) => ({
   props: {
     ...(await commonServerSideTranslations(locale)),
-    layout: 'fluid',
   },
 });

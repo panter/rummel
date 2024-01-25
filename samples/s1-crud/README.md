@@ -10,7 +10,7 @@ Exposes full CRUD (FindOne, FindMany Connect, Create Update, Delete) endpoints f
 ## Getting Started
 
 - `yarn`
-- `yarn dev`
+- `yarn dev --filter=@rummel/s1-crud`
 - Open http://localhost:3000/graphql
 
 ## Notes

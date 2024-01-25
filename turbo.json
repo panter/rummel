@@ -2,6 +2,9 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "dev": {
+      "dependsOn": [
+        "^build"
+      ],
       "cache": false,
       "persistent": true
     },
@@ -39,14 +42,11 @@
       ]
     },
     "lint": {
-      "cache": false,
       "dependsOn": [
         "lint:type-check"
       ]
     },
-    "lint:type-check": {
-      "cache": false
-    },
+    "lint:type-check": {},
     "clean": {
       "cache": false
     }
