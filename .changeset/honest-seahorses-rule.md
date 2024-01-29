@@ -1,5 +1,0 @@
----
-"@panter/crud": minor
----
-
-test

@@ -1,5 +1,11 @@
 # @panter/react-forms-ant
 
+## 0.0.7
+
+### Patch Changes
+
+- ea0b7c5: Fix Prisma and Graphql Modal Components
+
 ## 0.0.6
 
 ### Patch Changes

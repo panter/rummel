@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.4
+
+### Patch Changes
+
+- f91ef17: make query optional on useGenericQuery and the hooks useing it
+
 ## 0.0.3
 
 ### Patch Changes
