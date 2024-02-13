@@ -1,5 +1,16 @@
 # @panter/crud
 
+## 0.2.0
+
+### Minor Changes
+
+- 3b80e80: test
+
+### Patch Changes
+
+- 3b587af: Add 'ne' (not equals) filter for dates, strings and numbers
+- b068a37: minor verion bump
+
 ## 0.1.6
 
 ### Patch Changes

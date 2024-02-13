@@ -1,5 +1,11 @@
 # @panter/nestjs-utils
 
+## 0.0.6
+
+### Patch Changes
+
+- b068a37: minor verion bump
+
 ## 0.0.5
 
 ### Patch Changes
