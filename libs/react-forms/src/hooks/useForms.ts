@@ -160,6 +160,7 @@ export function useFormMutation<
       keepIsSubmitSuccessful: false,
       keepIsSubmitted: false,
       keepTouched: false,
+      keepSubmitCount: false,
     });
   }, [onClose, mutationOptions.reset]);
 
