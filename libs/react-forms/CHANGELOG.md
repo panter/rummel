@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.5
+
+### Patch Changes
+
+- 0cbf565: Fix prisma where variable state typings
+
 ## 0.0.4
 
 ### Patch Changes
