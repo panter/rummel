@@ -1,7 +1,9 @@
 import { TypedDocumentNode } from '@apollo/client';
 import { useState } from 'react';
 
-export type ExtractWhereVariableFromNode<T extends TypedDocumentNode> =
+export type ExtractWhereVariableFromNode<
+  T extends TypedDocumentNode<any, any>,
+> =
   T extends TypedDocumentNode<any, infer TVariables>
     ? ExtractWhereVariable<TVariables>
     : never;
