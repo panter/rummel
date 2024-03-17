@@ -21,6 +21,7 @@ export type FormFooterProps = {
   children?: ReactNode;
   beforeAction?: ReactNode;
   afterAction?: ReactNode;
+  additionalChildren?: ReactNode;
 };
 
 export const FormFooter: React.FC<FormFooterProps> = ({
@@ -38,6 +39,7 @@ export const FormFooter: React.FC<FormFooterProps> = ({
   children,
   beforeAction,
   afterAction,
+  additionalChildren,
 }) => {
   const { t } = useTranslation();
   return (
@@ -73,6 +75,7 @@ export const FormFooter: React.FC<FormFooterProps> = ({
           ) : null}
           {afterAction}
         </Space>
+        {additionalChildren}
       </Row>
     </Base>
   );
