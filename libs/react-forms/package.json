@@ -22,7 +22,8 @@
   },
   "peerDependencies": {
     "@panter/prisma-inputs": "0.x",
-    "react": "18.2.0"
+    "react": "18.2.0",
+    "react-hook-form": "~7.51.1"
   },
   "dependencies": {
     "dexie": "^3.2.6",

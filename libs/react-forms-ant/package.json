@@ -23,6 +23,7 @@
   "peerDependencies": {
     "@panter/prisma-inputs": "0.x",
     "@panter/react-forms": "0.x",
-    "react": "18.2.0"
+    "react": "18.2.0",
+    "react-hook-form": "~7.51.1"
   }
 }
