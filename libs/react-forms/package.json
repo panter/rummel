@@ -23,5 +23,9 @@
   "peerDependencies": {
     "@panter/prisma-inputs": "0.x",
     "react": "18.2.0"
+  },
+  "dependencies": {
+    "dexie": "^3.2.6",
+    "dexie-react-hooks": "^1.1.7"
   }
 }
