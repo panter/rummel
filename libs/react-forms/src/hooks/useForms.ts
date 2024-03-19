@@ -1,15 +1,15 @@
 import {
+  ApolloError,
   BaseMutationOptions,
   MutationHookOptions,
   MutationTuple,
   OperationVariables,
-  QueryTuple,
+  LazyQueryResultTuple,
   TypedDocumentNode,
   useMutation,
   useQuery,
-  ApolloError,
 } from '@apollo/client';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   DefaultValues,
   FieldValues,
@@ -27,8 +27,10 @@ export type GenericQueryOptions<
   TData,
   TVariables extends OperationVariables = OperationVariables,
 > = {
-  loadingModelError?: QueryTuple<TData, TVariables>[1]['error'] | Error;
-  model?: QueryTuple<TData, TVariables>[1]['data'];
+  loadingModelError?:
+    | LazyQueryResultTuple<TData, TVariables>[1]['error']
+    | Error;
+  model?: LazyQueryResultTuple<TData, TVariables>[1]['data'];
   loadingModel: boolean;
 };
 
@@ -119,22 +121,8 @@ export function useFormMutation<
     [onClose, options?.onCompleted],
   );
 
-  const formReturn = useForm<FModel>(defaultValues);
+  const formReturn = useForm<FModel>({ defaultValues });
 
-  // const formItem = useCallback(
-  //   (
-  //     name: Path<FModel>,
-  //   ): BaseFormInputNoFormItemProps<FModel, Path<FModel>> => ({
-  //     resourceId,
-  //     control: formReturn.control,
-  //   }),
-  //   [resourceId, formReturn.control],
-  // );
-
-  // const form: UseFormMutationReturn<FModel> = useMemo(
-  //   () => ({ ...formReturn, formItem }),
-  //   [formReturn, formItem],
-  // );
   const form = formReturn;
 
   const [callMutation, mutationOptions] = useMutation(mutation, {
