@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.7
+
+### Patch Changes
+
+- ea1b34b: expose asset uploads
+
 ## 0.0.6
 
 ### Patch Changes
