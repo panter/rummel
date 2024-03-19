@@ -1,5 +1,12 @@
 # @panter/react-forms-ant
 
+## 0.0.8
+
+### Patch Changes
+
+- 4b35d27: upload assets
+- 4b35d27: Upload file in a queue
+
 ## 0.0.7
 
 ### Patch Changes
