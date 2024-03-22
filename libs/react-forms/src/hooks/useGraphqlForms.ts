@@ -9,6 +9,9 @@ import {
   useFormQuery,
 } from './useForms';
 
+const isFunction = (obj: unknown): obj is (...args: any[]) => any =>
+  obj instanceof Function;
+
 export type GraphqlFormProps<
   QData = any,
   QVariables extends OperationVariables = OperationVariables,
@@ -22,12 +25,16 @@ export type GraphqlFormProps<
   > & {
     queryDataToModel?: (
       data: QData,
-      noDefaults?: boolean,
     ) => DefaultValues<FModel> | undefined | null;
-    onQueryCompleted?: (data: QData) => void;
+    onQueryCompleted?: (data?: QData) => void;
     modelToInput: (data: FModel, queryData?: QData) => MVariables | undefined;
     queryVariables?: QVariables;
-    defaultValues?: DefaultValues<FModel>;
+    defaultValues?:
+      | DefaultValues<FModel>
+      | ((
+          model?: DefaultValues<FModel> | null,
+          queryData?: QData,
+        ) => DefaultValues<FModel>);
   };
 
 export type UseGraphqlFormReturn<
@@ -65,6 +72,8 @@ export function useGraphqlForm<
   onClose,
   defaultValues,
   options: mutationOptions,
+  sendEmptyVariables,
+  mutationDataToModel,
 }: GraphqlFormProps<
   QData,
   QVariables,
@@ -76,24 +85,27 @@ export function useGraphqlForm<
     resourceId,
     mutation,
     modelToInput: (formModel) => modelToInput(formModel, formQuery.model),
-    defaultValues: defaultValues,
-    // defaultValues: defaultValues as DeepPartialUseForm<FModel>,
     options: mutationOptions,
     onClose,
+    sendEmptyVariables,
+    mutationDataToModel,
   });
 
-  // cro todo: reset query on close
+  // cro todo: reset query on close, now we use useEffect to call onCompleted
+  // in useFormQuery
   const formQuery = useFormQuery({
     query,
     variables: queryVariables,
     skipQuery,
     validateResult,
     onCompleted: (data) => {
-      queryDataToModel &&
-        formMutation.form.reset({
-          ...((defaultValues || {}) as any),
-          ...(queryDataToModel(data) || undefined),
-        });
+      const newModel = data && queryDataToModel?.(data);
+      formMutation.form.reset({
+        ...(newModel || ({} as any)),
+        ...((isFunction(defaultValues)
+          ? defaultValues(newModel, data)
+          : defaultValues) || ({} as any)),
+      });
       onQueryCompleted?.(data);
     },
   });

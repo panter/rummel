@@ -49,12 +49,19 @@ export type PrismaFormProps<
 > = {
   schema: PrismaInputSchema<SchemaInput>;
   queryVariables?: QVariables;
-  defaultValues?: DefaultValues<FModel & object>;
-  onQueryCompleted?: (data: QData) => void;
+  defaultValues?: (
+    model?: DefaultValues<FModel> | null,
+    queryData?: QData,
+  ) => DefaultValues<FModel & object> | undefined | null;
+  onQueryCompleted?: (data?: QData) => void;
   queryDataToModel?: (
     data: QData,
-    noDefaults?: boolean,
   ) => DefaultValues<FModel & object> | undefined | null;
+  modelToInput?: (p: {
+    input?: PrismaInputArgs<MVariables>;
+    queryVariables?: QVariables;
+    model: FModel;
+  }) => MVariables | undefined;
 } & Omit<UseFormQueryProps<QData, QVariables>, 'onCompleted' | 'variables'> &
   Omit<
     UseFormMutationProps<FModel, MData, MVariables>,
@@ -87,7 +94,8 @@ export function usePrismaForm<
 >({
   schema,
   queryDataToModel,
-  // defaultValues,
+  modelToInput,
+  defaultValues,
   ...graphqlFormProps
 }: PrismaFormProps<
   QData,
@@ -99,27 +107,30 @@ export function usePrismaForm<
 >): UsePrismaFormReturn<FModel, QData, QVariables, MData, MVariables> {
   const graphqlFormOptions = useGraphqlForm({
     ...graphqlFormProps,
-    // defaultValues,
     skipQuery: Boolean(graphqlFormProps.skipQuery || !graphqlFormProps.query),
     queryDataToModel,
-    modelToInput: (data, queryData) => {
+    modelToInput: (model, queryData) => {
       // "as any" thing goes here, we do trust in typescript
-      // modelToInput will only map the fields that are in the schema
+      // also 'modelToInput' will only map the fields that are in the schema
 
-      const input = mapModelToInput(
+      const inputData = mapModelToInput(
         schema,
-        data as any,
-        queryData &&
-          queryDataToModel &&
-          (queryDataToModel(queryData, true) as any),
+        model as any,
+        queryData && queryDataToModel && (queryDataToModel(queryData) as any),
       );
 
-      return input !== undefined && data !== undefined
-        ? ({
-            data: input,
-            ...graphqlFormProps.queryVariables,
-          } as any)
-        : undefined;
+      if (modelToInput) {
+        return modelToInput({
+          input: inputData,
+          queryVariables: graphqlFormProps.queryVariables,
+          model,
+        });
+      }
+
+      return {
+        data: inputData || {},
+        ...graphqlFormProps.queryVariables,
+      } as any;
     },
   });
 
@@ -148,9 +159,11 @@ export const prismaResource = <
   fragment: TypedDocumentNode<FModel>;
   queryDataToModel?: (
     data: QData,
-    noDefaults?: boolean,
   ) => DefaultValues<FModel & object> | undefined | null;
-  defaultValues?: DefaultValues<FModel & object>;
+  defaultValues?: (
+    model?: DefaultValues<FModel>,
+    queryData?: QData,
+  ) => DefaultValues<FModel & object> | undefined | null;
 } & PrismaFormProps<
   QData extends FieldValues ? QData : any,
   QVariables,
