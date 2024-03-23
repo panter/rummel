@@ -2,12 +2,12 @@ import { ApolloError } from '@apollo/client';
 import { notification } from 'antd';
 import confirm from 'antd/lib/modal/confirm';
 import { ReactNode, useMemo, useRef } from 'react';
+import { ArgsProps } from 'antd/lib/notification/interface';
 import {
   GenericMutation,
-  useGenericMutation,
   UseGenericMutationProps,
-} from './useGenericMutation';
-import { ArgsProps } from 'antd/lib/notification/interface';
+  useGenericMutation,
+} from '@panter/react-forms';
 
 export const getDefaultMutationState = (m: GenericMutation<any, any>) => {
   if (m.successfullySubmitted) {

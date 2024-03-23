@@ -18,6 +18,7 @@ import {
 } from 'react-hook-form';
 import { notNil } from '../utils/arrays';
 
+export type FormCloseReason = 'canceled' | 'saved';
 // export type UseFormMutationReturn<T extends FieldValues> = UseFormReturn<T> & {
 //   formItem: (name: Path<T>) => BaseFormInputNoFormItemProps<T>;
 // };
@@ -79,12 +80,11 @@ export type UseFormMutationProps<
   resourceId?: string;
   modelToInput: (data: FModel) => MVariables | undefined;
   mutationDataToModel?: (data: MData) => FModel | undefined | null;
-  onClose?: (v?: MData | null) => void;
+  onClose?: (reason: FormCloseReason, v?: MData | null) => void;
   mutation: TypedDocumentNode<MData, MVariables>;
   options?: MutationHookOptions<MData, MVariables>;
   defaultValues?: DefaultValues<FModel>;
   sendEmptyVariables?: boolean;
-  disableCloseOnEmptyVariables?: boolean;
 };
 
 /**
@@ -107,7 +107,6 @@ export function useFormMutation<
   mutationDataToModel,
   defaultValues,
   sendEmptyVariables,
-  disableCloseOnEmptyVariables,
 }: UseFormMutationProps<FModel, MData, MVariables>): FormMutationOptions<
   FModel,
   MData,
@@ -115,15 +114,13 @@ export function useFormMutation<
 > {
   const onCompleted = useCallback(
     (data: MData, completedOptions: BaseMutationOptions | undefined) => {
-      onClose?.(data);
+      onClose?.('saved', data);
       options?.onCompleted?.(data, completedOptions);
     },
     [onClose, options?.onCompleted],
   );
 
-  const formReturn = useForm<FModel>({ defaultValues });
-
-  const form = formReturn;
+  const form = useForm<FModel>({ defaultValues });
 
   const [callMutation, mutationOptions] = useMutation(mutation, {
     ...options,
@@ -135,34 +132,37 @@ export function useFormMutation<
     // onCompleted,
   });
 
-  const doClose = useCallback(() => {
-    onClose?.();
-    mutationOptions.reset();
-    form.reset({} as any, {
-      keepValues: false,
-      keepDefaultValues: false,
-      keepDirty: false,
-      keepDirtyValues: false,
-      keepErrors: false,
-      keepIsValid: false,
-      keepIsSubmitSuccessful: false,
-      keepIsSubmitted: false,
-      keepTouched: false,
-      keepSubmitCount: false,
-    });
-  }, [onClose, mutationOptions.reset]);
+  const close = useCallback(
+    (reason: FormCloseReason) => {
+      onClose?.(reason);
+      mutationOptions.reset();
+      form.reset({} as any, {
+        keepValues: false,
+        keepDefaultValues: false,
+        keepDirty: false,
+        keepDirtyValues: false,
+        keepErrors: false,
+        keepIsValid: false,
+        keepIsSubmitSuccessful: false,
+        keepIsSubmitted: false,
+        keepTouched: false,
+        keepSubmitCount: false,
+        keepIsValidating: false,
+      });
+    },
+    [onClose, mutationOptions.reset],
+  );
+  const doClose = useCallback(
+    () => close('canceled'),
+    [onClose, mutationOptions.reset],
+  );
 
   const submit = form.handleSubmit((formModel) => {
     const variables = modelToInput(formModel);
     if (variables || (!variables && sendEmptyVariables)) {
       callMutation({ variables });
-    }
-    if (
-      !Object.keys(variables || {}).length &&
-      !sendEmptyVariables &&
-      !disableCloseOnEmptyVariables
-    ) {
-      doClose();
+    } else {
+      close('saved');
     }
   });
 
@@ -184,7 +184,7 @@ export type UseFormQueryProps<
   QResult = any,
   QVariables extends OperationVariables = OperationVariables,
 > = {
-  onCompleted?: (data: QResult) => void;
+  onCompleted?: (data?: QResult) => void;
   query?: TypedDocumentNode<QResult, QVariables>;
   variables?: QVariables;
   skipQuery?: boolean;
@@ -226,9 +226,19 @@ export function useFormQuery<
   validateResult,
   onCompleted,
 }: UseFormQueryProps<QData, QVariables>): FormQueryOptions<QData, QVariables> {
-  const query = useState<TypedDocumentNode<QData, QVariables> | undefined>(
+  const [called, setCalled] = useState(false);
+  // cache query so we stick with the first we got.
+  // this is because we cannot call useQuery conditionally
+  const [query] = useState<TypedDocumentNode<QData, QVariables> | undefined>(
     initialQuery,
-  )?.[0];
+  );
+  // call onCompleted if no query is provided, this happens only once, as we cache the query
+  useEffect(() => {
+    if (!query && !skipQuery && !called) {
+      setCalled(true);
+      onCompleted?.();
+    }
+  }, [query, skipQuery, called, onCompleted]);
 
   let model: QData | undefined = undefined;
   let loadingModel: boolean = false;
@@ -236,21 +246,19 @@ export function useFormQuery<
 
   if (query) {
     const queryResult = useQuery(query, {
-      onCompleted,
+      onCompleted: (data) => {
+        setCalled(true);
+        onCompleted?.(data);
+      },
       variables,
       skip: skipQuery,
       fetchPolicy: 'network-only',
     });
+
     model = queryResult.data;
     loadingModel = queryResult.loading;
     loadingModelError = queryResult.error;
   }
-
-  useEffect(() => {
-    if (!query) {
-      onCompleted?.({} as any);
-    }
-  }, [query]);
 
   const [error, setError] = useState<Error>();
   useEffect(() => {
@@ -263,6 +271,7 @@ export function useFormQuery<
 
   const reset = useCallback(() => {
     setError(undefined);
+    setCalled(false);
   }, []);
 
   return {

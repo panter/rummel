@@ -1,9 +1,9 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useCallback, useMemo, useRef } from 'react';
 import { isNumber } from 'lodash';
+import { useMemo, useRef } from 'react';
+import { AssetDb } from '../db/AssetDb';
 import { InMemoryAssetsDb } from '../db/InMemoryAssetsDb';
 import { useInMemoryAssetDbQuery } from './useInMemoryAssetDbQuery';
-import { AssetDb } from '../db/AssetDb';
 
 /**
  * Custom hook to manage polling intervals and conditions for Apollo queries based on the presence of asset to upload.
@@ -29,14 +29,9 @@ export const useAssetPolling = (
     assetDb.allScheduledAssetsInfos(),
   );
 
-  const allAssetInfos = useCallback(
-    () => assetDb.allScheduledAssetsInfos(),
-    [assetDb],
-  );
-
   const allInMemory = useInMemoryAssetDbQuery(
     assetDb instanceof InMemoryAssetsDb ? assetDb : inMemoryFallback,
-    allAssetInfos,
+    () => assetDb.allScheduledAssetsInfos(),
   );
 
   const assetInfos = indexedAssetsInfos || allInMemory;
