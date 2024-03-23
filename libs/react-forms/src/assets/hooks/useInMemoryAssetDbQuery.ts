@@ -3,7 +3,6 @@ import { InMemoryAssetsDb } from '../db/InMemoryAssetsDb';
 
 /**
  * A custom hook for querying data from an in-memory assets database and subscribing to updates.
- * Remember to memoize the `fetchData` function using `useCallback` to prevent unnecessary re-fetches or re-renders.
  * @param assetDb The in-memory database instance to subscribe to for updates.
  * @param fetchData A function that fetches the data asynchronously, please use useCallback to memoize it.
  * @param Optional dependencies array to control the effect's re-execution.
@@ -28,7 +27,7 @@ export function useInMemoryAssetDbQuery<T>(
     });
 
     return unsubscribe;
-  }, [assetDb, fetchData, ...(deps || [])]);
+  }, [assetDb, ...(deps || [])]);
 
   return data;
 }
