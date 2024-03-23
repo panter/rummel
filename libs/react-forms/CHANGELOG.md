@@ -1,5 +1,13 @@
 # @panter/react-forms
 
+## 0.0.8
+
+### Patch Changes
+
+- 263001b: Change default value behaviour for useGraphqlForm and usePrismaForms
+- b769d38: useUploadFieldArray hook for form usage
+- b769d38: move useMutationWithConfirm to react-forms-ant
+
 ## 0.0.7
 
 ### Patch Changes
