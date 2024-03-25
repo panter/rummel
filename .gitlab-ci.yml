@@ -55,16 +55,28 @@ build-samples:
 #     - yarn --immutable
 #     - yarn changesets-gitlab comment
 
-#  tmp disabled due to:
+lint-lib:
+  stage: test
+  only: ["merge_requests", "main"]
+  script:
+    - yarn --immutable
+    - yarn turbo run lint --filter='./libs/*'
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
+
+# manual beacuse not working properly:
 # Could not find a working container runtime strategy
 # const pgContainer = await new PostgreSqlContainer()'
 test-lib:
   stage: test
   only: ["merge_requests", "main"]
+  allow_failure: true
+  when: manual
   script:
     - yarn --immutable
-    #   - yarn turbo run test --filter='./libs/*'
-    - yarn turbo run lint --filter='./libs/*'
+    - yarn turbo run test --filter='./libs/*'
   artifacts:
     paths:
       - libs/**/coverage*/
