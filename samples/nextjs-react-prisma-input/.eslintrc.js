@@ -15,14 +15,7 @@ module.exports = {
     'prefer-template': 1,
     'import/no-anonymous-default-export': 0,
     'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'warn', // or "error"
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
+    '@typescript-eslint/no-unused-vars': 'off',
     'prettier/prettier': [
       'error',
       {

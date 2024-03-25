@@ -52,27 +52,13 @@ import { UserAuthority } from './authorization';
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CrudModule.forRootAsync<UserAuthority>({
-      authorizeCallback: ({
-        operation,
-        resource,
-        currentUser,
-        data,
-        condition,
-      }) => {
-        return;
-        // console.log(
-        //   `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
-        // );
-        // //example of find one
-        // if (
-        //   !currentUser.can(
-        //     operation,
-        //     resource,
-        //     condition ? { id: condition?.where.id } : undefined,
-        //   )
-        // ) {
-        //   throw new UnauthorizedException();
-        // }
+      useFactory: () => {
+        return {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          auditCallback: ({ operation, resource, currentUser, data }) => {
+            return;
+          },
+        };
       },
     }),
   ],
