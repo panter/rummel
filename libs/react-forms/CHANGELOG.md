@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.9
+
+### Patch Changes
+
+- 8b36dea: fix ant mutations
+
 ## 0.0.8
 
 ### Patch Changes
