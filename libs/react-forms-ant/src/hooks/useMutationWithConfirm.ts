@@ -52,7 +52,7 @@ export const processCompleted = <TData, TVariables>({
   }
 };
 
-export const processError = <TVariables,>({
+export const processError = <TVariables>({
   error,
   defaultUnsuccessMessage,
   onError,
