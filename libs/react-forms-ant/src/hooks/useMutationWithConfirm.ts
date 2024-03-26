@@ -1,6 +1,5 @@
 import { ApolloError } from '@apollo/client';
-import { notification } from 'antd';
-import confirm from 'antd/lib/modal/confirm';
+import { notification, Modal } from 'antd';
 import { ReactNode, useMemo, useRef } from 'react';
 import { ArgsProps } from 'antd/lib/notification/interface';
 import {
@@ -8,7 +7,6 @@ import {
   UseGenericMutationProps,
   useGenericMutation,
 } from '@panter/react-forms';
-
 export const getDefaultMutationState = (m: GenericMutation<any, any>) => {
   if (m.successfullySubmitted) {
     return 'success';
@@ -154,7 +152,7 @@ export function useMutationWithConfirm<TData, TVariables>({
       ) => {
         variables.current = v;
 
-        confirm({
+        Modal.confirm({
           title: confirmProps?.title || title,
           content: confirmProps?.content || content,
           icon: confirmProps?.icon || icon,
