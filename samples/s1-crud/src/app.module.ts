@@ -25,6 +25,7 @@ import { getCorsOrigins } from '@panter/nestjs-utils';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { UserAuthority } from './authorization';
+import mikroOrmConfig from '../mikro-orm.config';
 
 @Module({
   imports: [
@@ -48,7 +49,9 @@ import { UserAuthority } from './authorization';
         context: ({ req, res }) => ({ req, res }),
       }),
     }),
-    MikroOrmModule.forRoot(),
+    MikroOrmModule.forRoot({
+      ...mikroOrmConfig,
+    }),
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CrudModule.forRootAsync<UserAuthority>({
