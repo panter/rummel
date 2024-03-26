@@ -4,7 +4,7 @@ import {
   CreateOnePersonResolver,
   DeleteOnePersonResolver,
   FindManyPersonResolver,
-  FinOneUserResolver,
+  FindOneUserResolver,
   UpdateOnePersonResolver,
 } from './app.resolver';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -66,7 +66,7 @@ import mikroOrmConfig from '../mikro-orm.config';
     }),
   ],
   providers: [
-    FinOneUserResolver,
+    FindOneUserResolver,
     FindManyPersonResolver,
     CreateOnePersonResolver,
     UpdateOnePersonResolver,
