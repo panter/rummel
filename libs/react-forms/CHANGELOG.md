@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.10
+
+### Patch Changes
+
+- 5b77b26: fix lint and package deps
+
 ## 0.0.9
 
 ### Patch Changes
