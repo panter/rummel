@@ -13,15 +13,15 @@
     "lint:type-check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.11.5",
+    "@types/node": "^20.11.30",
     "@types/supertest": "^6.0.2",
-    "eslint": "8.56.0",
+    "eslint": "8.57.0",
     "eslint-config-custom": "*",
     "jest": "^29.7.0",
     "rimraf": "^5.0.5",
     "supertest": "^6.3.4",
     "tsconfig": "*",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.4.3"
   }
 }

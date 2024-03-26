@@ -34,6 +34,9 @@
     "concurrently": "^8.2.2",
     "patch-package": "^8.0.0",
     "syncpack": "^12.3.0",
-    "turbo": "^1.11.3"
+    "turbo": "^1.13.0"
+  },
+  "resolutions": {
+    "typescript": "5.3.x"
   }
 }

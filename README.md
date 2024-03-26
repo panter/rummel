@@ -6,7 +6,7 @@ This is a monorepo managed by yarn workspaces powered by turborepo.
 
 ### Start
 
-```bash 
+```bash
 yarn
 ```
 
@@ -47,12 +47,13 @@ for the workspace.
 Packages Directory: [packages](./packages)
 
 ### Consistent dependency versions
+
 To keep the dependency versions consistent across all packages, we use [syncpack](https://github.com/JamieMason/syncpack).
 
 Whenver you added or updated a new dependency, you need to run `yarn syncpack:fix-mismatches` allign all the version again.
 
-- `syncpack:fix-mismatches` - fix all mismatches
-- `syncpack:update` - update libs
+- `yarn syncpack:fix-mismatches` - fix all mismatches
+- `yarn syncpack:update` - update libs
 
 ## Publish
 
@@ -62,7 +63,7 @@ This repo uses [Changeset](https://github.com/changesets/changesets)
 and [Changeset Gitlab](https://github.com/un-ts/changesets-gitlab) for changes documentation, changelog generation, and
 release management. The needed access tokens are stored in the CI/CD variables.
 
-__npm public:__
+**npm public:**
 
 - [prism-inputs](https://git.panter.ch/rummel/rummel/-/tree/main/libs/prisma-inputs)
 - [crud](https://git.panter.ch/rummel/rummel/-/tree/main/libs/crud)
@@ -92,4 +93,3 @@ changelog and package.json while publishing a new versions. Merge it and your pr
 ## Links
 
 - https://www.notion.so/panterch/Notes-bb32ae412c3949c1961eb1c75cb9f262?pvs=4
-
