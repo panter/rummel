@@ -8,6 +8,7 @@ variables:
   DOCKER_HOST: "tcp://docker:2375"
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
+  TESTCONTAINERS_HOST_OVERRIDE: "host.docker.internal"
   KUBERNETES_CPU_REQUEST: "0.5"
   KUBERNETES_CPU_LIMIT: "1"
   KUBERNETES_MEMORY_REQUEST: 2Gi
@@ -55,23 +56,35 @@ build-samples:
 #     - yarn --immutable
 #     - yarn changesets-gitlab comment
 
-#  tmp disabled due to:
+lint-lib:
+  stage: test
+  only: ["merge_requests", "main"]
+  script:
+    - yarn --immutable
+    - yarn turbo run lint --filter='./libs/*'
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
+
+# manual beacuse not working properly:
 # Could not find a working container runtime strategy
 # const pgContainer = await new PostgreSqlContainer()'
-#test-lib:
-#  stage: test
-#  only: ["merge_requests", "main"]
-#  script:
-#    - yarn --immutable
-#    - yarn turbo run test --filter='./libs/*'
-#    - yarn turbo run lint --filter='./libs/*'
-#  artifacts:
-#    paths:
-#      - libs/**/coverage*/
-#  cache:
-#    paths:
-#      - node_modules/
-#      - .yarn
+test-lib:
+  stage: test
+  only: ["merge_requests", "main"]
+  allow_failure: true
+  when: manual
+  script:
+    - yarn --immutable
+    - yarn turbo run test --filter='./libs/*'
+  artifacts:
+    paths:
+      - libs/**/coverage*/
+  cache:
+    paths:
+      - node_modules/
+      - .yarn
 
 test-samples:
   stage: test

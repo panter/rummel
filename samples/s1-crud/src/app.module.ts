@@ -4,7 +4,7 @@ import {
   CreateOnePersonResolver,
   DeleteOnePersonResolver,
   FindManyPersonResolver,
-  FinOneUserResolver,
+  FindOneUserResolver,
   UpdateOnePersonResolver,
 } from './app.resolver';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -25,6 +25,7 @@ import { getCorsOrigins } from '@panter/nestjs-utils';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
 import { UserAuthority } from './authorization';
+import mikroOrmConfig from '../mikro-orm.config';
 
 @Module({
   imports: [
@@ -48,36 +49,24 @@ import { UserAuthority } from './authorization';
         context: ({ req, res }) => ({ req, res }),
       }),
     }),
-    MikroOrmModule.forRoot(),
+    MikroOrmModule.forRoot({
+      ...mikroOrmConfig,
+    }),
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CrudModule.forRootAsync<UserAuthority>({
-      authorizeCallback: ({
-        operation,
-        resource,
-        currentUser,
-        data,
-        condition,
-      }) => {
-        return;
-        // console.log(
-        //   `operation: ${operation}, resource: ${resource}, currentUser: ${currentUser.getUserAuthorityId()}, data: ${data}`,
-        // );
-        // //example of find one
-        // if (
-        //   !currentUser.can(
-        //     operation,
-        //     resource,
-        //     condition ? { id: condition?.where.id } : undefined,
-        //   )
-        // ) {
-        //   throw new UnauthorizedException();
-        // }
+      useFactory: () => {
+        return {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          auditCallback: ({ operation, resource, currentUser, data }) => {
+            return;
+          },
+        };
       },
     }),
   ],
   providers: [
-    FinOneUserResolver,
+    FindOneUserResolver,
     FindManyPersonResolver,
     CreateOnePersonResolver,
     UpdateOnePersonResolver,

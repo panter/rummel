@@ -1,25 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { TestContext, afterAllCallback, beforeAllCallback } from './utils';
+import { FindOneUserResolver } from '../src/app.resolver';
 
 describe('AppController (e2e)', () => {
-  let app: INestApplication;
+  let context: TestContext;
 
-  beforeEach(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    await app.init();
+  beforeAll(async () => {
+    context = await beforeAllCallback([FindOneUserResolver]);
   });
 
-  afterEach(async () => {
-    await app.close();
+  afterAll(async () => {
+    return afterAllCallback(context);
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(404);
+    return request(context.app.getHttpServer()).get('/').expect(404);
   });
 });

@@ -20,6 +20,7 @@
     "@rummel/eslint-config-custom": "*",
     "@rummel/tsconfig": "*",
     "@types/uuid": "^9.0.7",
+    "eslint": "8.56.0",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
     "uuid": "^9.0.1"

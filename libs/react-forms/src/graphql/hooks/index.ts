@@ -4,4 +4,3 @@ export * from './useGenericMutation';
 export * from './useGraphqlFormModal';
 export * from './useGraphqlFormModal';
 export * from './usePrismaFormModal';
-export * from './useMutationWithFormDialog';

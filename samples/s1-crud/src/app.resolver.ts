@@ -15,10 +15,10 @@ import { CheckPermissions, CrudPermissionAction } from './authorization';
  */
 @Resolver()
 @CheckPermissions([CrudPermissionAction.READ, AppUser.name])
-export class FinOneUserResolver extends FindOneResolver(AppUser) {}
+export class FindOneUserResolver extends FindOneResolver(AppUser) {}
 
 @Resolver()
-export class FinOnePersonResolver extends FindOneResolver(Person) {}
+export class FindOnePersonResolver extends FindOneResolver(Person) {}
 
 @Resolver()
 export class FindManyPersonResolver extends FindManyResolver(Person) {}

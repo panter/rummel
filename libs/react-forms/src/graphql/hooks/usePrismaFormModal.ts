@@ -77,7 +77,7 @@ export function usePrismaFormModal<
   const onClose = useCallback(() => {
     setQueryVariables(undefined);
     setSkipQuery(true);
-    props.onClose?.();
+    props.onClose?.('canceled');
     setIsOpen(false);
   }, [props.onClose]);
 

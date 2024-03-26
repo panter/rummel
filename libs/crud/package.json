@@ -13,8 +13,8 @@
     "lint:type-check": "tsc --noEmit",
     "prepack": "npm run build",
     "test": "istanbul-merge --out coverage/coverage-final.json coverage-e2e/coverage-final.json coverage-unit/coverage-final.json && istanbul report --include coverage/coverage-final.json --dir coverage html",
-    "test:unit": "jest --config test/jest-unit.json --runInBand",
-    "test:e2e": "jest --config test/jest-e2e.json --runInBand"
+    "test:unit": "jest --config test/jest-unit.json",
+    "test:e2e": "jest --config test/jest-e2e.json"
   },
   "publishConfig": {
     "access": "public",
@@ -41,13 +41,14 @@
     "@panter/nestjs-utils": "*",
     "@rummel/eslint-config-custom": "*",
     "@rummel/tsconfig": "*",
-    "@testcontainers/postgresql": "^10.6.0",
+    "@testcontainers/postgresql": "^10.7.2",
     "@types/lodash": "^4.14.202",
     "@types/node": "^20.11.5",
     "@types/pluralize": "^0.0.33",
     "@types/supertest": "^6.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "eslint": "8.56.0",
     "graphql": "^16.8.1",
     "graphql-scalars": "^1.22.4",
     "graphql-upload": "14.0.0",

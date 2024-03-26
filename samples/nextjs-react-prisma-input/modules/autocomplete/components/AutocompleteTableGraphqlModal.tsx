@@ -2,9 +2,8 @@ import { PlusOutlined } from '@ant-design/icons';
 import {
   UseFormMutationReturn,
   useGraphqlFormModal,
-  usePrismaFormModal,
 } from '@panter/react-forms';
-import { GraphqlFormModal, PrismaFormModal } from '@panter/react-forms-ant';
+import { GraphqlFormModal } from '@panter/react-forms-ant';
 import { Button, Table } from 'antd';
 import {
   AutocompleteFragment as AutocompleteFragmentType,
@@ -17,14 +16,13 @@ import { FilterPanel } from '../../filter/components/FilterComponents';
 import { useAutocompleteColumns } from '../hooks/useAutocompleteColumns';
 import { useManyAutocompletes } from '../hooks/useManyAutocompletes';
 import {
-  AutocompleteCreateResource,
   AutocompleteFragment,
   CreateOneAutocompleteMutation,
   OneAutocompleteQuery,
   UpdateOneAutocompleteMutation,
 } from '../resource';
 
-export type AutocompleteTablePrismaModalProps = {};
+export type AutocompleteTablePrismaModalProps = object;
 
 export const AutocompleteTableGraphqlModal: React.FC<
   AutocompleteTablePrismaModalProps
@@ -69,7 +67,7 @@ export const AutocompleteTableGraphqlModal: React.FC<
   const [createOne, formModalPropsCreate] = useGraphqlFormModal({
     mutation: CreateOneAutocompleteMutation,
     defaultValues: {} as Partial<AutocompleteFragmentType>,
-    modelToInput: (formModel, queryData) => {
+    modelToInput: (formModel, _queryData) => {
       const mutationVars: CreateOneAutocompleteMutationVariables = { data: {} };
       if (formModel.key) {
         mutationVars.data.key = formModel.key;
