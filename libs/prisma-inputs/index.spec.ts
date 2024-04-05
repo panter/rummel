@@ -151,10 +151,12 @@ const simpleSchema = prismaSchemaBuilder<SimpleCreateInput, SimpleUpdateInput>({
 const personSchema = prismaSchemaBuilder<PersonCreateInput, PersonUpdateInput>({
   props: {
     name: property(),
-    addresses: manyRelation(() => addressSchema.relation()),
-    addressesIds: manyReference(),
-    organisation: reference(),
-    organisationId: reference(),
+    addresses: manyRelation(() => addressSchema.relation(), {
+      fk: ['id'],
+    }),
+    addressesIds: manyReference({ fk: ['id'] }),
+    organisation: reference({ fk: ['id'] }),
+    organisationId: reference({ fk: ['id'] }),
   },
   create: {},
   update: {},
@@ -177,15 +179,33 @@ const organisationCreateMapper: PrismaInputSchema<
   mapper: object(),
   properties: {
     description: property(),
-    person: manyReference(),
-    personIds: manyReference(),
+    person: manyReference({ fk: ['id'] }),
+    personIds: manyReference({ fk: ['id'] }),
     simple: relation(() => simpleSchema.relation()),
-    simpleId: reference(),
-    simples: manyRelation(() => simpleSchema.relation()),
-    simplesIds: manyReference(),
+    simpleId: reference({ fk: ['id'] }),
+    simples: manyRelation(() => simpleSchema.relation(), {
+      fk: ['id'],
+    }),
+    simplesIds: manyReference({ fk: ['id'] }),
   },
 };
 
+const organisationUpdateMapper: PrismaInputSchema<
+  PrismaInput<OrganisationUpdateInput>
+> = {
+  mapper: object(),
+  properties: {
+    description: property(),
+    person: manyReference({ fk: ['id'] }),
+    personIds: manyReference({ fk: ['id'] }),
+    simple: relation(() => simpleSchema.relation()),
+    simpleId: reference({ fk: ['id'] }),
+    simples: manyRelation(() => simpleSchema.relation(), {
+      fk: ['id'],
+    }),
+    simplesIds: manyReference({ fk: ['id'] }),
+  },
+};
 describe('property()', () => {
   it('should return new value if no oldValue is not set "create"', () => {
     const resultUndefined = property<string>().map({
@@ -284,17 +304,16 @@ describe('reference()', () => {
     const resultUndefined = reference<
       { connect: { id: string } },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: { id: '1' },
     });
     expect(resultUndefined).toEqual({ connect: { id: '1' } });
   });
 
   it('should return undefined if value and oldValue are the same', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string }
-    >().map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      { fk: ['id'] },
+    ).map({
       value: { id: '1' },
       oldValue: { id: '1' },
     });
@@ -305,25 +324,23 @@ describe('reference()', () => {
     const resultUndefined = reference<
       { connect: { id: string } },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       oldValue: { id: '1' },
     });
     expect(resultUndefined).toEqual({ disconnect: true });
 
-    const resultNull = reference<
-      { connect: { id: string } },
-      { id: string }
-    >().map({
+    const resultNull = reference<{ connect: { id: string } }, { id: string }>({
+      fk: ['id'],
+    }).map({
       oldValue: { id: '1' },
     });
     expect(resultNull).toEqual({ disconnect: true });
   });
 
   it('should return value if value and oldValue are set', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string }
-    >().map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      { fk: ['id'] },
+    ).map({
       value: { id: '1' },
       oldValue: { id: '2' },
     });
@@ -331,10 +348,9 @@ describe('reference()', () => {
   });
 
   it('should return undefined if there is nothing to do', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string }
-    >().map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      { fk: ['id'] },
+    ).map({
       value: {} as any,
       oldValue: undefined,
     });
@@ -347,7 +363,7 @@ describe('manyReference()', () => {
     const resultUndefined = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [{ id: '1' }],
     });
     expect(resultUndefined).toEqual({ connect: [{ id: '1' }] });
@@ -357,7 +373,7 @@ describe('manyReference()', () => {
     const resultCreate = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [{ id: '1' }],
       oldValue: [{ id: '1' }],
     });
@@ -368,7 +384,7 @@ describe('manyReference()', () => {
     const resultUndefined = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       oldValue: [{ id: '1' }],
     });
     expect(resultUndefined).toEqual({ disconnect: [{ id: '1' }] });
@@ -376,7 +392,7 @@ describe('manyReference()', () => {
     const resultNull = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       oldValue: [{ id: '1' }],
     });
     expect(resultNull).toEqual({ disconnect: [{ id: '1' }] });
@@ -386,7 +402,7 @@ describe('manyReference()', () => {
     const resultCreate = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [{ id: '1' }],
       oldValue: [{ id: '2' }],
     });
@@ -400,7 +416,7 @@ describe('manyReference()', () => {
     const resultCreate = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [{ id: '1' }],
       oldValue: [{ id: '2' }],
     });
@@ -414,7 +430,7 @@ describe('manyReference()', () => {
     const resultCreate = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [] as any,
       oldValue: undefined,
     });
@@ -428,7 +444,7 @@ describe('manyReference()', () => {
     const resultCreate = manyReference<
       { connect: { id: string }[] },
       { id: string }
-    >().map({
+    >({ fk: ['id'] }).map({
       value: [{ id: '' }],
       oldValue: [{ id: '2' }],
     });
@@ -474,8 +490,8 @@ describe('relation()', () => {
     expect(resultNull).toEqual({ disconnect: true });
   });
 
-  it('should return create if property id is not set, disregarding the oldValue', () => {
-    const resultCreate = organisationCreateMapper.properties.simple.map({
+  it('should return update even if property id is not set', () => {
+    const resultCreate = organisationUpdateMapper.properties.simple.map({
       value: { name: 'John' },
       oldValue: {
         name: 'Jane',
@@ -483,7 +499,7 @@ describe('relation()', () => {
       } as any,
     });
     expect(resultCreate).toEqual({
-      create: { name: 'John' },
+      update: { name: { set: 'John' } },
     });
   });
   it('should return update if property id is set, disregarding the oldValue', () => {
