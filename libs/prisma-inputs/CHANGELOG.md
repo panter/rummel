@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.5
+
+### Patch Changes
+
+- f679b62: introduce foreign keys
+
 ## 0.0.4
 
 ### Patch Changes
