@@ -49,12 +49,12 @@ build-samples:
       - libs/crud/dist
       - libs/nestjs-utils/dist
 
-# changeset-mr-comment:
-#   stage: comment
-#   only: ["merge_requests"]
-#   script:
-#     - yarn --immutable
-#     - yarn changesets-gitlab comment
+changeset-mr-comment:
+  stage: comment
+  only: ["merge_requests"]
+  script:
+    - yarn --immutable
+    - yarn changesets-gitlab comment
 
 lint-lib:
   stage: test
