@@ -130,13 +130,13 @@ export const prismaSchemaBuilder = <
   relation: (
     customSchemas?:
       | {
-          create: () => PrismaInputSchema<PrismaCreateInput>;
-          update: () => PrismaInputSchema<PrismaUpdateInput>;
+          create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
+          update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
         }
       | undefined,
   ) => {
-    create: () => PrismaInputSchema<PrismaCreateInput>;
-    update: () => PrismaInputSchema<PrismaUpdateInput>;
+    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
+    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
   };
 } => {
   const { props, create, update } = schemas;
@@ -167,11 +167,11 @@ export const prismaSchemaBuilder = <
     } as any);
 
   const relation = (customSchemas?: {
-    create?: () => PrismaInputSchema<PrismaCreateInput>;
-    update?: () => PrismaInputSchema<PrismaUpdateInput>;
+    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
+    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
   }): {
-    create: () => PrismaInputSchema<PrismaCreateInput>;
-    update: () => PrismaInputSchema<PrismaUpdateInput>;
+    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
+    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
   } => ({
     create: customSchemas?.create
       ? customSchemas?.create

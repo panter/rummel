@@ -7,9 +7,9 @@ type EntityIdInput = {
 };
 
 // TODO: composed primary keys
-type ConnectRelationInput = {
-  id?: string;
-};
+// type ConnectRelationInput = {
+//   id?: string;
+// };
 
 type PropertyTypes = string | number | boolean | Date | bigint;
 
@@ -46,6 +46,12 @@ type ExtractPrismaInputFromOne<C, U> = PrismaInput<
       : never
 >;
 
+type ExtractManyRelationConnectType<T> = T extends {
+  connect?: (infer C)[] | null;
+}
+  ? C | undefined
+  : never;
+
 type ExtractManyReferenceType<T> = T extends { connect?: (infer C)[] }
   ? C | undefined
   : never;
@@ -73,15 +79,15 @@ export type PrismaInputReferences<T> = {
 
 export type PrismaInput<T> = PrismaInputReferences<T> & T;
 
-export type PrismaOneObjectInput<Create, Update> = {
-  connect?: ConnectRelationInput;
+export type PrismaOneObjectInput<Create, Update, Connect> = {
+  connect?: Connect;
   create?: Create;
   disconnect?: boolean;
   update?: Update;
 };
 
-export type PrismaManyObjectInput<Create, Update> = {
-  connect?: ConnectRelationInput[];
+export type PrismaManyObjectInput<Create, Update, Connect> = {
+  connect?: Connect[];
   create?: Create[];
   disconnect?: EntityIdInput[];
   update?: { where: EntityIdInput; data: Update }[];
@@ -112,12 +118,13 @@ export type OneRelationMapper<
   Model = any,
   Create = 'create' extends keyof Input ? Input['create'] : never,
   Update = 'update' extends keyof Input ? Input['update'] : never,
+  Connect = 'connect' extends keyof Input ? Input['connect'] : never,
 > = {
   // embbedded?: boolean;
   map: (props: {
     value?: Model | null;
     oldValue?: Model | null;
-  }) => PrismaOneObjectInput<Create, Update> | undefined;
+  }) => PrismaOneObjectInput<Create, Update, Connect> | undefined;
   __typename: 'Relation';
 };
 
@@ -126,12 +133,17 @@ export type ManyRelationMapper<
   Model = any,
   Create = Input['create'],
   Update = Input['update'],
+  Connect = 'connect' extends keyof Input
+    ? Input['connect'] extends unknown
+      ? undefined
+      : Input['connect']
+    : undefined,
 > = {
   // embbedded?: boolean;
   map: (props: {
     value?: Model[] | null;
     oldValue?: Model[] | null;
-  }) => PrismaManyObjectInput<Create, Update> | undefined;
+  }) => PrismaManyObjectInput<Create, Update, Connect> | undefined;
   __typename: 'ManyRelation';
 };
 
@@ -185,14 +197,16 @@ export type PrismaInputSchemaProperty<
       Input,
       ExtractModelDataType<Model>,
       C | undefined,
-      ExtractManyRelationUpdateDataType<U> | undefined
+      ExtractManyRelationUpdateDataType<U> | undefined,
+      ExtractManyRelationConnectType<Input>
     >
   : Input extends { create?: infer C; update?: infer U }
     ? OneRelationMapper<
         Input,
         Model,
         C extends unknown ? C | undefined : C | undefined,
-        U extends unknown ? U | undefined : U | undefined
+        U extends unknown ? U | undefined : U | undefined,
+        'connect' extends keyof Input ? Input['connect'] : undefined
       >
     : Input extends { connect?: (infer C)[] | null }
       ? ManyReferenceMapper<Input, Model[], Partial<C> | undefined>

@@ -24,6 +24,8 @@ const MAPPER_ORDER: { [key: string]: number } = {
   ManyReference: 5,
 };
 
+// type StringTuple<T extends (string | number | symbol)[]> = [T[number], ...T];
+
 export const setPropertyMapper = <T, M extends 'create' | 'update'>(
   method: M,
   value: T,
@@ -50,14 +52,19 @@ export const relation = <
   S = T,
   Create = 'create' extends keyof T
     ? T['create'] extends unknown
-      ? any
+      ? undefined
       : T['create']
-    : any,
+    : undefined,
   Update = 'update' extends keyof T
     ? T['update'] extends unknown
-      ? any
+      ? undefined
       : T['update']
-    : any,
+    : undefined,
+  Connect = 'connect' extends keyof T
+    ? T['connect'] extends unknown
+      ? undefined
+      : T['connect']
+    : undefined,
 >(
   p: () => {
     create?: () => PrismaInputSchema<Create, S> | undefined;
@@ -67,7 +74,8 @@ export const relation = <
   T,
   S | undefined | null,
   Create | undefined,
-  Update | undefined
+  Update | undefined,
+  Connect | undefined
 > => ({
   map: ({ value, oldValue }) => {
     const { create, update } = p();
@@ -75,7 +83,11 @@ export const relation = <
       return;
     }
     const inputData:
-      | PrismaOneObjectInput<Create | undefined, Update | undefined>
+      | PrismaOneObjectInput<
+          Create | undefined,
+          Update | undefined,
+          Connect | undefined
+        >
       | undefined = {};
 
     if (
@@ -84,10 +96,7 @@ export const relation = <
       (value === undefined || value === null)
     ) {
       inputData.disconnect = true;
-    } else if (
-      (value as any)?.id &&
-      (value as any)?.id === (oldValue as any)?.id
-    ) {
+    } else if (oldValue !== undefined && oldValue != null && value) {
       const updateMapper = update?.();
       const updateInputData = updateMapper?.mapper?.({
         value: value === undefined ? null : value,
@@ -97,8 +106,6 @@ export const relation = <
       if (updateInputData) {
         inputData.update = updateInputData;
       }
-    } else if ((value as any)?.id) {
-      inputData.connect = { id: (value as any)?.id };
     } else if (value !== undefined && value !== null) {
       const createMapper = create?.();
       const createInputData = createMapper?.mapper?.({
@@ -126,19 +133,27 @@ export const manyRelation = <
   SourceUpdate = T extends { update?: (infer U)[] | null } ? U : never,
   Create = T extends { create?: (infer C)[] | null } ? C : never,
   Update = 'data' extends keyof SourceUpdate ? SourceUpdate['data'] : never,
+  Connect = T extends { connect?: any[] | null } ? T | undefined : undefined,
 >(
   p: () => {
     create?: () => PrismaInputSchema<Create, S> | undefined;
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
+  o: {
+    fk: 'where' extends keyof SourceUpdate
+      ? Array<keyof NonNullable<SourceUpdate['where']>>
+      : undefined;
+  },
 ): ManyRelationMapper<
   T,
   S | undefined | null,
   Create | undefined,
-  Update | undefined
+  Update | undefined,
+  Connect | undefined
 > => ({
   map: ({ value, oldValue }) => {
     const { create, update } = p();
+    const { fk: foreignKeys = [] } = o;
     if (value === oldValue) {
       return;
     }
@@ -149,7 +164,8 @@ export const manyRelation = <
 
     const inputData: PrismaManyObjectInput<
       Create | undefined,
-      Update | undefined
+      Update | undefined,
+      Connect | undefined
     > = {};
 
     // disconnect
@@ -161,20 +177,31 @@ export const manyRelation = <
       })
       .forEach((oldValueItem) => {
         inputData.disconnect = inputData.disconnect || [];
-        inputData.disconnect.push({ id: (oldValueItem as any).id });
+        const disconnectInput = foreignKeys.reduce((acc, key) => {
+          acc[key] = (oldValueItem as any)[key];
+          return acc;
+        }, {} as any);
+        inputData.disconnect.push(disconnectInput);
       });
 
     // create & update
     value?.forEach((newValueItem) => {
       const oldValueItem = oldValue?.find((oldValueItem) => {
         return (
-          (newValueItem as any)?.id &&
-          (newValueItem as any)?.id === (oldValueItem as any)?.id
+          foreignKeys.length &&
+          foreignKeys.every((key) => {
+            return (newValueItem as any)[key] === (oldValueItem as any)[key];
+          })
         );
       });
       if (
-        (newValueItem as any)?.id &&
-        (newValueItem as any)?.id == (oldValueItem as any)?.id
+        foreignKeys.length > 0 &&
+        foreignKeys.every((key) => {
+          return (
+            (newValueItem as any)[key] &&
+            (newValueItem as any)[key] === (oldValueItem as any)[key]
+          );
+        })
       ) {
         const updateMapper = update?.();
         const updateInputData = updateMapper?.mapper?.({
@@ -184,14 +211,26 @@ export const manyRelation = <
         });
         if (updateInputData) {
           inputData.update = inputData.update || [];
-          inputData.update.push({
-            where: { id: (newValueItem as any)?.id },
-            data: updateInputData,
-          });
+          if (foreignKeys.length) {
+            inputData.update.push({
+              where: foreignKeys.reduce((acc, key) => {
+                acc[key] = (newValueItem as any)[key];
+                return acc;
+              }, {} as any),
+              data: updateInputData,
+            });
+          }
         }
-      } else if ((newValueItem as any)?.id && !oldValueItem) {
-        inputData.connect = inputData.connect || [];
-        inputData.connect.push({ id: (newValueItem as any)?.id });
+        // } else if ((newValueItem as any)?.id && !oldValueItem) {
+        //   inputData.connect = inputData.connect || [];
+        //   if (foreignKeys.length) {
+        //     inputData.connect.push(
+        //       foreignKeys.reduce((acc, key) => {
+        //         acc[key] = (newValueItem as any)[key];
+        //         return acc;
+        //       }, {} as any),
+        //     );
+        //   }
       } else {
         const createMapper = create?.();
         const createInputData = createMapper?.mapper?.({
@@ -212,21 +251,24 @@ export const manyRelation = <
   __typename: 'ManyRelation',
 });
 
-export const reference = <T extends { connect?: any }, S>(): // map?: (props: {
-//   value?: S | null;
-//   oldValue?: S | null;
-// }) => PrismaOneReferenceInput<T['connect']>,
-OneReferenceMapper<T, S | undefined> => ({
+export const reference = <T extends { connect?: any }, S>(p: {
+  fk: Array<keyof NonNullable<S>>;
+}): OneReferenceMapper<T, S | undefined> => ({
   map: ({ value, oldValue }) => {
     // if (map) {
     //   return map({ value, oldValue });
     // }
-
+    const { fk: foreignKeys = [] } = p;
     if (value === oldValue) {
       return;
     }
 
-    if ((value as any)?.id && (value as any)?.id === (oldValue as any)?.id) {
+    if (
+      foreignKeys.length > 0 &&
+      foreignKeys?.every((key) => {
+        return (value as any)?.[key] === (oldValue as any)?.[key];
+      })
+    ) {
       return;
     }
 
@@ -237,8 +279,17 @@ OneReferenceMapper<T, S | undefined> => ({
       (value === undefined || value === null)
     ) {
       inputData.disconnect = true;
-    } else if ((value as any)?.id) {
-      inputData.connect = { id: (value as any)?.id };
+    } else if (
+      foreignKeys.length > 0 &&
+      foreignKeys?.every((key) => {
+        return (value as any)?.[key];
+      })
+    ) {
+      // connect by foreign key
+      inputData.connect = foreignKeys.reduce((acc, key) => {
+        acc[key] = (value as any)?.[key];
+        return acc;
+      }, {} as any);
     }
 
     if (Object.keys(inputData).length === 0) {
@@ -252,8 +303,12 @@ OneReferenceMapper<T, S | undefined> => ({
 export const manyReference = <
   T extends { connect?: any },
   S = T,
->(): ManyReferenceMapper<T, S[] | undefined> => ({
+  C = T extends { connect?: (infer C)[] } ? C : undefined,
+>(p: {
+  fk: Array<keyof NonNullable<C>>;
+}): ManyReferenceMapper<T, S[] | undefined> => ({
   map: ({ value, oldValue }) => {
+    const { fk: foreignKeys = [] } = p;
     if (value === oldValue) {
       return;
     }
@@ -277,7 +332,11 @@ export const manyReference = <
       if (
         !value?.some(
           (newValueItem) =>
-            (newValueItem as any).id === (oldValueItem as any).id,
+            foreignKeys.every(
+              (key) =>
+                (newValueItem as any)[key] === (oldValueItem as any)[key],
+            ),
+          // (newValueItem as any).id === (oldValueItem as any).id,
         )
       ) {
         inputData.disconnect = inputData.disconnect || [];
@@ -287,7 +346,8 @@ export const manyReference = <
 
     // connect
     value?.forEach((newValueItem) => {
-      if (!(newValueItem as any).id) {
+      // !(newValueItem as any).id
+      if (foreignKeys.some((key) => !(newValueItem as any)[key])) {
         console.warn(
           'ManyReference: id is missing, ignore the connect',
           newValueItem,
@@ -297,11 +357,21 @@ export const manyReference = <
         if (
           !oldValue?.some(
             (oldValueItem) =>
-              (newValueItem as any).id === (oldValueItem as any).id,
+              foreignKeys.every(
+                (key) =>
+                  (newValueItem as any)[key] === (oldValueItem as any)[key],
+              ),
+            // (newValueItem as any).id === (oldValueItem as any).id,
           )
         ) {
           inputData.connect = inputData.connect || [];
-          inputData.connect.push({ id: (newValueItem as any).id } as any); // CRO: weird typing
+          // inputData.connect.push({ id: (newValueItem as any).id } as any); // CRO: weird typing
+          inputData.connect.push(
+            foreignKeys.reduce((acc, key) => {
+              acc[key] = (newValueItem as any)[key];
+              return acc;
+            }, {} as any),
+          );
         }
       }
     });
@@ -362,7 +432,7 @@ export const object =
           const oldValue = oldSource?.[key as keyof Model] as any;
 
           if (propMapper.__typename === 'Property') {
-            const method = (source as any)?.id ? 'update' : 'create';
+            const method = oldValue ? 'update' : 'create';
             const mappedValue = propMapper.map?.({
               value,
               oldValue,
