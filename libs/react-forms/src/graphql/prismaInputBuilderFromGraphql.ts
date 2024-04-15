@@ -12,9 +12,13 @@ type ExtractDataFromMutationVariable<TVariable> = TVariable extends {
   ? TData
   : never;
 
-export type PrismaSchemaFromGraphql<Create, Update> = InferSchema<
+type ExtractTypeFromFragment<T> =
+  T extends TypedDocumentNode<infer Type, unknown> ? Type : never;
+
+export type PrismaSchemaFromGraphql<Create, Update, Fragment> = InferSchema<
   ExtractDataFromMutation<Create>,
-  ExtractDataFromMutation<Update>
+  ExtractDataFromMutation<Update>,
+  ExtractTypeFromFragment<Fragment>
 >;
 
 export const prismaInputBuilderFromGraphql = <
@@ -22,12 +26,15 @@ export const prismaInputBuilderFromGraphql = <
   CVariables,
   UData,
   UVariables,
+  FData,
 >(props: {
+  fragment: TypedDocumentNode<FData, any>;
   create?: TypedDocumentNode<CData, CVariables>;
   update?: TypedDocumentNode<UData, UVariables>;
 }) => {
   return prismaSchemaBuilder<
     ExtractDataFromMutationVariable<CVariables>,
-    ExtractDataFromMutationVariable<UVariables>
+    ExtractDataFromMutationVariable<UVariables>,
+    FData
   >;
 };

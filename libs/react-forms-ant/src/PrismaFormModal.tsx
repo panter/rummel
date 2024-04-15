@@ -11,6 +11,7 @@ export const PrismaFormModal = <
   MData extends FieldValues,
   MVariables extends OperationVariables,
   FModel extends FieldValues,
+  SchemaModel,
 >({
   isOpen,
   title,
@@ -26,7 +27,8 @@ export const PrismaFormModal = <
   MData,
   MVariables,
   FModel,
-  PrismaInputArgs<MVariables>
+  PrismaInputArgs<MVariables>,
+  SchemaModel
 >) => {
   const { t } = useTranslation();
 
