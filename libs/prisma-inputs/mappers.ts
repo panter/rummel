@@ -1,11 +1,11 @@
+import { deepCompareObjects } from './deepCompare';
 import {
   GenericPrismaInput,
-  InferPrismaModel,
   ManyReferenceMapper,
   ManyRelationMapper,
+  Nullable,
   OneReferenceMapper,
   OneRelationMapper,
-  PrismaInput,
   PrismaInputSchema,
   PrismaInputSchemaProperty,
   PrismaManyObjectInput,
@@ -14,7 +14,6 @@ import {
   PrismaOneReferenceInput,
   PropertyMapper,
 } from './index';
-import { deepCompareObjects } from './deepCompare';
 
 const MAPPER_ORDER: { [key: string]: number } = {
   Property: 1,
@@ -38,19 +37,43 @@ export const setPropertyMapper = <T, M extends 'create' | 'update'>(
   return result;
 };
 
-export const property = <T>(
+export function property<T, S>(
+  pick: (a?: S | null) => T,
   forceMethod?: 'create' | 'update',
-): PropertyMapper<T> => ({
-  map: ({ value, oldValue, method }) => {
-    if (value !== oldValue) {
-      return setPropertyMapper(
-        forceMethod || method,
-        value === null ? undefined : value,
-      );
-    }
-  },
-  __typename: 'Property',
-});
+): PropertyMapper<T | null | undefined, S, any> {
+  return {
+    pick,
+    map: ({ value, oldValue, method }) => {
+      if (value !== oldValue) {
+        return setPropertyMapper(
+          forceMethod || method,
+          value === null ? undefined : value,
+        );
+      }
+    },
+    __typename: 'Property',
+  };
+}
+
+export function autoProperty<T, S, K>(
+  forceMethod?: 'create' | 'update',
+): PropertyMapper<
+  T | null | undefined,
+  S,
+  K extends keyof S ? (T extends S[K] ? K : unknown) : any
+> {
+  return {
+    map: ({ value, oldValue, method }) => {
+      if (value !== oldValue) {
+        return setPropertyMapper(
+          forceMethod || method,
+          value === null ? undefined : value,
+        );
+      }
+    },
+    __typename: 'Property',
+  };
+}
 
 export const relation = <
   T extends { create?: any; update?: any },
@@ -70,18 +93,22 @@ export const relation = <
       ? undefined
       : T['connect']
     : undefined,
+  ModelSource = any,
 >(
   p: () => {
-    create?: () => PrismaInputSchema<Create, S> | undefined;
-    update?: () => PrismaInputSchema<Update, S> | undefined;
+    create?: () => PrismaInputSchema<Create, Nullable<Partial<S>>> | undefined;
+    update?: () => PrismaInputSchema<Update, Nullable<Partial<S>>> | undefined;
   },
+  pick: (m?: ModelSource | null) => Nullable<Partial<S>> | null | undefined,
 ): OneRelationMapper<
   T,
-  S | undefined | null,
+  Nullable<Partial<S>> | undefined | null,
   Create | undefined,
   Update | undefined,
-  Connect | undefined
+  Connect | undefined,
+  ModelSource
 > => ({
+  pick,
   map: ({ value, oldValue }) => {
     const { create, update } = p();
     if (value === oldValue) {
@@ -123,7 +150,6 @@ export const relation = <
         inputData.create = createInputData;
       }
     }
-
     if (Object.keys(inputData).length === 0) {
       return;
     }
@@ -139,26 +165,36 @@ export const manyRelation = <
   Create = T extends { create?: (infer C)[] | null } ? C : never,
   Update = 'data' extends keyof SourceUpdate ? SourceUpdate['data'] : never,
   Connect = T extends { connect?: any[] | null } ? T | undefined : undefined,
+  // Where = 'where' extends keyof SourceUpdate ? SourceUpdate['where'] : false,
+  // Disconnect = T extends { disconnect?: any[] | null }
+  //   ? T | undefined
+  //   : undefined,
+  ModelSource = object,
 >(
   p: () => {
     create?: () => PrismaInputSchema<Create, S> | undefined;
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
-  o: {
-    fk: 'where' extends keyof SourceUpdate
-      ? Array<keyof NonNullable<SourceUpdate['where']>>
-      : undefined;
-  },
+  pick: (
+    m?: ModelSource | null,
+  ) => (Partial<S> | null | undefined)[] | null | undefined,
+  pickForUpdate: 'where' extends keyof SourceUpdate
+    ? (m: S | undefined | null) => SourceUpdate['where'] | null | undefined
+    : false,
 ): ManyRelationMapper<
   T,
   S | undefined | null,
   Create | undefined,
   Update | undefined,
-  Connect | undefined
+  Connect | undefined,
+  any, // Errros in disconnect will popup on runtime
+  ModelSource
 > => ({
+  pick,
   map: ({ value, oldValue }) => {
     const { create, update } = p();
-    const { fk: foreignKeys = [] } = o;
+    // const pick = o?.pick || ((v: any) => v?.[fk]);
+
     if (value === oldValue) {
       return;
     }
@@ -170,43 +206,56 @@ export const manyRelation = <
     const inputData: PrismaManyObjectInput<
       Create | undefined,
       Update | undefined,
-      Connect | undefined
+      Connect | undefined,
+      any
     > = {};
 
     // disconnect
-    oldValue
-      ?.filter((oldValueItem) => {
-        return !value?.some((newValueItem) => {
-          return (newValueItem as any).id === (oldValueItem as any).id;
+    if (pickForUpdate) {
+      oldValue
+        ?.filter((oldValueItem) => {
+          return !value?.some((newValueItem) => {
+            return deepCompareObjects(
+              pickForUpdate(newValueItem) || false,
+              pickForUpdate(oldValueItem),
+            );
+          });
+        })
+        .forEach((oldValueItem) => {
+          inputData.disconnect = inputData.disconnect || [];
+          // const disconnectInput = foreignKeys.reduce((acc, key) => {
+          //   acc[key] = (oldValueItem as any)[key];
+          //   return acc;
+          // }, {} as any);
+          const disconnectInput = pickForUpdate(oldValueItem);
+          if (disconnectInput) inputData.disconnect.push(disconnectInput);
         });
-      })
-      .forEach((oldValueItem) => {
-        inputData.disconnect = inputData.disconnect || [];
-        const disconnectInput = foreignKeys.reduce((acc, key) => {
-          acc[key] = (oldValueItem as any)[key];
-          return acc;
-        }, {} as any);
-        inputData.disconnect.push(disconnectInput);
-      });
+    }
 
     // create & update
     value?.forEach((newValueItem) => {
-      const oldValueItem = oldValue?.find((oldValueItem) => {
-        return (
-          foreignKeys.length &&
-          foreignKeys.every((key) => {
-            return (newValueItem as any)[key] === (oldValueItem as any)[key];
-          })
-        );
-      });
-      if (
-        foreignKeys.length > 0 &&
-        foreignKeys.every((key) => {
-          return (
-            (newValueItem as any)[key] &&
-            (newValueItem as any)[key] === (oldValueItem as any)[key]
+      const oldValueItem =
+        pickForUpdate &&
+        oldValue?.find((oldValueItem) => {
+          return deepCompareObjects(
+            pickForUpdate(newValueItem) || false,
+            pickForUpdate(oldValueItem),
           );
-        })
+        });
+
+      if (
+        // foreignKeys.length > 0 &&
+        // foreignKeys.every((key) => {
+        //   return (
+        //     (newValueItem as any)[key] &&
+        //     (newValueItem as any)[key] === (oldValueItem as any)[key]
+        //   );
+        // })
+        pickForUpdate &&
+        deepCompareObjects(
+          pickForUpdate(newValueItem) || false,
+          pickForUpdate(oldValueItem),
+        )
       ) {
         const updateMapper = update?.();
         const updateInputData = updateMapper?.mapper?.({
@@ -216,15 +265,15 @@ export const manyRelation = <
         });
         if (updateInputData) {
           inputData.update = inputData.update || [];
-          if (foreignKeys.length) {
-            inputData.update.push({
-              where: foreignKeys.reduce((acc, key) => {
-                acc[key] = (newValueItem as any)[key];
-                return acc;
-              }, {} as any),
-              data: updateInputData,
-            });
-          }
+
+          inputData.update.push({
+            // where: foreignKeys.reduce((acc, key) => {
+            //   acc[key] = (newValueItem as any)[key];
+            //   return acc;
+            // }, {} as any),
+            where: pickForUpdate(newValueItem) as any,
+            data: updateInputData,
+          });
         }
         // } else if ((newValueItem as any)?.id && !oldValueItem) {
         //   inputData.connect = inputData.connect || [];
@@ -256,64 +305,95 @@ export const manyRelation = <
   __typename: 'ManyRelation',
 });
 
-export const reference = <T extends { connect?: any }, S>(p: {
-  fk: Array<keyof NonNullable<S>>;
-}): OneReferenceMapper<T, S | undefined> => ({
-  map: ({ value, oldValue }) => {
-    // if (map) {
-    //   return map({ value, oldValue });
-    // }
-    const { fk: foreignKeys = [] } = p;
-    if (deepCompareObjects(value, oldValue)) {
-      return;
-    }
+manyRelation.FALLBACK_UPDATE = 'update' as const;
 
-    if (
-      foreignKeys.length > 0 &&
-      foreignKeys?.every((key) => {
-        return (value as any)?.[key] === (oldValue as any)?.[key];
-      })
-    ) {
-      return;
-    }
+const mapReference = <Model, Connect>(p?: {
+  value?: Model | null;
+  oldValue?: Model | null;
+}): PrismaOneReferenceInput<Connect> | undefined => {
+  const { value, oldValue } = p || {};
+  if (
+    deepCompareObjects(value || false, oldValue)
+    // foreignKeys.length > 0 &&
+    // foreignKeys?.every((key) => {
+    //   return (value as any)?.[key] === (oldValue as any)?.[key];
+    // })
+  ) {
+    return;
+  }
 
-    const inputData: PrismaOneReferenceInput<T['connect']> | undefined = {};
-    if (
-      oldValue !== undefined &&
-      oldValue !== null &&
-      (value === undefined || value === null)
-    ) {
-      inputData.disconnect = true;
-    } else if (
-      foreignKeys.length > 0 &&
-      foreignKeys?.every((key) => {
-        return (value as any)?.[key];
-      })
-    ) {
-      // connect by foreign key
-      inputData.connect = foreignKeys.reduce((acc, key) => {
-        acc[key] = (value as any)?.[key];
-        return acc;
-      }, {} as any);
-    }
+  const inputData: PrismaOneReferenceInput<Connect> | undefined = {};
+  if (
+    oldValue !== undefined &&
+    oldValue !== null &&
+    (value === undefined || value === null)
+  ) {
+    inputData.disconnect = true;
+  } else if (
+    // foreignKeys.length > 0 &&
+    // foreignKeys?.every((key) => {
+    //   return (value as any)?.[key];
+    // })
+    value &&
+    Object.keys(value).length > 0
+  ) {
+    // connect by foreign key
+    inputData.connect = value as any;
+    // inputData.connect = foreignKeys.reduce((acc, key) => {
+    //   acc[key] = (value as any)?.[key];
+    //   return acc;
+    // }, {} as any);
+  }
 
-    if (Object.keys(inputData).length === 0) {
-      return;
-    }
-    return inputData;
-  },
+  if (Object.keys(inputData).length === 0) {
+    return;
+  }
+  return inputData;
+};
+
+export const autoReference = <
+  T extends { connect?: any },
+  S,
+  ModelSource,
+  Key,
+>(): OneReferenceMapper<
+  T,
+  S | undefined,
+  'connect' extends keyof S ? S['connect'] : any,
+  ModelSource,
+  Key extends keyof ModelSource
+    ? 'connect' extends keyof T
+      ? T['connect'] | undefined | null extends
+          | ModelSource[Key]
+          | undefined
+          | null // TODO or vice versa?
+        ? Key
+        : unknown
+      : any
+    : any
+> => ({ map: (p) => mapReference(p), __typename: 'Reference' });
+
+export const reference = <T extends { connect?: any }, S, ModelSource>(
+  resolveValue: (
+    value?: Partial<ModelSource> | null,
+  ) => T['connect'] | null | undefined,
+): OneReferenceMapper<
+  T,
+  S | undefined,
+  'connect' extends keyof S ? S['connect'] : any,
+  ModelSource
+> => ({
+  pick: resolveValue,
+  map: (p) => mapReference(p),
   __typename: 'Reference',
 });
 
-export const manyReference = <
-  T extends { connect?: any },
-  S = T,
-  C = T extends { connect?: (infer C)[] } ? C : undefined,
->(p: {
-  fk: Array<keyof NonNullable<C>>;
-}): ManyReferenceMapper<T, S[] | undefined> => ({
+export const manyReference = <T extends { connect?: any }, S, ModelSource>(
+  // p?: ReferenceOptions<NonNullable<S>, keyof NonNullable<S>>,
+  resolveValue?: (value?: ModelSource | null) => S[] | null | undefined,
+): ManyReferenceMapper<T, S[] | undefined | null, any, ModelSource> => ({
+  pick: resolveValue,
   map: ({ value, oldValue }) => {
-    const { fk: foreignKeys = [] } = p;
     if (value === oldValue) {
       return;
     }
@@ -335,24 +415,21 @@ export const manyReference = <
     // disconnect
     oldValue?.forEach((oldValueItem) => {
       if (
-        !value?.some(
-          (newValueItem) =>
-            foreignKeys.every(
-              (key) =>
-                (newValueItem as any)[key] === (oldValueItem as any)[key],
-            ),
-          // (newValueItem as any).id === (oldValueItem as any).id,
+        !value?.some((newValueItem) =>
+          deepCompareObjects(newValueItem, oldValueItem),
         )
       ) {
         inputData.disconnect = inputData.disconnect || [];
-        inputData.disconnect.push({ id: (oldValueItem as any).id });
+        inputData.disconnect.push(oldValueItem as any);
       }
     });
 
     // connect
     value?.forEach((newValueItem) => {
+      const ids = newValueItem;
+
       // !(newValueItem as any).id
-      if (foreignKeys.some((key) => !(newValueItem as any)[key])) {
+      if (!ids || !someKeysHaveValues(ids)) {
         console.warn(
           'ManyReference: id is missing, ignore the connect',
           newValueItem,
@@ -361,21 +438,18 @@ export const manyReference = <
         // connect if not in oldValue
         if (
           !oldValue?.some(
-            (oldValueItem) =>
-              foreignKeys.every(
-                (key) =>
-                  (newValueItem as any)[key] === (oldValueItem as any)[key],
-              ),
+            (oldValueItem) => deepCompareObjects(newValueItem, oldValueItem),
             // (newValueItem as any).id === (oldValueItem as any).id,
           )
         ) {
           inputData.connect = inputData.connect || [];
           // inputData.connect.push({ id: (newValueItem as any).id } as any); // CRO: weird typing
           inputData.connect.push(
-            foreignKeys.reduce((acc, key) => {
-              acc[key] = (newValueItem as any)[key];
-              return acc;
-            }, {} as any),
+            newValueItem as any,
+            // foreignKeys.reduce((acc, key) => {
+            //   acc[key] = (newValueItem as any)[key];
+            //   return acc;
+            // }, {} as any),
           );
         }
       }
@@ -391,10 +465,7 @@ export const manyReference = <
 });
 
 export const object =
-  <
-    Input extends GenericPrismaInput,
-    Model extends InferPrismaModel<Partial<Input>>,
-  >() =>
+  <Input extends GenericPrismaInput, Model>() =>
   (props: {
     value?: Model | null;
     oldValue?: Model | null;
@@ -414,7 +485,7 @@ export const object =
     if (source) {
       Object.keys(props.mapper.properties)
         .sort((a, b) => {
-          // sort by mapper type so that relations before references
+          // sort by mapper type so that relations are before references
           const aPropMapper: PrismaInputSchemaProperty = (
             props.mapper.properties as any
           )[a as keyof Input];
@@ -433,8 +504,12 @@ export const object =
             props.mapper.properties as any
           )[key as keyof Input];
 
-          const value = source[key as keyof Model] as any;
-          const oldValue = oldSource?.[key as keyof Model] as any;
+          const value = propMapper.pick
+            ? propMapper.pick(source)
+            : (source[key as keyof Model] as any);
+          const oldValue = propMapper.pick
+            ? propMapper.pick(oldSource)
+            : (oldSource?.[key as keyof Model] as any);
 
           if (propMapper.__typename === 'Property') {
             const method = oldValue ? 'update' : 'create';
@@ -521,20 +596,20 @@ export const object =
     return inputData as Input;
   };
 
-export function prismaInputSchema<T>(
-  schema: PrismaInputSchema<PrismaInput<T>>,
-): PrismaInputSchema<PrismaInput<T>> {
-  return schema;
-}
+// export function prismaInputSchema<T, M>(
+//   schema: PrismaInputSchema<PrismaInput<T>, M>,
+// ): PrismaInputSchema<PrismaInput<T>, M> {
+//   return schema;
+// }
 
-export const mapFromPrismaSchema = <T>({
+export const mapFromPrismaSchema = <T, M>({
   schema,
   value,
   oldValue,
 }: {
-  schema: PrismaInputSchema<T>;
-  value?: InferPrismaModel<T> | null | undefined;
-  oldValue?: InferPrismaModel<T> | null | undefined;
+  schema: PrismaInputSchema<T, M>;
+  value?: Partial<M> | null | undefined;
+  oldValue?: Partial<M> | null | undefined;
 }) => schema.mapper({ value, oldValue, mapper: schema });
 
 // const assertDisconnectConflict = (v: any, v2: any, key: string) => {
@@ -545,3 +620,44 @@ export const mapFromPrismaSchema = <T>({
 //     );
 //   }
 // };
+
+// function shallowEqual(value1: any, value2: any): boolean {
+//   // Check if both values are strictly equal, covering primitives and reference equality for objects
+//   if (value1 === value2) {
+//     return true;
+//   }
+
+//   // Check for null or undefined
+//   if (value1 == null || value2 == null) {
+//     return value1 === value2;
+//   }
+
+//   // Ensure both values are objects before proceeding with object comparison
+//   if (typeof value1 !== 'object' || typeof value2 !== 'object') {
+//     return false;
+//   }
+
+//   const keys1 = Object.keys(value1);
+//   const keys2 = Object.keys(value2);
+
+//   if (keys1.length !== keys2.length) {
+//     return false;
+//   }
+
+//   for (const key of keys1) {
+//     if (value1[key] !== value2[key]) {
+//       return false;
+//     }
+//   }
+
+//   return true;
+// }
+
+function someKeysHaveValues(obj: any) {
+  for (const key in obj) {
+    if (obj[key]) {
+      return true;
+    }
+  }
+  return false;
+}

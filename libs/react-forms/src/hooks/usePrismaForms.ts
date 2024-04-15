@@ -30,7 +30,8 @@ export type ExtractFormModel<T> =
     infer MData,
     infer MVariables,
     infer FModel,
-    infer SchemaInput
+    infer SchemaInput,
+    infer SchemaModel
   >
     ? FModel
     : never;
@@ -46,8 +47,9 @@ export type PrismaFormProps<
   MVariables extends OperationVariables,
   FModel extends FieldValues,
   SchemaInput extends PrismaInputArgs<MVariables>,
+  SchemaModel,
 > = {
-  schema: PrismaInputSchema<SchemaInput>;
+  schema: PrismaInputSchema<SchemaInput, SchemaModel>;
   queryVariables?: QVariables;
   defaultValues?: (
     model?: DefaultValues<FModel> | null,
@@ -74,8 +76,9 @@ export type UsePrismaFormReturn<
   QVariables extends OperationVariables,
   MData,
   MVariables extends OperationVariables,
+  SchemaModel,
 > = {
-  schema: PrismaInputSchema<PrismaInputArgs<MVariables>>;
+  schema: PrismaInputSchema<PrismaInputArgs<MVariables>, SchemaModel>;
   formQuery: FormQueryOptions<QData, QVariables>;
   formMutation: FormMutationOptions<FModel, MData, MVariables>;
 };
@@ -91,6 +94,7 @@ export function usePrismaForm<
   MData extends FieldValues,
   MVariables extends OperationVariables,
   FModel extends FieldValues,
+  SchemaModel,
 >({
   schema,
   queryDataToModel,
@@ -103,8 +107,16 @@ export function usePrismaForm<
   MData,
   MVariables,
   FModel,
-  PrismaInputArgs<MVariables>
->): UsePrismaFormReturn<FModel, QData, QVariables, MData, MVariables> {
+  PrismaInputArgs<MVariables>,
+  SchemaModel
+>): UsePrismaFormReturn<
+  FModel,
+  QData,
+  QVariables,
+  MData,
+  MVariables,
+  SchemaModel
+> {
   const graphqlFormOptions = useGraphqlForm({
     ...graphqlFormProps,
     defaultValues,
@@ -141,6 +153,10 @@ export function usePrismaForm<
   };
 }
 
+type GenericMap<T> = {
+  [K in keyof T]: T[K];
+};
+
 export const prismaResource = <
   QData extends FieldValues,
   QVariables extends OperationVariables,
@@ -175,7 +191,8 @@ export const prismaResource = <
     : FModelMode extends 'mutation'
       ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
       : FormModel<FModel, PrismaInputArgs<MVariables>>,
-  SchemaInput
+  SchemaInput,
+  FModel
 >): {
   formModelType?: FModelMode;
 } & PrismaFormProps<
@@ -188,7 +205,8 @@ export const prismaResource = <
     : FModelMode extends 'mutation'
       ? PrismaInputFormModel<PrismaInputArgs<MVariables>>
       : FormModel<FModel, PrismaInputArgs<MVariables>>,
-  SchemaInput
+  SchemaInput,
+  FModel
 > => {
   return graphqlSchemaFormProps;
 };

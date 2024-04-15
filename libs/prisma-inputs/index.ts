@@ -1,6 +1,10 @@
 export * from './mappers';
 export * from './builder';
 
+export type Nullable<T> = {
+  [P in keyof T]: T[P] | null;
+};
+
 // TODO: composed primary keys
 type EntityIdInput = {
   id?: string;
@@ -36,7 +40,7 @@ type ExtractPrismaInputFromMany<C, U> = PrismaInput<
       : never)
 >;
 
-type ExtractModelDataType<S> = S extends any[] ? S[0] : never;
+// type ExtractArrayModelDataType<S> = S extends any[] ? S[0] : never;
 
 type ExtractPrismaInputFromOne<C, U> = PrismaInput<
   C extends Record<any, any>
@@ -51,6 +55,12 @@ type ExtractManyRelationConnectType<T> = T extends {
 }
   ? C | undefined
   : never;
+
+type ExtractManyRelationDisconnectType<T> = T extends {
+  disconnect?: (infer C)[] | null;
+}
+  ? C | undefined
+  : undefined;
 
 type ExtractManyReferenceType<T> = T extends { connect?: (infer C)[] }
   ? C | undefined
@@ -86,10 +96,10 @@ export type PrismaOneObjectInput<Create, Update, Connect> = {
   update?: Update;
 };
 
-export type PrismaManyObjectInput<Create, Update, Connect> = {
+export type PrismaManyObjectInput<Create, Update, Connect, Disconnect> = {
   connect?: Connect[];
   create?: Create[];
-  disconnect?: EntityIdInput[];
+  disconnect?: Disconnect[];
   update?: { where: EntityIdInput; data: Update }[];
 };
 
@@ -104,12 +114,16 @@ export type PrismaManyReferenceInput<Connect> = {
 };
 
 // ---
-export type PropertyMapper<Model> = {
+
+export type PropertyMapper<Model, ModelSource, Key> = {
+  // fake property needed for the mapper to work
+  __key__?: Key;
+  pick?: (o?: ModelSource | null) => Model | undefined;
   map: (props: {
-    value?: Model | null;
-    oldValue?: Model | null;
+    value?: Model;
+    oldValue?: Model;
     method: 'create' | 'update';
-  }) => Model | { set?: Model } | undefined;
+  }) => Model | { set?: Model | null } | undefined;
   __typename: 'Property';
 };
 
@@ -119,8 +133,10 @@ export type OneRelationMapper<
   Create = 'create' extends keyof Input ? Input['create'] : never,
   Update = 'update' extends keyof Input ? Input['update'] : never,
   Connect = 'connect' extends keyof Input ? Input['connect'] : never,
+  ModelSource = any,
 > = {
   // embbedded?: boolean;
+  pick?: (o?: ModelSource | null) => Partial<Model> | null;
   map: (props: {
     value?: Model | null;
     oldValue?: Model | null;
@@ -138,12 +154,19 @@ export type ManyRelationMapper<
       ? undefined
       : Input['connect']
     : undefined,
+  Disconnect = 'disconnect' extends keyof Input
+    ? Input['disconnect'] extends unknown
+      ? undefined
+      : Input['disconnect']
+    : undefined,
+  ModelSource = any,
 > = {
   // embbedded?: boolean;
+  pick?: (o?: ModelSource | null) => any;
   map: (props: {
     value?: Model[] | null;
     oldValue?: Model[] | null;
-  }) => PrismaManyObjectInput<Create, Update, Connect> | undefined;
+  }) => PrismaManyObjectInput<Create, Update, Connect, Disconnect> | undefined;
   __typename: 'ManyRelation';
 };
 
@@ -151,8 +174,12 @@ export type OneReferenceMapper<
   Input extends GenericPrismaOneConnect,
   Model = Input,
   Connect = Input['connect'],
+  ModelSource = any,
+  Key = any,
 > = {
+  __key__?: Key;
   // embbedded?: boolean;
+  pick?: (o?: ModelSource | null) => Model | null;
   map: (props: {
     value?: Model | null;
     oldValue?: Model | null;
@@ -164,8 +191,10 @@ export type ManyReferenceMapper<
   Input extends GenericPrismaManyConnect,
   Source = any,
   Connect = ExtractManyReferenceType<Input>,
+  ModelSource = any,
 > = {
   // embbedded?: boolean;
+  pick?: (o?: ModelSource | null) => Source | null | undefined;
   map: (props: {
     value?: Source | null;
     oldValue?: Source | null;
@@ -189,35 +218,49 @@ export type ManyReferenceMapper<
 export type PrismaInputSchemaProperty<
   Input = any,
   Model = any,
-  InputSource = any,
-  Key extends keyof InputSource = any,
+  ModelSource = any,
+  Key = any,
 > = Input extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
 }
   ? ManyRelationMapper<
       Input,
-      ExtractModelDataType<Model>,
+      any, // ExtractArrayModelDataType<Model>,
       C | undefined,
       ExtractManyRelationUpdateDataType<U> | undefined,
-      ExtractManyRelationConnectType<Input>
+      ExtractManyRelationConnectType<Input>,
+      ExtractManyRelationDisconnectType<Input>,
+      ModelSource
     >
   : Input extends { create?: infer C; update?: infer U }
     ? OneRelationMapper<
         Input,
-        Model,
+        any, // Model,
         C extends unknown ? C | undefined : C | undefined,
         U extends unknown ? U | undefined : U | undefined,
-        'connect' extends keyof Input ? Input['connect'] : undefined
+        'connect' extends keyof Input ? Input['connect'] : undefined,
+        ModelSource
       >
     : Input extends { connect?: (infer C)[] | null }
-      ? ManyReferenceMapper<Input, Model[], Partial<C> | undefined>
+      ? ManyReferenceMapper<
+          Input,
+          Model | undefined,
+          Partial<C> | undefined,
+          ModelSource
+        >
       : Input extends { connect?: infer C }
-        ? OneReferenceMapper<Input, Model, Partial<C> | undefined>
+        ? OneReferenceMapper<
+            Input,
+            Model | undefined,
+            Partial<C> | undefined,
+            ModelSource,
+            Key
+          >
         : Input extends PropertyTypes
-          ? PropertyMapper<InputSource[Key]>
+          ? PropertyMapper<Input | null | undefined, ModelSource, Key>
           : Input extends { set?: infer S }
-            ? PropertyMapper<Partial<S>>
+            ? PropertyMapper<S | null | undefined, ModelSource, Key>
             : never;
 
 /**
@@ -239,16 +282,17 @@ export type PrismaInputSchemaProperty<
  */
 export type PrismaInputSchema<
   Input extends GenericPrismaInput | unknown,
-  Model = InferPrismaModel<Partial<Input>>,
+  Model,
+  InputModel = InferPrismaModel<Partial<Input>>,
 > = {
   mapper(props: {
-    value?: Model | null;
-    oldValue?: Model | null;
+    value?: Partial<Model> | null;
+    oldValue?: Partial<Model> | null;
     mapper: PrismaInputSchema<Input, Model>;
   }): Input | undefined;
   properties: {
-    [K in keyof Input]-?: K extends keyof Model
-      ? PrismaInputSchemaProperty<Input[K], Model[K]>
+    [K in keyof Input]-?: K extends keyof InputModel
+      ? PrismaInputSchemaProperty<Input[K], InputModel[K], Model, K>
       : never;
   };
 };
@@ -302,11 +346,14 @@ export type InferPrismaModel<Input> = {
  *
  * @typeParam Input - Represents the Prisma input structure from which the model is inferred.
  */
-export type PrismaInputSchemaProperties<Input> = {
+export type PrismaInputSchemaProperties<
+  Input,
+  Model,
+  InputModel = InferPrismaModel<Input>,
+> = {
   [K in keyof Input]-?: PrismaInputSchemaProperty<
     Input[K],
-    InferPrismaModel<Input>[K],
-    Input,
-    K
+    K extends keyof InputModel ? InputModel[K] : unknown,
+    Model
   >;
 };

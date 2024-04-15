@@ -12,8 +12,17 @@ export type PrismaFormModalProps<
   MVariables extends OperationVariables,
   FModel extends FieldValues,
   SchemaInput extends PrismaInputArgs<MVariables>,
+  SchemaModel,
 > = BaseGraphqlFormModalProps<QData, QVariables, MData, MVariables, FModel> &
-  PrismaFormProps<QData, QVariables, MData, MVariables, FModel, SchemaInput>;
+  PrismaFormProps<
+    QData,
+    QVariables,
+    MData,
+    MVariables,
+    FModel,
+    SchemaInput,
+    SchemaModel
+  >;
 
 type UsePrismaFormModalProps<
   QData extends FieldValues,
@@ -24,6 +33,7 @@ type UsePrismaFormModalProps<
   },
   FModel extends FieldValues,
   SchemaInput extends PrismaInputArgs<MVariables>,
+  SchemaModel,
 > = Omit<
   PrismaFormModalProps<
     QData,
@@ -31,7 +41,8 @@ type UsePrismaFormModalProps<
     MData,
     MVariables,
     FModel,
-    SchemaInput
+    SchemaInput,
+    SchemaModel
   >,
   'queryVariables' | 'skipQuery'
 >;
@@ -43,6 +54,7 @@ export function usePrismaFormModal<
   MVariables extends OperationVariables,
   FModel extends FieldValues,
   SchemaInput extends PrismaInputArgs<MVariables>,
+  SchemaModel,
 >(
   props: UsePrismaFormModalProps<
     QData,
@@ -50,7 +62,8 @@ export function usePrismaFormModal<
     MData,
     MVariables,
     FModel,
-    SchemaInput
+    SchemaInput,
+    SchemaModel
   >,
 ): [
   (where?: QVariables, skipQuery?: boolean) => void,
@@ -60,7 +73,8 @@ export function usePrismaFormModal<
     MData,
     MVariables,
     FModel,
-    SchemaInput
+    SchemaInput,
+    SchemaModel
   >,
 ] {
   const [isOpen, setIsOpen] = useState(false);
