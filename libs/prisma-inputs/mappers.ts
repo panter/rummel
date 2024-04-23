@@ -38,10 +38,15 @@ export const setPropertyMapper = <T, M extends 'create' | 'update'>(
   return result;
 };
 
-export const property = <T>(): PropertyMapper<T> => ({
+export const property = <T>(
+  forceMethod?: 'create' | 'update',
+): PropertyMapper<T> => ({
   map: ({ value, oldValue, method }) => {
     if (value !== oldValue) {
-      return setPropertyMapper(method, value === null ? undefined : value);
+      return setPropertyMapper(
+        forceMethod || method,
+        value === null ? undefined : value,
+      );
     }
   },
   __typename: 'Property',
@@ -419,8 +424,8 @@ export const object =
           )[b as keyof Input];
 
           return (
-            MAPPER_ORDER[aPropMapper.__typename] -
-            MAPPER_ORDER[bPropMapper.__typename]
+            (MAPPER_ORDER[aPropMapper.__typename] || 0) -
+            (MAPPER_ORDER[bPropMapper.__typename] || 0)
           );
         })
         .forEach((key) => {
