@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.11
+
+### Patch Changes
+
+- b619ee4: fix when using with very restrictive tsconfigs
+
 ## 0.0.10
 
 ### Patch Changes
