@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.6
+
+### Patch Changes
+
+- 4a80aa7: fix: type errors when used with very restrictive tsconfig
+
 ## 0.0.5
 
 ### Patch Changes
