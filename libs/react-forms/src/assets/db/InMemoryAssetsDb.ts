@@ -31,7 +31,7 @@ export class InMemoryAssetsDb implements AssetDb {
     }
 
     const currentHightestId =
-      sortBy(this.assetInfos, 'id').reverse()[0].id || 0;
+      sortBy(this.assetInfos, 'id').reverse()[0]?.id || 0;
     return currentHightestId + 1;
   }
 
@@ -39,7 +39,7 @@ export class InMemoryAssetsDb implements AssetDb {
     if (this.files.length === 0) {
       return 1;
     }
-    const currentHightestId = sortBy(this.files, 'id').reverse()[0].id || 0;
+    const currentHightestId = sortBy(this.files, 'id').reverse()[0]?.id || 0;
     return currentHightestId + 1;
   }
 
