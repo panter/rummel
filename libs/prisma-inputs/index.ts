@@ -189,6 +189,8 @@ export type ManyReferenceMapper<
 export type PrismaInputSchemaProperty<
   Input = any,
   Model = any,
+  InputSource = any,
+  Key extends keyof InputSource = any,
 > = Input extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
@@ -213,7 +215,7 @@ export type PrismaInputSchemaProperty<
       : Input extends { connect?: infer C }
         ? OneReferenceMapper<Input, Model, Partial<C> | undefined>
         : Input extends PropertyTypes
-          ? PropertyMapper<Input>
+          ? PropertyMapper<InputSource[Key]>
           : Input extends { set?: infer S }
             ? PropertyMapper<Partial<S>>
             : never;
@@ -303,6 +305,8 @@ export type InferPrismaModel<Input> = {
 export type PrismaInputSchemaProperties<Input> = {
   [K in keyof Input]-?: PrismaInputSchemaProperty<
     Input[K],
-    InferPrismaModel<Input>[K]
+    InferPrismaModel<Input>[K],
+    Input,
+    K
   >;
 };
