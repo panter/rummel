@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.7
+
+### Patch Changes
+
+- 178f3f7: fix type inference for enums
+
 ## 0.0.6
 
 ### Patch Changes
