@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 0.0.12
+
+### Patch Changes
+
+- 69c199e: fix default values
+
 ## 0.0.11
 
 ### Patch Changes
