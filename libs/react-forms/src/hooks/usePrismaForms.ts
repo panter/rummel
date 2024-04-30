@@ -107,6 +107,7 @@ export function usePrismaForm<
 >): UsePrismaFormReturn<FModel, QData, QVariables, MData, MVariables> {
   const graphqlFormOptions = useGraphqlForm({
     ...graphqlFormProps,
+    defaultValues,
     skipQuery: Boolean(graphqlFormProps.skipQuery || !graphqlFormProps.query),
     queryDataToModel,
     modelToInput: (model, queryData) => {

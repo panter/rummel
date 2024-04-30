@@ -34,7 +34,7 @@ export type GraphqlFormProps<
       | ((
           model?: DefaultValues<FModel> | null,
           queryData?: QData,
-        ) => DefaultValues<FModel>);
+        ) => DefaultValues<FModel> | undefined | null);
   };
 
 export type UseGraphqlFormReturn<

@@ -234,7 +234,7 @@ export function useFormQuery<
   );
   // call onCompleted if no query is provided, this happens only once, as we cache the query
   useEffect(() => {
-    if (!query && !skipQuery && !called) {
+    if ((!query || skipQuery) && !called) {
       setCalled(true);
       onCompleted?.();
     }
