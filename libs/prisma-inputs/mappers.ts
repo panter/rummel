@@ -1,6 +1,7 @@
 import { deepCompareObjects } from './deepCompare';
 import {
   GenericPrismaInput,
+  InferPrismaModel,
   ManyReferenceMapper,
   ManyRelationMapper,
   Nullable,
@@ -75,6 +76,65 @@ export function autoProperty<T, S, K>(
   };
 }
 
+const mapRelation = <Model, Create, Update, Connect>(p: {
+  relationMappers: () => {
+    create?: () =>
+      | PrismaInputSchema<Create, Nullable<Partial<Model>>>
+      | undefined;
+    update?: () =>
+      | PrismaInputSchema<Update, Nullable<Partial<Model>>>
+      | undefined;
+  };
+  value?: Nullable<Partial<Model>> | undefined | null;
+  oldValue?: Nullable<Partial<Model>> | undefined | null;
+}) => {
+  const { value, oldValue } = p;
+  const { create, update } = p.relationMappers();
+  if (value === oldValue) {
+    return;
+  }
+  const inputData:
+    | PrismaOneObjectInput<
+        Create | undefined,
+        Update | undefined,
+        Connect | undefined
+      >
+    | undefined = {};
+
+  if (
+    oldValue !== undefined &&
+    oldValue !== null &&
+    (value === undefined || value === null)
+  ) {
+    inputData.disconnect = true;
+  } else if (oldValue !== undefined && oldValue != null && value) {
+    const updateMapper = update?.();
+    const updateInputData = updateMapper?.mapper?.({
+      value: value === undefined ? null : value,
+      oldValue,
+      mapper: updateMapper,
+    });
+    if (updateInputData) {
+      inputData.update = updateInputData;
+    }
+  } else if (value !== undefined && value !== null) {
+    const createMapper = create?.();
+    const createInputData = createMapper?.mapper?.({
+      value: value === undefined ? null : value,
+      oldValue,
+      mapper: createMapper,
+    });
+
+    if (createInputData) {
+      inputData.create = createInputData;
+    }
+  }
+  if (Object.keys(inputData).length === 0) {
+    return;
+  }
+  return inputData;
+};
+
 export const relation = <
   T extends { create?: any; update?: any },
   S = T,
@@ -95,65 +155,76 @@ export const relation = <
     : undefined,
   ModelSource = any,
 >(
+  pick: (m?: ModelSource | null) => Nullable<Partial<S>> | null | undefined,
   p: () => {
     create?: () => PrismaInputSchema<Create, Nullable<Partial<S>>> | undefined;
     update?: () => PrismaInputSchema<Update, Nullable<Partial<S>>> | undefined;
   },
-  pick: (m?: ModelSource | null) => Nullable<Partial<S>> | null | undefined,
 ): OneRelationMapper<
   T,
   Nullable<Partial<S>> | undefined | null,
   Create | undefined,
   Update | undefined,
   Connect | undefined,
-  ModelSource
+  ModelSource,
+  any
 > => ({
   pick,
   map: ({ value, oldValue }) => {
-    const { create, update } = p();
-    if (value === oldValue) {
-      return;
-    }
-    const inputData:
-      | PrismaOneObjectInput<
-          Create | undefined,
-          Update | undefined,
-          Connect | undefined
-        >
-      | undefined = {};
+    return mapRelation({
+      relationMappers: p,
+      value,
+      oldValue,
+    });
+  },
+  __typename: 'Relation',
+});
 
-    if (
-      oldValue !== undefined &&
-      oldValue !== null &&
-      (value === undefined || value === null)
-    ) {
-      inputData.disconnect = true;
-    } else if (oldValue !== undefined && oldValue != null && value) {
-      const updateMapper = update?.();
-      const updateInputData = updateMapper?.mapper?.({
-        value: value === undefined ? null : value,
-        oldValue,
-        mapper: updateMapper,
-      });
-      if (updateInputData) {
-        inputData.update = updateInputData;
-      }
-    } else if (value !== undefined && value !== null) {
-      const createMapper = create?.();
-      const createInputData = createMapper?.mapper?.({
-        value: value === undefined ? null : value,
-        oldValue,
-        mapper: createMapper,
-      });
-
-      if (createInputData) {
-        inputData.create = createInputData;
-      }
-    }
-    if (Object.keys(inputData).length === 0) {
-      return;
-    }
-    return inputData;
+export const autoRelation = <
+  T extends { create?: any; update?: any },
+  S = T,
+  Create = 'create' extends keyof T
+    ? T['create'] extends unknown
+      ? undefined
+      : T['create']
+    : undefined,
+  Update = 'update' extends keyof T
+    ? T['update'] extends unknown
+      ? undefined
+      : T['update']
+    : undefined,
+  Connect = 'connect' extends keyof T
+    ? T['connect'] extends unknown
+      ? undefined
+      : T['connect']
+    : undefined,
+  ModelSource = any,
+  Key = any,
+>(
+  p: () => {
+    create?: () => PrismaInputSchema<Create, Nullable<Partial<S>>> | undefined;
+    update?: () => PrismaInputSchema<Update, Nullable<Partial<S>>> | undefined;
+  },
+): OneRelationMapper<
+  T,
+  Nullable<Partial<S>> | undefined | null,
+  Create | undefined,
+  Update | undefined,
+  Connect | undefined,
+  ModelSource,
+  Key extends keyof ModelSource
+    ? ModelSource[Key] extends InferPrismaModel<Create> &
+        InferPrismaModel<Update>
+      ? Key
+      : unknown
+    : any
+> => ({
+  map: ({ value, oldValue }) => {
+    return mapRelation({
+      relationMappers: p,
+      value,
+      oldValue,
+    });
   },
   __typename: 'Relation',
 });
@@ -362,14 +433,12 @@ export const autoReference = <
   'connect' extends keyof S ? S['connect'] : any,
   ModelSource,
   Key extends keyof ModelSource
-    ? 'connect' extends keyof T
-      ? T['connect'] | undefined | null extends
-          | ModelSource[Key]
-          | undefined
-          | null // TODO or vice versa?
-        ? Key
-        : unknown
-      : any
+    ? T['connect'] | undefined | null extends
+        | ModelSource[Key]
+        | undefined
+        | null // TODO or vice versa?
+      ? Key
+      : unknown
     : any
 > => ({ map: (p) => mapReference(p), __typename: 'Reference' });
 
