@@ -162,8 +162,10 @@ export type ManyRelationMapper<
       : Input['disconnect']
     : undefined,
   ModelSource = any,
+  Key = any,
 > = {
   // embbedded?: boolean;
+  __key__?: Key;
   pick?: (o?: ModelSource | null) => any;
   map: (props: {
     value?: Model[] | null;
@@ -234,7 +236,8 @@ export type PrismaInputSchemaProperty<
       ExtractManyRelationUpdateDataType<U> | undefined,
       ExtractManyRelationConnectType<Input>,
       ExtractManyRelationDisconnectType<Input>,
-      ModelSource
+      ModelSource,
+      Key
     >
   : Input extends { create?: infer C; update?: infer U }
     ? OneRelationMapper<
@@ -363,6 +366,7 @@ export type PrismaInputSchemaProperties<
     Input[K],
     K extends keyof InputModel ? InputModel[K] : unknown,
     Model,
-    Input[K]
+    Input,
+    K
   >;
 };
