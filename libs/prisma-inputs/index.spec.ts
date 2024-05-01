@@ -240,6 +240,7 @@ const organisationCreateMapper: PrismaInputSchema<
     };
     simpleId: {
       id: string | null;
+      // ida?: string;
     };
     simples: Array<{
       id: string;
@@ -277,8 +278,10 @@ const organisationCreateMapper: PrismaInputSchema<
     // },
     personIds: manyReference((m) => m?.person),
     simple: relation(
+      (m) => {
+        return { id: m?.simple.id, fname: m?.simple.name };
+      },
       () => simpleSchema.relation(),
-      (m) => m?.simple,
     ),
     simpleId: autoReference(),
     // simpleId: {
@@ -309,10 +312,7 @@ const organisationUpdateMapper: PrismaInputSchema<
     description: property((m) => m?.description),
     person: manyReference((m) => m?.person),
     personIds: manyReference((m) => m?.personIds),
-    simple: relation(
-      () => simpleSchema.relation(),
-      (m) => m?.simple,
-    ),
+    simple: relation(() => simpleSchema.relation()),
     simpleId: reference((m) => m?.simpleId),
     simples: manyRelation(
       () => simpleSchema.relation(),

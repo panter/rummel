@@ -134,7 +134,9 @@ export type OneRelationMapper<
   Update = 'update' extends keyof Input ? Input['update'] : never,
   Connect = 'connect' extends keyof Input ? Input['connect'] : never,
   ModelSource = any,
+  Key = any,
 > = {
+  __key__?: Key;
   // embbedded?: boolean;
   pick?: (o?: ModelSource | null) => Partial<Model> | null;
   map: (props: {
@@ -219,7 +221,8 @@ export type PrismaInputSchemaProperty<
   Input = any,
   Model = any,
   ModelSource = any,
-  Key = any,
+  InputSource = any,
+  Key extends keyof InputSource = any,
 > = Input extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
@@ -240,7 +243,8 @@ export type PrismaInputSchemaProperty<
         C extends unknown ? C | undefined : C | undefined,
         U extends unknown ? U | undefined : U | undefined,
         'connect' extends keyof Input ? Input['connect'] : undefined,
-        ModelSource
+        ModelSource,
+        Key
       >
     : Input extends { connect?: (infer C)[] | null }
       ? ManyReferenceMapper<
@@ -258,7 +262,11 @@ export type PrismaInputSchemaProperty<
             Key
           >
         : Input extends PropertyTypes
-          ? PropertyMapper<Input | null | undefined, ModelSource, Key>
+          ? PropertyMapper<
+              InputSource[Key] | null | undefined,
+              ModelSource,
+              Key
+            >
           : Input extends { set?: infer S }
             ? PropertyMapper<S | null | undefined, ModelSource, Key>
             : never;
@@ -292,7 +300,7 @@ export type PrismaInputSchema<
   }): Input | undefined;
   properties: {
     [K in keyof Input]-?: K extends keyof InputModel
-      ? PrismaInputSchemaProperty<Input[K], InputModel[K], Model, K>
+      ? PrismaInputSchemaProperty<Input[K], InputModel[K], Model, Input, K>
       : never;
   };
 };
@@ -354,6 +362,7 @@ export type PrismaInputSchemaProperties<
   [K in keyof Input]-?: PrismaInputSchemaProperty<
     Input[K],
     K extends keyof InputModel ? InputModel[K] : unknown,
-    Model
+    Model,
+    Input[K]
   >;
 };
