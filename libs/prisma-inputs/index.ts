@@ -1,5 +1,5 @@
-export * from './mappers';
 export * from './builder';
+export * from './mappers';
 
 export type Nullable<T> = {
   [P in keyof T]: T[P] | null;
@@ -107,13 +107,13 @@ export type PrismaManyReferenceInput<Connect> = {
 
 // ---
 
-export type PropertyMapper<Input, ModelSource, Key, Model = Input> = {
+export type PropertyMapper<Input, ModelSource, Key> = {
   // fake property needed for the mapper to work
   __key__?: Key;
-  pick?: (o?: ModelSource) => Model | undefined;
+  pick?: (o?: ModelSource) => Input | undefined;
   map: (props: {
-    value?: Model;
-    oldValue?: Model;
+    value?: Input;
+    oldValue?: Input;
     method: 'create' | 'update';
   }) => Input | { set?: Input } | undefined;
   __typename: 'Property';
@@ -168,7 +168,7 @@ export type ManyRelationMapper<
 
 export type OneReferenceMapper<
   Input extends GenericPrismaOneConnect,
-  Model = Input,
+  Model = Input, // TODO: Model no needed, eg Model is always same as Connect
   Connect = Input['connect'],
   ModelSource = any,
   Key = any,
@@ -217,6 +217,7 @@ export type PrismaInputSchemaProperty<
   ModelSource = any,
   InputSource = any,
   Key extends keyof InputSource = any,
+  InputCopy = InputSource[Key],
 > = Input extends {
   create?: (infer C)[] | null;
   update?: (infer U)[] | null;
@@ -256,10 +257,14 @@ export type PrismaInputSchemaProperty<
             ModelSource,
             Key
           >
-        : Input extends PropertyTypes
-          ? PropertyMapper<InputSource[Key], ModelSource, Key>
-          : Input extends { set?: infer S }
-            ? PropertyMapper<S | null | undefined, ModelSource, Key, unknown>
+        : Input extends { set?: infer S }
+          ? PropertyMapper<S | undefined, ModelSource, Key>
+          : Input extends PropertyTypes
+            ? PropertyMapper<
+                Exclude<InputCopy, { set?: any }> | undefined,
+                ModelSource,
+                Key
+              >
             : never;
 
 /**

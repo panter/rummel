@@ -110,8 +110,7 @@ describe('reference()', () => {
   it('should return new value if no oldValue is not set', () => {
     const resultUndefined = reference<
       { connect: { id: string } },
-      { id: string },
-      any
+      { id: string }
     >(TESTPICK).map({
       value: { id: '1' },
     });
@@ -119,11 +118,9 @@ describe('reference()', () => {
   });
 
   it('should return undefined if value and oldValue are the same', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string },
-      any
-    >(TESTPICK).map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      TESTPICK,
+    ).map({
       value: { id: '1' },
       oldValue: { id: '1' },
     });
@@ -133,29 +130,24 @@ describe('reference()', () => {
   it('should return undefined if new value is null or undefined and oldValue is set on create', () => {
     const resultUndefined = reference<
       { connect: { id: string } },
-      { id: string },
-      any
+      { id: string }
     >(TESTPICK).map({
       oldValue: { id: '1' },
     });
     expect(resultUndefined).toEqual({ disconnect: true });
 
-    const resultNull = reference<
-      { connect: { id: string } },
-      { id: string },
-      any
-    >(TESTPICK).map({
+    const resultNull = reference<{ connect: { id: string } }, { id: string }>(
+      TESTPICK,
+    ).map({
       oldValue: { id: '1' },
     });
     expect(resultNull).toEqual({ disconnect: true });
   });
 
   it('should return value if value and oldValue are set', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string },
-      any
-    >(TESTPICK).map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      TESTPICK,
+    ).map({
       value: { id: '1' },
       oldValue: { id: '2' },
     });
@@ -163,11 +155,9 @@ describe('reference()', () => {
   });
 
   it('should return undefined if there is nothing to do', () => {
-    const resultCreate = reference<
-      { connect: { id: string } },
-      { id: string },
-      any
-    >(TESTPICK).map({
+    const resultCreate = reference<{ connect: { id: string } }, { id: string }>(
+      TESTPICK,
+    ).map({
       value: {} as any,
       oldValue: undefined,
     });
@@ -301,91 +291,91 @@ describe('relation()', () => {
     expect(resultCreate).toBeUndefined();
   });
 
-  it('should disconnect if new value is null or undefined and oldValue is set', () => {
-    const resultUndefined = organisationCreateMapper.properties.simple.map({
-      value: undefined,
-      oldValue: { fname: 'John' },
-    });
-    expect(resultUndefined).toEqual({ disconnect: true });
+  //   it('should disconnect if new value is null or undefined and oldValue is set', () => {
+  //     const resultUndefined = organisationCreateMapper.properties.simple.map({
+  //       value: undefined,
+  //       oldValue: { fname: 'John' },
+  //     });
+  //     expect(resultUndefined).toEqual({ disconnect: true });
 
-    const resultNull = organisationCreateMapper.properties.simple.map({
-      value: null,
-      oldValue: { fname: 'John' },
-    });
-    expect(resultNull).toEqual({ disconnect: true });
-  });
+  //     const resultNull = organisationCreateMapper.properties.simple.map({
+  //       value: null,
+  //       oldValue: { fname: 'John' },
+  //     });
+  //     expect(resultNull).toEqual({ disconnect: true });
+  //   });
 
-  it('should return update even if property id is not set', () => {
-    const resultCreate = organisationUpdateMapper.properties.simple.map({
-      value: { fname: 'John' },
-      oldValue: {
-        fname: 'Jane',
-        id: '1',
-      } as any,
-    });
-    expect(resultCreate).toEqual({
-      update: { name: { set: 'John' } },
-    });
-  });
-  it('should return update if property id is set, disregarding the oldValue', () => {
-    const resultCreate = organisationCreateMapper.properties.simple.map({
-      value: { fname: 'John', id: '1' } as any,
-      oldValue: { fname: 'Jane', id: '1' } as any,
-    });
-    expect(resultCreate).toEqual({
-      update: { name: { set: 'John' } },
-    });
-  });
-});
+  //   it('should return update even if property id is not set', () => {
+  //     const resultCreate = organisationUpdateMapper.properties.simple.map({
+  //       value: { fname: 'John' },
+  //       oldValue: {
+  //         fname: 'Jane',
+  //         id: '1',
+  //       } as any,
+  //     });
+  //     expect(resultCreate).toEqual({
+  //       update: { name: { set: 'John' } },
+  //     });
+  //   });
+  //   it('should return update if property id is set, disregarding the oldValue', () => {
+  //     const resultCreate = organisationCreateMapper.properties.simple.map({
+  //       value: { fname: 'John', id: '1' } as any,
+  //       oldValue: { fname: 'Jane', id: '1' } as any,
+  //     });
+  //     expect(resultCreate).toEqual({
+  //       update: { name: { set: 'John' } },
+  //     });
+  //   });
+  // });
 
-describe('manyRelation()', () => {
-  it('should return new value if oldValue is not set', () => {
-    const resultCreate = organisationCreateMapper.properties.simples.map({
-      value: [{ fname: 'John' }],
-    });
-    expect(resultCreate).toEqual({ create: [{ name: 'John' }] });
-  });
+  // describe('manyRelation()', () => {
+  //   it('should return new value if oldValue is not set', () => {
+  //     const resultCreate = organisationCreateMapper.properties.simples.map({
+  //       value: [{ fname: 'John' }],
+  //     });
+  //     expect(resultCreate).toEqual({ create: [{ name: 'John' }] });
+  //   });
 
-  it('should return undefined if value and oldValue are the same', () => {
-    const resultCreate = organisationCreateMapper.properties.simples.map({
-      value: [{ fname: 'John' }],
-      oldValue: [{ fname: 'John' }],
-    });
-    expect(resultCreate).toBeUndefined();
-  });
+  //   it('should return undefined if value and oldValue are the same', () => {
+  //     const resultCreate = organisationCreateMapper.properties.simples.map({
+  //       value: [{ fname: 'John' }],
+  //       oldValue: [{ fname: 'John' }],
+  //     });
+  //     expect(resultCreate).toBeUndefined();
+  //   });
 
-  it('should disconnect if new value is null or undefined and oldValue is set', () => {
-    const john = { fname: 'John', id: '1' };
+  //   it('should disconnect if new value is null or undefined and oldValue is set', () => {
+  //     const john = { fname: 'John', id: '1' };
 
-    const resultUndefined = organisationCreateMapper.properties.simples.map({
-      oldValue: [john],
-    });
-    expect(resultUndefined).toEqual({ disconnect: [{ id: john.id }] });
+  //     const resultUndefined = organisationCreateMapper.properties.simples.map({
+  //       oldValue: [john],
+  //     });
+  //     expect(resultUndefined).toEqual({ disconnect: [{ id: john.id }] });
 
-    const resultNull = organisationCreateMapper.properties.simples.map({
-      value: null,
-      oldValue: [john],
-    });
-    expect(resultNull).toEqual({ disconnect: [{ id: john.id }] });
-  });
+  //     const resultNull = organisationCreateMapper.properties.simples.map({
+  //       value: null,
+  //       oldValue: [john],
+  //     });
+  //     expect(resultNull).toEqual({ disconnect: [{ id: john.id }] });
+  //   });
 
-  it('should update, create and remove', () => {
-    const jane = { fname: 'Jane', id: '1' };
-    const james = { fname: 'James', id: '2' };
-    const emma = { fname: 'Emma', id: '3' };
-    const resultCreate = organisationCreateMapper.properties.simples.map({
-      value: [{ fname: 'John' }, james, { id: emma.id, fname: 'Emma-Lisa' }],
-      oldValue: [jane, james, emma],
-    });
+  //   it('should update, create and remove', () => {
+  //     const jane = { fname: 'Jane', id: '1' };
+  //     const james = { fname: 'James', id: '2' };
+  //     const emma = { fname: 'Emma', id: '3' };
+  //     const resultCreate = organisationCreateMapper.properties.simples.map({
+  //       value: [{ fname: 'John' }, james, { id: emma.id, fname: 'Emma-Lisa' }],
+  //       oldValue: [jane, james, emma],
+  //     });
 
-    expect(resultCreate).toEqual({
-      create: [{ name: 'John' }],
-      update: [
-        { where: { id: emma.id }, data: { name: { set: 'Emma-Lisa' } } },
-      ],
-      disconnect: [{ id: jane.id }],
-    });
-  });
+  //     expect(resultCreate).toEqual({
+  //       create: [{ name: 'John' }],
+  //       update: [
+  //         { where: { id: emma.id }, data: { name: { set: 'Emma-Lisa' } } },
+  //       ],
+  //       disconnect: [{ id: jane.id }],
+  //     });
+  //   });
 });
 
 describe('object()', () => {

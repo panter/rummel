@@ -1,4 +1,5 @@
 import {
+  DeepIntersect,
   InferPrismaModel,
   PrismaInput,
   PrismaInputSchema,
@@ -186,7 +187,7 @@ const simpleSchema = prismaSchemaBuilder<
     //       __typename: 'Property',
     // pick: (m) => m?.name,
     //     }
-    name: property((m) => m?.fname || ''),
+    name: property((m) => m?.fname),
   },
   create: {},
   update: { secondName: property((m) => m?.fsecondeName) },
@@ -214,13 +215,33 @@ export const personSchema = prismaSchemaBuilder<
   update: {},
 });
 
+type A = DeepIntersect<
+  PrismaInput<AddressCreateWithoutPersonInput>,
+  PrismaInput<AddressUpdateInput>
+>;
+
+const A: A = {
+  address: '',
+};
+
 const addressSchema = prismaSchemaBuilder<
   AddressCreateWithoutPersonInput,
   AddressUpdateInput,
   Address
 >({
   props: {
-    address: property((m) => m?.address),
+    address: property((m) => {
+      return m?.address;
+    }),
+    // address: {
+    //   pick: (m) => m?.address,
+    //   map: (p) => {
+    //     p.value;
+    //     console.log('value', p.value);
+    //     return '';
+    //   },
+    //   __typename: 'Property',
+    // },
   },
   create: {},
   update: {},
@@ -238,7 +259,7 @@ export const organisationCreateMapper: PrismaInputSchema<
       id: string;
     };
     simpleId: {
-      id: string | null;
+      id: string;
       // ida?: string;
     };
     simples: Array<{

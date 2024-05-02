@@ -71,6 +71,29 @@ describe('types: PropertyMapper', () => {
 
     expect(schema).toBeDefined();
   });
+
+  it('should respect Input types with the {set?: ... | null} type', () => {
+    const schema: PrismaInputSchema<
+      {
+        name: { set?: string };
+      },
+      { name: string }
+    > = {
+      mapper: object(),
+
+      properties: {
+        name: {
+          pick: (m) => m?.name,
+          map: (p) => {
+            return p ? { set: p.value } : undefined;
+          },
+          __typename: 'Property',
+        },
+      },
+    };
+
+    expect(schema).toBeDefined();
+  });
 });
 
 describe('types: PropertyMapper -> property', () => {
@@ -95,6 +118,35 @@ describe('types: PropertyMapper -> property', () => {
         secondName: property((m) => m?.name),
         // no error map optionalName to displayName, both are nullable and strings
         displayName: property((m) => m?.optionalName),
+      },
+    };
+
+    expect(schema).toBeDefined();
+  });
+
+  it('should respect Input and Model property types also with the "set" styles', () => {
+    const schema: PrismaInputSchema<
+      {
+        name: { set?: string };
+        secondName: { set?: string };
+        displayName: { set?: string | null };
+      },
+      {
+        name: string | null;
+        secondName: boolean | null;
+        optionalName: string | null;
+      }
+    > = {
+      mapper: object(),
+      properties: {
+        // @ts-expect-error Input.name is not nullable but Model.name is
+        name: property((m) => m?.name),
+        // @ts-expect-error Model.name is boolean but Input.name is string
+        secondName: property((m) => m?.name),
+        // no error map optionalName to displayName, both are nullable and strings
+        displayName: property((m) => m?.optionalName, {
+          nullable: true,
+        }),
       },
     };
 
@@ -202,10 +254,10 @@ describe('types: OneReferenceMapper -> reference', () => {
   it('should respect that Input and Model properties are equal types', () => {
     const schema: PrismaInputSchema<
       {
-        personId: { connect: { id: string } };
-        addressId: { connect: { id: string } };
-        countryId: { connect: { id: string } };
-        organizationId: { connect: { id: string | null } | null };
+        personId: { connect?: { id: string } };
+        addressId: { connect?: { id: string } };
+        countryId: { connect?: { id: string } };
+        organizationId: { connect?: { id: string | null } | null };
       },
       {
         personId: { id: string | null };
@@ -235,10 +287,10 @@ describe('types: OneReferenceMapper -> autoReference', () => {
   it('should respect that Input and Model properties are equal types', () => {
     const schema: PrismaInputSchema<
       {
-        personId: { connect: { id: string } };
-        addressId: { connect: { id: string } };
-        countryId: { connect: { id: string } };
-        organizationId: { connect: { id: string | null } | null };
+        personId: { connect?: { id: string } };
+        addressId: { connect?: { id: string } };
+        countryId: { connect?: { id: string } };
+        organizationId: { connect?: { id: string | null } | null };
       },
       {
         personId: { id: string | null };

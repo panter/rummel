@@ -39,13 +39,14 @@ export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
   return result;
 };
 
-export function property<Input, ModelSource>(
+export function property<Input, ModelSource, Nullable extends boolean = false>(
   pick: (a?: ModelSource | null) => Input | undefined,
-  forceMethod?: 'create' | 'update',
-): PropertyMapper<Input, ModelSource, any> {
+  options?: { forceMethod?: 'create' | 'update'; nullable: Nullable },
+): PropertyMapper<Input | null | undefined, ModelSource, any> {
   return {
     pick,
     map: ({ value, oldValue, method }) => {
+      const { forceMethod } = options || {};
       if (value !== oldValue) {
         return setPropertyMapper(
           forceMethod || method,
@@ -408,9 +409,9 @@ export const autoManyRelation = <
   Create = T extends { create?: (infer C)[] | null } ? C : never,
   Update = 'data' extends keyof SourceUpdate ? SourceUpdate['data'] : never,
   Connect = T extends { connect?: any[] | null } ? T | undefined : undefined,
-  aConnectData = T extends { connect?: (infer Data)[] | null }
-    ? Data | undefined
-    : undefined,
+  // ConnectData = T extends { connect?: (infer Data)[] | null }
+  //   ? Data | undefined
+  //   : undefined,
   UpdateWhere = 'where' extends keyof SourceUpdate
     ? SourceUpdate['where']
     : undefined,
@@ -503,12 +504,11 @@ const mapReference = <Model, Connect>(p?: {
 
 export const autoReference = <
   Input extends GenericPrismaOneConnect,
-  Model,
   ModelSource,
   Key,
 >(): OneReferenceMapper<
   Input,
-  Model,
+  Input['connect'] | undefined,
   Input['connect'],
   ModelSource,
   Key extends keyof ModelSource
@@ -518,15 +518,16 @@ export const autoReference = <
     : unknown
 > => ({ map: (p) => mapReference(p), __typename: 'Reference' });
 
-export const reference = <
-  Input extends GenericPrismaOneConnect,
-  Model,
-  ModelSource,
->(
+export const reference = <Input extends GenericPrismaOneConnect, ModelSource>(
   resolveValue: (
     value?: Partial<ModelSource> | null,
   ) => Input['connect'] | undefined,
-): OneReferenceMapper<Input, Model, Input['connect'], ModelSource> => ({
+): OneReferenceMapper<
+  Input,
+  Input['connect'],
+  Input['connect'],
+  ModelSource
+> => ({
   pick: resolveValue,
   map: (p) => mapReference(p),
   __typename: 'Reference',
