@@ -1,6 +1,7 @@
 import { deepCompareObjects } from './deepCompare';
 import {
   GenericPrismaInput,
+  GenericPrismaOneConnect,
   InferPrismaModel,
   ManyReferenceMapper,
   ManyRelationMapper,
@@ -26,22 +27,22 @@ const MAPPER_ORDER: { [key: string]: number } = {
 
 // type StringTuple<T extends (string | number | symbol)[]> = [T[number], ...T];
 
-export const setPropertyMapper = <T, M extends 'create' | 'update'>(
+export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
   method: M,
-  value: T,
+  value: Model,
 ):
-  | T
+  | Model
   | {
-      set?: T;
+      set?: Model;
     } => {
   const result = method === 'create' ? value : { set: value };
   return result;
 };
 
-export function property<T, S>(
-  pick: (a?: S | null) => T,
+export function property<Input, ModelSource>(
+  pick: (a?: ModelSource | null) => Input | undefined,
   forceMethod?: 'create' | 'update',
-): PropertyMapper<T | null | undefined, S, any> {
+): PropertyMapper<Input, ModelSource, any> {
   return {
     pick,
     map: ({ value, oldValue, method }) => {
@@ -56,12 +57,16 @@ export function property<T, S>(
   };
 }
 
-export function autoProperty<T, S, K>(
+export function autoProperty<Input, ModelSource, Key>(
   forceMethod?: 'create' | 'update',
 ): PropertyMapper<
-  T | null | undefined,
-  S,
-  K extends keyof S ? (T extends S[K] ? K : unknown) : any
+  Input,
+  ModelSource,
+  Key extends keyof ModelSource
+    ? ModelSource[Key] extends Input
+      ? Key
+      : unknown
+    : unknown
 > {
   return {
     map: ({ value, oldValue, method }) => {
@@ -497,41 +502,41 @@ const mapReference = <Model, Connect>(p?: {
 };
 
 export const autoReference = <
-  T extends { connect?: any },
-  S,
+  Input extends GenericPrismaOneConnect,
+  Model,
   ModelSource,
   Key,
 >(): OneReferenceMapper<
-  T,
-  S | undefined,
-  'connect' extends keyof S ? S['connect'] : any,
+  Input,
+  Model,
+  Input['connect'],
   ModelSource,
   Key extends keyof ModelSource
-    ? T['connect'] | undefined | null extends
-        | ModelSource[Key]
-        | undefined
-        | null // TODO or vice versa?
+    ? ModelSource[Key] extends Input['connect'] | undefined | null // TODO or vice versa?
       ? Key
       : unknown
-    : any
+    : unknown
 > => ({ map: (p) => mapReference(p), __typename: 'Reference' });
 
-export const reference = <T extends { connect?: any }, S, ModelSource>(
+export const reference = <
+  Input extends GenericPrismaOneConnect,
+  Model,
+  ModelSource,
+>(
   resolveValue: (
     value?: Partial<ModelSource> | null,
-  ) => T['connect'] | null | undefined,
-): OneReferenceMapper<
-  T,
-  S | undefined,
-  'connect' extends keyof S ? S['connect'] : any,
-  ModelSource
-> => ({
+  ) => Input['connect'] | undefined,
+): OneReferenceMapper<Input, Model, Input['connect'], ModelSource> => ({
   pick: resolveValue,
   map: (p) => mapReference(p),
   __typename: 'Reference',
 });
 
-export const manyReference = <T extends { connect?: any }, S, ModelSource>(
+export const manyReference = <
+  T extends GenericPrismaOneConnect,
+  S,
+  ModelSource,
+>(
   // p?: ReferenceOptions<NonNullable<S>, keyof NonNullable<S>>,
   resolveValue?: (value?: ModelSource | null) => S[] | null | undefined,
 ): ManyReferenceMapper<T, S[] | undefined | null, any, ModelSource> => ({

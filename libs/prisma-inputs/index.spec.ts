@@ -21,7 +21,7 @@ describe('property()', () => {
     });
     expect(resultUndefined).toBe('John');
 
-    const resultNull = property<string, any>(TESTPICK).map({
+    const resultNull = property<string | null, any>(TESTPICK).map({
       value: 'John',
       oldValue: null,
       method: 'create',
@@ -36,7 +36,7 @@ describe('property()', () => {
     });
     expect(resultUndefined).toEqual({ set: 'John' });
 
-    const resultNull = property<string, string>(TESTPICK).map({
+    const resultNull = property<string | null, string>(TESTPICK).map({
       value: 'John',
       oldValue: null,
       method: 'update',
@@ -67,7 +67,7 @@ describe('property()', () => {
     });
     expect(resultUndefined).toBeUndefined();
 
-    const resultNull = property<string, string>(TESTPICK).map({
+    const resultNull = property<string | null, string>(TESTPICK).map({
       value: null,
       oldValue: 'John',
       method: 'create',
@@ -82,7 +82,7 @@ describe('property()', () => {
     });
     expect(resultCreate).toEqual({ set: undefined });
 
-    const resultUpdate = property<string, string>(TESTPICK).map({
+    const resultUpdate = property<string | null, string>(TESTPICK).map({
       value: null,
       oldValue: 'John',
       method: 'update',
@@ -97,7 +97,7 @@ describe('property()', () => {
     });
     expect(resultUndefined).toEqual({ set: 'John' });
 
-    const resultNull = property<string, string>(TESTPICK).map({
+    const resultNull = property<string | null, string>(TESTPICK).map({
       value: 'John',
       oldValue: null,
       method: 'update',
