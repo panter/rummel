@@ -3,6 +3,7 @@ import {
   InferPrismaModel,
   PrismaInput,
   PrismaInputSchema,
+  autoManyReference,
   autoManyRelation,
   autoProperty,
   autoReference,
@@ -37,7 +38,7 @@ export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 
 export type ConnectRelationInput = {
-  id: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EntityIdInput = {
@@ -84,7 +85,7 @@ export type SimpleUpdateInput = {
 };
 
 export type PersonCreateInput = {
-  addresses?: InputMaybe<AddressCreateNestedManyWithoutPersonInput>;
+  addresses: AddressCreateNestedManyWithoutPersonInput;
   name?: InputMaybe<Scalars['String']['input']>;
   organisation?: InputMaybe<OrganisationCreateNestedOneWithoutPersonInput>;
 };
@@ -284,7 +285,7 @@ export const organisationCreateMapper: PrismaInputSchema<
     ),
     simpleId: autoReference(),
     simples: autoManyRelation(() => simpleSchema.relation(), 'id'),
-    simplesIds: manyReference((m) => m?.simples?.map((s) => ({ id: s.id }))),
+    simplesIds: autoManyReference(),
     // description: {
     //   pick: (m) => `${m?.description}`,
     //   map: ({ oldValue, value, method }) => {

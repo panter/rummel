@@ -1,10 +1,14 @@
 import { PrismaInputSchema } from '.';
 import {
+  autoManyReference,
   autoProperty,
   autoReference,
+  autoRelation,
+  manyReference,
   object,
   property,
   reference,
+  relation,
 } from './mappers';
 
 describe('types: PrismaInputSchema', () => {
@@ -194,10 +198,10 @@ describe('types: OneReferenceMapper', () => {
   it('should respect that Input and Model properties are equal types', () => {
     const schema: PrismaInputSchema<
       {
-        personId: { connect: { id: string } };
-        addressId: { connect: { id: string } };
-        countryId: { connect: { id: string } };
-        organizationId: { connect: { id: string | null } | null };
+        personId: { connect?: { id: string } };
+        addressId: { connect?: { id: string } };
+        countryId: { connect?: { id: string } };
+        organizationId: { connect?: { id: string | null } | null };
       },
       { personId: { id: string | null }; addressId: { id: number } }
     > = {
@@ -254,24 +258,24 @@ describe('types: OneReferenceMapper -> reference', () => {
   it('should respect that Input and Model properties are equal types', () => {
     const schema: PrismaInputSchema<
       {
-        personId: { connect?: { id: string } };
-        addressId: { connect?: { id: string } };
-        countryId: { connect?: { id: string } };
-        organizationId: { connect?: { id: string | null } | null };
+        personId: { connect?: { id?: string | null } };
+        addressId?: { connect?: { id?: string | null } | null } | null;
+        countryId?: { connect?: { id?: string | null } | null } | null;
+        organizationId?: { connect?: { id: string | null } | null } | null;
       },
       {
         personId: { id: string | null };
         addressId: { id: number };
-        organizationId: { id: string };
+        organizationId: { id: string; tooMuch?: string | null } | null;
       }
     > = {
       mapper: object(),
       properties: {
-        // @ts-expect-error Input.personId.id is not nullable but Model.personId.id is
-        personId: reference((m) => m?.personId),
+        // @-ts-expect-error Input.personId.id is not nullable but Model.personId.id is
+        personId: reference((m) => m?.personId, { required: true }),
         // @ts-expect-error Input.personId.id is a string but Model.personId.id is a number
         addressId: reference((m) => m?.addressId),
-        // @ts-expect-error Input.personId.id cannot be null
+        // @-ts-expect-error Input.personId.id cannot be null
         countryId: reference(() => {
           return { id: null };
         }),
@@ -287,16 +291,16 @@ describe('types: OneReferenceMapper -> autoReference', () => {
   it('should respect that Input and Model properties are equal types', () => {
     const schema: PrismaInputSchema<
       {
-        personId: { connect?: { id: string } };
-        addressId: { connect?: { id: string } };
-        countryId: { connect?: { id: string } };
-        organizationId: { connect?: { id: string | null } | null };
+        personId: { connect?: { id?: string | null } };
+        addressId?: { connect?: { id?: string | null } | null } | null;
+        countryId: { connect?: { id?: string | null } | null } | null;
+        organizationId?: { connect?: { id?: string | null } | null } | null;
       },
       {
-        personId: { id: string | null };
-        addressId: { id: number };
-        countryId: { id: string };
-        organizationId: { id: string | null } | null;
+        personId: { id: string | null } | null;
+        addressId?: { id: number | null } | null;
+        countryId?: { id?: string | null } | null;
+        organizationId?: { id?: string | null; tooMuch?: number } | null;
       }
     > = {
       mapper: object(),
@@ -306,10 +310,223 @@ describe('types: OneReferenceMapper -> autoReference', () => {
         // @ts-expect-error Input.personId.id is a string but Model.personId.id is a number
         addressId: autoReference(),
         countryId: autoReference(),
+        // @ts-expect-error Model.organizationId, has more properties than Input.organizationId
         organizationId: autoReference(),
       },
     };
 
+    expect(schema).toBeDefined();
+  });
+});
+
+describe('types: OneRelationMapper', () => {
+  it('should respect that Input and Model properties are equal types', () => {
+    const schema: PrismaInputSchema<
+      {
+        person: { create?: { name: string } };
+      },
+      { person: { name: string; id: string } }
+    > = {
+      mapper: object(),
+      properties: {
+        // the property has no idea how to map the person object, so it leave everything as any
+        // for a consistent typing system use the `*Relation` mappers
+        person: {
+          pick: (m) => m?.person,
+          map: (p) => {
+            return p ? { create: { name: p.value } } : undefined;
+          },
+          __typename: 'Relation',
+        },
+      },
+    };
+    expect(schema).toBeDefined();
+  });
+});
+
+describe('types: OneRelationMapper -> relation', () => {
+  it('should respect that Input and Model properties are equal types', () => {
+    const schema: PrismaInputSchema<
+      {
+        person: { create?: { name: string } };
+        address: { create?: { name: string } };
+        country: { create?: { name: string } };
+        // organizationId: { connect?: { id: string | null } | null };
+      },
+      {
+        person: { name: string; id: string };
+        address: { name: string | null };
+        country: { name: string };
+      }
+    > = {
+      mapper: object(),
+      properties: {
+        // no error here
+        person: relation(
+          (m) => m?.person,
+          () =>
+            ({}) as {
+              create?: () => PrismaInputSchema<
+                {
+                  name: string;
+                },
+                { name: string }
+              >;
+            },
+        ),
+        address: relation(
+          // @ts-expect-error Model.address.name is nullable but the `create` schema model property `name` is not nullable
+          (m) => m?.address,
+          () =>
+            ({}) as {
+              create?: () => PrismaInputSchema<
+                {
+                  name: string;
+                },
+                { name: string }
+              >;
+            },
+        ),
+        // @ts-expect-error Input.country.name is not nullable but the `create` schema input property `name` is nullable
+        country: relation(
+          (m) => m?.country,
+          () =>
+            ({}) as {
+              create?: () => PrismaInputSchema<
+                {
+                  name: string | null;
+                },
+                { name: string }
+              >;
+            },
+        ),
+      },
+    };
+    expect(schema).toBeDefined();
+  });
+});
+
+describe('types: OneRelationMapper -> autoRelation', () => {
+  it('should respect that Input and Model properties are equal types', () => {
+    const schema: PrismaInputSchema<
+      {
+        person: { create?: { name: string } };
+        // address: { create?: { name: string } };
+        // country: { create?: { name: string } };
+        // organizationId: { connect?: { id: string | null } | null };
+      },
+      {
+        person: { name: string; id: string };
+        // address: { name: string | null };
+        // country: { name: string };
+      }
+    > = {
+      mapper: object(),
+      properties: {
+        // no error here
+        person: autoRelation(
+          () =>
+            ({}) as {
+              create?: () => PrismaInputSchema<
+                {
+                  name: string;
+                },
+                { name: string }
+              >;
+            },
+        ),
+      },
+    };
+    expect(schema).toBeDefined();
+  });
+});
+
+describe('types: ManyReferenceMapper -> manyReference', () => {
+  it('should respect that Input and Model properties are equal types', () => {
+    const schema: PrismaInputSchema<
+      {
+        persons: { connect?: { id?: string | null }[] | null };
+        notRequiredPersons?: {
+          connect?: { id?: string | null }[] | null;
+        } | null;
+        requiredPersons: { connect?: { id?: string | null }[] | null };
+        addresses?: { connect?: { id?: string | null }[] | null } | null;
+        countries?: { connect?: { id?: string | null }[] | null } | null;
+        organization?: { connect?: { id?: string | null }[] | null } | null;
+      },
+      {
+        persons: { id: string }[];
+        addresses: { id?: number | null }[];
+        organization: { id: string; tooMuch?: string }[];
+      }
+    > = {
+      mapper: object(),
+      properties: {
+        // no error here
+        persons: manyReference(
+          () => {
+            return [{ id: 'm?.persons || null)' }];
+          },
+          { required: true },
+        ),
+        notRequiredPersons: manyReference(() => {
+          return [{ id: 'm?.persons || null)' }];
+        }),
+        // @ts-expect-error Input.addresses is required, so the param "{required: true}"" is missing
+        requiredPersons: manyReference(() => {
+          return null;
+        }),
+        // @ts-expect-error Input.addresses.id is a string but Model.addresses.id is a number
+        addresses: autoManyReference(),
+        // @ts-expect-error countries no present in the model
+        countries: autoManyReference(),
+        // @ts-expect-error organization has more properties than the model "tooMuch?: string"
+        organization: autoManyReference(),
+      },
+    };
+    expect(schema).toBeDefined();
+  });
+});
+
+describe('types: ManyReferenceMapper -> autoManyReference', () => {
+  it('should respect that Input and Model properties are equal types', () => {
+    const schema: PrismaInputSchema<
+      {
+        persons: { connect?: { id?: string | null }[] | null };
+        notRequiredPersons: {
+          connect?: { id?: string | null }[] | null;
+        } | null;
+        requiredPersons: {
+          connect?: { id?: string | null }[] | null;
+        };
+        addresses?: { connect?: { id?: string | null }[] | null } | null;
+        countries?: { connect?: { id?: string | null }[] | null } | null;
+        organization?: { connect?: { id?: string | null }[] | null } | null;
+      },
+      {
+        persons: { id: string }[];
+        notRequiredPersons: { id: string }[] | null;
+        requiredPersons: { id: string }[] | null;
+        addresses?: { id: number | null }[] | null;
+        organization?: { id: string; tooMuch?: string }[] | null;
+      }
+    > = {
+      mapper: object(),
+      properties: {
+        // no error here
+        persons: autoManyReference(),
+        // no error here
+        notRequiredPersons: autoManyReference(),
+        // @ts-expect-error Input.requiredPersons.id is nullable but Model.requiredPersons.id is not
+        requiredPersons: autoManyReference(),
+        // @ts-expect-error Input.addresses.id is a string but Model.addresses.id is a number
+        addresses: autoManyReference(),
+        // @ts-expect-error countries no present in the model
+        countries: autoManyReference(),
+        // @ts-expect-error organization has more properties than the model "tooMuch?: string"
+        organization: autoManyReference(),
+      },
+    };
     expect(schema).toBeDefined();
   });
 });

@@ -84,15 +84,11 @@ export function autoProperty<Input, ModelSource, Key>(
 
 const mapRelation = <Model, Create, Update, Connect>(p: {
   relationMappers: () => {
-    create?: () =>
-      | PrismaInputSchema<Create, Nullable<Partial<Model>>>
-      | undefined;
-    update?: () =>
-      | PrismaInputSchema<Update, Nullable<Partial<Model>>>
-      | undefined;
+    create?: () => PrismaInputSchema<Create, Model> | undefined;
+    update?: () => PrismaInputSchema<Update, Model> | undefined;
   };
-  value?: Nullable<Partial<Model>> | undefined | null;
-  oldValue?: Nullable<Partial<Model>> | undefined | null;
+  value?: Partial<Model> | undefined | null;
+  oldValue?: Partial<Model> | undefined | null;
 }) => {
   const { value, oldValue } = p;
   const { create, update } = p.relationMappers();
@@ -161,14 +157,14 @@ export const relation = <
     : undefined,
   ModelSource = any,
 >(
-  pick: (m?: ModelSource | null) => Nullable<Partial<S>> | null | undefined,
+  pick: (m?: ModelSource | null) => Partial<S> | undefined,
   p: () => {
-    create?: () => PrismaInputSchema<Create, Nullable<Partial<S>>> | undefined;
-    update?: () => PrismaInputSchema<Update, Nullable<Partial<S>>> | undefined;
+    create?: () => PrismaInputSchema<Create, S> | undefined;
+    update?: () => PrismaInputSchema<Update, S> | undefined;
   },
 ): OneRelationMapper<
   T,
-  Nullable<Partial<S>> | undefined | null,
+  Partial<S> | undefined | null,
   Create | undefined,
   Update | undefined,
   Connect | undefined,
@@ -208,12 +204,12 @@ export const autoRelation = <
   Key = any,
 >(
   p: () => {
-    create?: () => PrismaInputSchema<Create, Nullable<Partial<S>>> | undefined;
-    update?: () => PrismaInputSchema<Update, Nullable<Partial<S>>> | undefined;
+    create?: () => PrismaInputSchema<Create, S> | undefined;
+    update?: () => PrismaInputSchema<Update, S> | undefined;
   },
 ): OneRelationMapper<
   T,
-  Nullable<Partial<S>> | undefined | null,
+  Partial<S> | undefined | null,
   Create | undefined,
   Update | undefined,
   Connect | undefined,
@@ -437,7 +433,7 @@ export const autoManyRelation = <
   ModelSource,
   Key extends keyof ModelSource
     ? ModelSource[Key] extends Partial<InferPrismaModel<Create>>[]
-      ? ModelSource[Key][0] extends UpdateWhere | undefined | null // TODO or vice versa?
+      ? ModelSource[Key][0] extends UpdateWhere | undefined | null
         ? ForeignKey extends keyof ModelSource[Key][0]
           ? ForeignKey extends keyof UpdateWhere
             ? Key
@@ -449,7 +445,10 @@ export const autoManyRelation = <
 > => ({
   map: ({ value, oldValue }) => {
     return mapManyRelation({
-      pickForUpdate: (m?: any) => m?.[foreignKey as any],
+      pickForUpdate: (m?: any) =>
+        m?.[foreignKey as any]
+          ? { [foreignKey]: m?.[foreignKey as any] }
+          : undefined,
       relationMappers: p,
       value,
       oldValue,
@@ -457,6 +456,12 @@ export const autoManyRelation = <
   },
   __typename: 'ManyRelation',
 });
+
+type IsTypeAssignable<A, B> = A extends B
+  ? keyof Omit<A, '__typename'> extends keyof Omit<B, '__typename'>
+    ? true
+    : false
+  : false;
 
 const mapReference = <Model, Connect>(p?: {
   value?: Model | null;
@@ -502,116 +507,258 @@ const mapReference = <Model, Connect>(p?: {
   return inputData;
 };
 
+// Define a utility type that removes the __typename property recursively
+type DeepOmitTypename<T> = T extends object
+  ? {
+      [K in keyof T as Exclude<K, '__typename'>]: DeepOmitTypename<T[K]>;
+    }
+  : T;
+
+// Function to deeply omit __typename from an object or array
+const omitTypename = <T>(value: T): DeepOmitTypename<T> => {
+  console.log('value', value);
+  if (value === null || value === undefined) {
+    return value as DeepOmitTypename<T>;
+  }
+  if (typeof value !== 'object') {
+    return value as DeepOmitTypename<T>;
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => omitTypename(v)) as DeepOmitTypename<T>;
+  }
+  const result: Record<string, unknown> = {};
+  for (const key in value) {
+    if (key === '__typename') {
+      continue;
+    }
+    result[key] = omitTypename(value[key as keyof typeof value]);
+  }
+  return result as DeepOmitTypename<T>;
+};
+
+const omitTypenameFromArray = <T>(
+  value: T[] | null | undefined,
+): DeepOmitTypename<T>[] | null | undefined => {
+  console.log('value', value);
+  if (value === null || value === undefined) {
+    return value as DeepOmitTypename<T>[] | null | undefined;
+  }
+  const arr = value.map((v) => omitTypename(v));
+  return arr;
+};
+
 export const autoReference = <
   Input extends GenericPrismaOneConnect,
   ModelSource,
   Key,
 >(): OneReferenceMapper<
   Input,
-  Input['connect'] | undefined,
+  Input['connect'],
   Input['connect'],
   ModelSource,
+  // Key extends keyof ModelSource
+  //   ? ModelSource[Key] extends Input['connect'] | undefined | null
+  //     ? Key
+  //     : unknown
+  //   : unknown
+  // Model source:   { id?: string | null | undefined; } | null | undefined
+  // Input[source]:  { id?: string | null | undefined; } | null | undefined
+  //
   Key extends keyof ModelSource
-    ? ModelSource[Key] extends Input['connect'] | undefined | null // TODO or vice versa?
+    ? IsTypeAssignable<
+        NonNullable<ModelSource[Key]>,
+        NonNullable<Input['connect']>
+      > extends true
       ? Key
       : unknown
-    : unknown
-> => ({ map: (p) => mapReference(p), __typename: 'Reference' });
+    : unknown,
+  Key extends keyof ModelSource
+    ? null extends ModelSource[Key]
+      ? false
+      : true
+    : never
+> => ({
+  map: ({ value, oldValue }) =>
+    mapReference({
+      value: omitTypename(value),
+      oldValue: omitTypename(oldValue),
+    }),
+  __typename: 'Reference',
+});
 
-export const reference = <Input extends GenericPrismaOneConnect, ModelSource>(
+export const reference = <
+  Input extends GenericPrismaOneConnect,
+  ModelSource,
+  Required extends boolean = false,
+>(
   resolveValue: (
     value?: Partial<ModelSource> | null,
   ) => Input['connect'] | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options?: {
+    required?: Required;
+  },
 ): OneReferenceMapper<
   Input,
   Input['connect'],
   Input['connect'],
-  ModelSource
+  ModelSource,
+  any,
+  Required extends true ? true : false
 > => ({
   pick: resolveValue,
   map: (p) => mapReference(p),
   __typename: 'Reference',
 });
 
+type IsArrayTypeAssignable<A, B> = A extends any[]
+  ? B extends any[]
+    ? A[number] extends B[number]
+      ? keyof A[number] extends keyof B[number]
+        ? true
+        : false
+      : false
+    : true
+  : false;
+
+const mapManyReference = <T, Connect>(p: {
+  value: Connect[] | null | undefined;
+  oldValue: Connect[] | null | undefined;
+}) => {
+  const { value, oldValue } = p;
+  if (value === oldValue) {
+    return;
+  }
+
+  if (deepCompareObjects(value, oldValue)) {
+    return;
+  }
+
+  const inputData:
+    | PrismaManyReferenceInput<
+        T extends {
+          connect?: (infer C)[] | undefined;
+        }
+          ? C | undefined
+          : never
+      >
+    | undefined = {};
+
+  // disconnect
+  oldValue?.forEach((oldValueItem) => {
+    if (
+      !value?.some((newValueItem) =>
+        deepCompareObjects(newValueItem, oldValueItem),
+      )
+    ) {
+      inputData.disconnect = inputData.disconnect || [];
+      inputData.disconnect.push(oldValueItem as any);
+    }
+  });
+
+  // connect
+  value?.forEach((newValueItem) => {
+    const ids = newValueItem;
+
+    // !(newValueItem as any).id
+    if (!ids || !someKeysHaveValues(ids)) {
+      console.warn(
+        'ManyReference: id is missing, ignore the connect',
+        newValueItem,
+      );
+    } else {
+      // connect if not in oldValue
+      if (
+        !oldValue?.some(
+          (oldValueItem) => deepCompareObjects(newValueItem, oldValueItem),
+          // (newValueItem as any).id === (oldValueItem as any).id,
+        )
+      ) {
+        inputData.connect = inputData.connect || [];
+        // inputData.connect.push({ id: (newValueItem as any).id } as any); // CRO: weird typing
+        inputData.connect.push(
+          newValueItem as any,
+          // foreignKeys.reduce((acc, key) => {
+          //   acc[key] = (newValueItem as any)[key];
+          //   return acc;
+          // }, {} as any),
+        );
+      }
+    }
+  });
+
+  if (Object.keys(inputData).length === 0) {
+    return;
+  }
+
+  return inputData;
+};
+
+export const autoManyReference = <
+  T extends GenericPrismaOneConnect,
+  S,
+  ModelSource,
+  Key,
+>(
+  resolveValue?: (value?: ModelSource | null) => S[] | null | undefined,
+): ManyReferenceMapper<
+  T,
+  T['connect'] | undefined | null,
+  any,
+  ModelSource,
+  Key extends keyof ModelSource
+    ? IsArrayTypeAssignable<
+        NonNullable<ModelSource[Key]>,
+        T['connect']
+      > extends true
+      ? Key
+      : unknown
+    : unknown,
+  Key extends keyof ModelSource
+    ? ModelSource[Key] extends any[]
+      ? ModelSource[Key] extends null
+        ? false
+        : true
+      : false
+    : never
+> => ({
+  pick: resolveValue,
+  map: ({ value, oldValue }) => {
+    return mapManyReference({
+      value: omitTypenameFromArray(value),
+      oldValue: omitTypenameFromArray(oldValue),
+    });
+  },
+  __typename: 'ManyReference',
+});
+
 export const manyReference = <
   T extends GenericPrismaOneConnect,
   S,
   ModelSource,
+  Required extends boolean = false,
 >(
-  // p?: ReferenceOptions<NonNullable<S>, keyof NonNullable<S>>,
   resolveValue?: (value?: ModelSource | null) => S[] | null | undefined,
-): ManyReferenceMapper<T, S[] | undefined | null, any, ModelSource> => ({
-  pick: resolveValue,
-  map: ({ value, oldValue }) => {
-    if (value === oldValue) {
-      return;
-    }
-
-    if (deepCompareObjects(value, oldValue)) {
-      return;
-    }
-
-    const inputData:
-      | PrismaManyReferenceInput<
-          T extends {
-            connect?: (infer C)[] | undefined;
-          }
-            ? C | undefined
-            : never
-        >
-      | undefined = {};
-
-    // disconnect
-    oldValue?.forEach((oldValueItem) => {
-      if (
-        !value?.some((newValueItem) =>
-          deepCompareObjects(newValueItem, oldValueItem),
-        )
-      ) {
-        inputData.disconnect = inputData.disconnect || [];
-        inputData.disconnect.push(oldValueItem as any);
-      }
-    });
-
-    // connect
-    value?.forEach((newValueItem) => {
-      const ids = newValueItem;
-
-      // !(newValueItem as any).id
-      if (!ids || !someKeysHaveValues(ids)) {
-        console.warn(
-          'ManyReference: id is missing, ignore the connect',
-          newValueItem,
-        );
-      } else {
-        // connect if not in oldValue
-        if (
-          !oldValue?.some(
-            (oldValueItem) => deepCompareObjects(newValueItem, oldValueItem),
-            // (newValueItem as any).id === (oldValueItem as any).id,
-          )
-        ) {
-          inputData.connect = inputData.connect || [];
-          // inputData.connect.push({ id: (newValueItem as any).id } as any); // CRO: weird typing
-          inputData.connect.push(
-            newValueItem as any,
-            // foreignKeys.reduce((acc, key) => {
-            //   acc[key] = (newValueItem as any)[key];
-            //   return acc;
-            // }, {} as any),
-          );
-        }
-      }
-    });
-
-    if (Object.keys(inputData).length === 0) {
-      return;
-    }
-
-    return inputData;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  options?: {
+    required?: Required;
   },
-  __typename: 'ManyReference',
-});
+): ManyReferenceMapper<
+  T,
+  Nullable<Partial<S>>[] | undefined | null,
+  any,
+  ModelSource,
+  any,
+  Required extends true ? true : false
+> => {
+  return {
+    pick: resolveValue,
+    map: ({ value, oldValue }) => {
+      return mapManyReference({ value, oldValue });
+    },
+    __typename: 'ManyReference',
+  };
+};
 
 export const object =
   <Input extends GenericPrismaInput, Model>() =>
@@ -718,6 +865,10 @@ export const object =
             if (relationInput) {
               inputData[key] = relationInput;
             } else {
+              // TODO: read above
+              // this is part of the "*Id|s" feature, we try to connect the relation by the id
+              // in case the mapper does not a mapper for the "*Id|s" field
+              // this is a bit hacky, and should be removed in the future
               const refValue = source[`${key}Id` as keyof Model] as any;
               const oldRefValue = oldSource?.[`${key}Id` as keyof Model] as any;
               const referenceInput = propMapper.map?.({
@@ -760,47 +911,6 @@ export const mapFromPrismaSchema = <T, M>({
   value?: Partial<M> | null | undefined;
   oldValue?: Partial<M> | null | undefined;
 }) => schema.mapper({ value, oldValue, mapper: schema });
-
-// const assertDisconnectConflict = (v: any, v2: any, key: string) => {
-//   if (v?.disconnect && v2?.disconnect) {
-//     console.error(
-//       `object: reference and relation property on ${key} want to disconnect`,
-//       key,
-//     );
-//   }
-// };
-
-// function shallowEqual(value1: any, value2: any): boolean {
-//   // Check if both values are strictly equal, covering primitives and reference equality for objects
-//   if (value1 === value2) {
-//     return true;
-//   }
-
-//   // Check for null or undefined
-//   if (value1 == null || value2 == null) {
-//     return value1 === value2;
-//   }
-
-//   // Ensure both values are objects before proceeding with object comparison
-//   if (typeof value1 !== 'object' || typeof value2 !== 'object') {
-//     return false;
-//   }
-
-//   const keys1 = Object.keys(value1);
-//   const keys2 = Object.keys(value2);
-
-//   if (keys1.length !== keys2.length) {
-//     return false;
-//   }
-
-//   for (const key of keys1) {
-//     if (value1[key] !== value2[key]) {
-//       return false;
-//     }
-//   }
-
-//   return true;
-// }
 
 function someKeysHaveValues(obj: any) {
   for (const key in obj) {

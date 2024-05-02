@@ -121,24 +121,7 @@ export const prismaSchemaBuilder = <
   unionSchema: PrismaInputSchema<PrismaUnionInput, ModelSource>;
   createSchema?: PrismaInputSchema<PrismaCreateInput, ModelSource>;
   updateSchema?: PrismaInputSchema<PrismaUpdateInput, ModelSource>;
-  relation: (
-    customSchemas?:
-      | {
-          create?: () =>
-            | PrismaInputSchema<
-                PrismaCreateInput,
-                Nullable<Partial<ModelSource>>
-              >
-            | undefined;
-          update?: () =>
-            | PrismaInputSchema<
-                PrismaUpdateInput,
-                Nullable<Partial<ModelSource>>
-              >
-            | undefined;
-        }
-      | undefined,
-  ) => {
+  relation: () => {
     create?: () =>
       | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
       | undefined;
@@ -178,14 +161,7 @@ export const prismaSchemaBuilder = <
       },
     } as any);
 
-  const relation = (customSchemas?: {
-    create?: () =>
-      | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
-      | undefined;
-    update?: () =>
-      | PrismaInputSchema<PrismaUpdateInput, Nullable<Partial<ModelSource>>>
-      | undefined;
-  }): {
+  const relation = (): {
     create?: () =>
       | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
       | undefined;
@@ -193,22 +169,8 @@ export const prismaSchemaBuilder = <
       | PrismaInputSchema<PrismaUpdateInput, Nullable<Partial<ModelSource>>>
       | undefined;
   } => ({
-    create: customSchemas?.create
-      ? customSchemas?.create
-      : createSchema
-        ? () => createSchema
-        : (undefined as any as () => PrismaInputSchema<
-            PrismaCreateInput,
-            Nullable<Partial<ModelSource>>
-          >),
-    update: customSchemas?.update
-      ? customSchemas?.update
-      : updateSchema
-        ? () => updateSchema
-        : (undefined as any as () => PrismaInputSchema<
-            PrismaUpdateInput,
-            Nullable<Partial<ModelSource>>
-          >),
+    create: createSchema ? () => createSchema : undefined,
+    update: updateSchema ? () => updateSchema : undefined,
   });
 
   return {

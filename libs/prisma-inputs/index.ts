@@ -75,7 +75,7 @@ export type PrismaInputReferences<T> = {
     : T[K] extends GenericPrismaOneConnect | undefined | null
       ? PrismaInputReferenceOneKeys<K>
       : never]: T[K] extends { connect?: infer U } | undefined | null
-    ? { connect?: U }
+    ? { connect?: U } | null // TODO: should relflect the null of the relation
     : never;
 };
 
@@ -96,12 +96,12 @@ export type PrismaManyObjectInput<Create, Update, Connect, Disconnect> = {
 };
 
 export type PrismaOneReferenceInput<Connect> = {
-  connect?: Connect;
+  connect?: Connect | null;
   disconnect?: boolean;
 };
 
 export type PrismaManyReferenceInput<Connect> = {
-  connect?: Connect[];
+  connect?: Connect[] | null;
   disconnect?: GenericEntityIdInput[];
 };
 
@@ -130,7 +130,7 @@ export type OneRelationMapper<
 > = {
   __key__?: Key;
   // embbedded?: boolean;
-  pick?: (o?: ModelSource | null) => Partial<Model> | null;
+  pick?: (o?: ModelSource | null) => Model | undefined;
   map: (props: {
     value?: Model | null;
     oldValue?: Model | null;
@@ -172,8 +172,10 @@ export type OneReferenceMapper<
   Connect = Input['connect'],
   ModelSource = any,
   Key = any,
+  Required = false,
 > = {
   __key__?: Key;
+  __required__?: Required;
   // embbedded?: boolean;
   pick?: (o?: ModelSource | null) => Model | undefined;
   map: (props: {
@@ -184,11 +186,15 @@ export type OneReferenceMapper<
 };
 
 export type ManyReferenceMapper<
-  Input extends GenericPrismaManyConnect,
+  Input extends GenericPrismaManyConnect | null,
   Source = any,
   Connect = ExtractManyReferenceType<Input>,
   ModelSource = any,
+  Key = any,
+  Required extends boolean = false,
 > = {
+  __key__?: Key;
+  __required__?: Required;
   // embbedded?: boolean;
   pick?: (o?: ModelSource | null) => Source | null | undefined;
   map: (props: {
@@ -247,7 +253,9 @@ export type PrismaInputSchemaProperty<
           Input,
           Model | undefined,
           Partial<C> | undefined,
-          ModelSource
+          ModelSource,
+          Key,
+          InputCopy extends null ? false | true : true
         >
       : Input extends { connect?: infer C }
         ? OneReferenceMapper<
@@ -255,7 +263,8 @@ export type PrismaInputSchemaProperty<
             Model | undefined,
             Partial<C> | undefined,
             ModelSource,
-            Key
+            Key,
+            InputCopy extends null ? false | true : true
           >
         : Input extends { set?: infer S }
           ? PropertyMapper<S | undefined, ModelSource, Key>
