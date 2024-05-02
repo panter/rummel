@@ -5,21 +5,13 @@ export type Nullable<T> = {
   [P in keyof T]: T[P] | null;
 };
 
-// TODO: composed primary keys
-type EntityIdInput = {
-  id?: string;
-};
-
-// TODO: composed primary keys
-// type ConnectRelationInput = {
-//   id?: string;
-// };
+type GenericEntityIdInput = { id?: string };
 
 type PropertyTypes = string | number | boolean | Date | bigint;
 
 export type GenericPrismaInput = Record<string, unknown>;
 
-type GenericPrismaOneConnect = { connect?: any };
+export type GenericPrismaOneConnect = { connect?: any };
 
 type GenericPrismaManyConnect = { connect?: any[] | null };
 
@@ -100,7 +92,7 @@ export type PrismaManyObjectInput<Create, Update, Connect, Disconnect> = {
   connect?: Connect[];
   create?: Create[];
   disconnect?: Disconnect[];
-  update?: { where: EntityIdInput; data: Update }[];
+  update?: { where: GenericEntityIdInput; data: Update }[];
 };
 
 export type PrismaOneReferenceInput<Connect> = {
@@ -110,20 +102,20 @@ export type PrismaOneReferenceInput<Connect> = {
 
 export type PrismaManyReferenceInput<Connect> = {
   connect?: Connect[];
-  disconnect?: EntityIdInput[];
+  disconnect?: GenericEntityIdInput[];
 };
 
 // ---
 
-export type PropertyMapper<Model, ModelSource, Key> = {
+export type PropertyMapper<Input, ModelSource, Key, Model = Input> = {
   // fake property needed for the mapper to work
   __key__?: Key;
-  pick?: (o?: ModelSource | null) => Model | undefined;
+  pick?: (o?: ModelSource) => Model | undefined;
   map: (props: {
     value?: Model;
     oldValue?: Model;
     method: 'create' | 'update';
-  }) => Model | { set?: Model | null } | undefined;
+  }) => Input | { set?: Input } | undefined;
   __typename: 'Property';
 };
 
@@ -183,10 +175,10 @@ export type OneReferenceMapper<
 > = {
   __key__?: Key;
   // embbedded?: boolean;
-  pick?: (o?: ModelSource | null) => Model | null;
+  pick?: (o?: ModelSource | null) => Model | undefined;
   map: (props: {
-    value?: Model | null;
-    oldValue?: Model | null;
+    value?: Model;
+    oldValue?: Model;
   }) => PrismaOneReferenceInput<Connect> | undefined;
   __typename: 'Reference';
 };
@@ -265,13 +257,9 @@ export type PrismaInputSchemaProperty<
             Key
           >
         : Input extends PropertyTypes
-          ? PropertyMapper<
-              InputSource[Key] | null | undefined,
-              ModelSource,
-              Key
-            >
+          ? PropertyMapper<InputSource[Key], ModelSource, Key>
           : Input extends { set?: infer S }
-            ? PropertyMapper<S | null | undefined, ModelSource, Key>
+            ? PropertyMapper<S | null | undefined, ModelSource, Key, unknown>
             : never;
 
 /**
