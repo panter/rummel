@@ -1,9 +1,13 @@
+import { mapModelToInput, prismaSchemaBuilder } from '.';
+import { deepCompareObjects } from './deepCompare';
 import {
+  autoProperty,
   manyReference,
   mapFromPrismaSchema,
   object,
   property,
   reference,
+  relation,
 } from './mappers';
 import {
   organisationCreateMapper,
@@ -103,6 +107,23 @@ describe('property()', () => {
       method: 'update',
     });
     expect(resultNull).toEqual({ set: 'John' });
+  });
+});
+
+describe('autoProperty()', () => {
+  it('should return new value if no oldValue is not set "create"', () => {
+    const resultUndefined = autoProperty<string, any, any>('create').map({
+      value: 'John',
+      method: 'create',
+    });
+    expect(resultUndefined).toBe('John');
+
+    const resultNull = autoProperty<string | null, any, any>().map({
+      value: 'John',
+      oldValue: null,
+      method: 'create',
+    });
+    expect(resultNull).toBe('John');
   });
 });
 
@@ -291,91 +312,129 @@ describe('relation()', () => {
     expect(resultCreate).toBeUndefined();
   });
 
-  //   it('should disconnect if new value is null or undefined and oldValue is set', () => {
-  //     const resultUndefined = organisationCreateMapper.properties.simple.map({
-  //       value: undefined,
-  //       oldValue: { fname: 'John' },
-  //     });
-  //     expect(resultUndefined).toEqual({ disconnect: true });
+  it('should disconnect if new value is null or undefined and oldValue is set', () => {
+    const resultUndefined = organisationCreateMapper.properties.simple.map({
+      value: undefined,
+      oldValue: { fname: 'John' },
+    });
+    expect(resultUndefined).toEqual({ disconnect: true });
 
-  //     const resultNull = organisationCreateMapper.properties.simple.map({
-  //       value: null,
-  //       oldValue: { fname: 'John' },
-  //     });
-  //     expect(resultNull).toEqual({ disconnect: true });
-  //   });
+    const resultNull = organisationCreateMapper.properties.simple.map({
+      value: null,
+      oldValue: { fname: 'John' },
+    });
+    expect(resultNull).toEqual({ disconnect: true });
+  });
 
-  //   it('should return update even if property id is not set', () => {
-  //     const resultCreate = organisationUpdateMapper.properties.simple.map({
-  //       value: { fname: 'John' },
-  //       oldValue: {
-  //         fname: 'Jane',
-  //         id: '1',
-  //       } as any,
-  //     });
-  //     expect(resultCreate).toEqual({
-  //       update: { name: { set: 'John' } },
-  //     });
-  //   });
-  //   it('should return update if property id is set, disregarding the oldValue', () => {
-  //     const resultCreate = organisationCreateMapper.properties.simple.map({
-  //       value: { fname: 'John', id: '1' } as any,
-  //       oldValue: { fname: 'Jane', id: '1' } as any,
-  //     });
-  //     expect(resultCreate).toEqual({
-  //       update: { name: { set: 'John' } },
-  //     });
-  //   });
-  // });
+  it('should return update even if property id is not set', () => {
+    const resultCreate = organisationUpdateMapper.properties.simple.map({
+      value: { fname: 'John' },
+      oldValue: {
+        fname: 'Jane',
+        id: '1',
+      } as any,
+    });
+    expect(resultCreate).toEqual({
+      update: { name: { set: 'John' } },
+    });
+  });
+  it('should return update if property id is set, disregarding the oldValue', () => {
+    const resultCreate = organisationCreateMapper.properties.simple.map({
+      value: { fname: 'John', id: '1' } as any,
+      oldValue: { fname: 'Jane', id: '1' } as any,
+    });
+    expect(resultCreate).toEqual({
+      update: { name: { set: 'John' } },
+    });
+  });
 
-  // describe('manyRelation()', () => {
-  //   it('should return new value if oldValue is not set', () => {
-  //     const resultCreate = organisationCreateMapper.properties.simples.map({
-  //       value: [{ fname: 'John' }],
-  //     });
-  //     expect(resultCreate).toEqual({ create: [{ name: 'John' }] });
-  //   });
+  it('should return none if both values are equal', () => {
+    const resultCreate = organisationCreateMapper.properties.simple.map({
+      value: {
+        fname: 'John',
+      },
+    });
+    expect(resultCreate).toEqual({ create: { name: 'John' } });
+  });
 
-  //   it('should return undefined if value and oldValue are the same', () => {
-  //     const resultCreate = organisationCreateMapper.properties.simples.map({
-  //       value: [{ fname: 'John' }],
-  //       oldValue: [{ fname: 'John' }],
-  //     });
-  //     expect(resultCreate).toBeUndefined();
-  //   });
+  it('should return undefined if values are equal', () => {
+    const value = { id: '1' };
+    const resultUndefined = relation(TESTPICK, () => ({}) as any).map({
+      value: value as any,
+      oldValue: value as any,
+    });
+    expect(resultUndefined).toEqual(undefined);
+  });
+});
 
-  //   it('should disconnect if new value is null or undefined and oldValue is set', () => {
-  //     const john = { fname: 'John', id: '1' };
+describe('manyRelation()', () => {
+  it('should return new value if oldValue is not set', () => {
+    const resultCreate = organisationCreateMapper.properties.simples.map({
+      value: [{ fname: 'John' }],
+    });
+    expect(resultCreate).toEqual({ create: [{ name: 'John' }] });
+  });
 
-  //     const resultUndefined = organisationCreateMapper.properties.simples.map({
-  //       oldValue: [john],
-  //     });
-  //     expect(resultUndefined).toEqual({ disconnect: [{ id: john.id }] });
+  it('should return undefined if value and oldValue are the same', () => {
+    const resultCreate = organisationCreateMapper.properties.simples.map({
+      value: [{ fname: 'John' }],
+      oldValue: [{ fname: 'John' }],
+    });
+    expect(resultCreate).toBeUndefined();
+  });
 
-  //     const resultNull = organisationCreateMapper.properties.simples.map({
-  //       value: null,
-  //       oldValue: [john],
-  //     });
-  //     expect(resultNull).toEqual({ disconnect: [{ id: john.id }] });
-  //   });
+  it('should disconnect if new value is null or undefined and oldValue is set', () => {
+    const john = { fname: 'John', id: '1' };
 
-  //   it('should update, create and remove', () => {
-  //     const jane = { fname: 'Jane', id: '1' };
-  //     const james = { fname: 'James', id: '2' };
-  //     const emma = { fname: 'Emma', id: '3' };
-  //     const resultCreate = organisationCreateMapper.properties.simples.map({
-  //       value: [{ fname: 'John' }, james, { id: emma.id, fname: 'Emma-Lisa' }],
-  //       oldValue: [jane, james, emma],
-  //     });
+    const resultUndefined = organisationCreateMapper.properties.simples.map({
+      oldValue: [john],
+    });
+    expect(resultUndefined).toEqual({ disconnect: [{ id: john.id }] });
 
-  //     expect(resultCreate).toEqual({
-  //       create: [{ name: 'John' }],
-  //       update: [
-  //         { where: { id: emma.id }, data: { name: { set: 'Emma-Lisa' } } },
-  //       ],
-  //       disconnect: [{ id: jane.id }],
-  //     });
-  //   });
+    const resultNull = organisationCreateMapper.properties.simples.map({
+      value: null,
+      oldValue: [john],
+    });
+    expect(resultNull).toEqual({ disconnect: [{ id: john.id }] });
+  });
+
+  it('should update, create and remove', () => {
+    const jane = { fname: 'Jane', id: '1' };
+    const james = { fname: 'James', id: '2' };
+    const emma = { fname: 'Emma', id: '3' };
+    const resultCreate = organisationCreateMapper.properties.simples.map({
+      value: [{ fname: 'John' }, james, { id: emma.id, fname: 'Emma-Lisa' }],
+      oldValue: [jane, james, emma],
+    });
+
+    expect(resultCreate).toEqual({
+      create: [{ name: 'John' }],
+      update: [
+        { where: { id: emma.id }, data: { name: { set: 'Emma-Lisa' } } },
+      ],
+      disconnect: [{ id: jane.id }],
+    });
+  });
+});
+
+describe('mapModelToInput()', () => {
+  it('should return undefinded if we only pass undefinded', () => {
+    const result = mapModelToInput(
+      organisationCreateMapper,
+      undefined,
+      undefined,
+    );
+
+    expect(result).toBeUndefined();
+  });
+});
+
+describe('deepCompare()', () => {
+  it('should return false if array are not the same length', () => {
+    const result = deepCompareObjects([true], [true, true]);
+
+    expect(result).toEqual(false);
+  });
 });
 
 describe('object()', () => {
@@ -406,6 +465,21 @@ describe('object()', () => {
     expect(resultCreate).toEqual({
       simple: { create: { name: 'Org1' } },
     });
+  });
+
+  it('should use relation() als for "*Id" properties', () => {
+    const simpleCreateSchema = organisationCreateMapper;
+    expect(simpleCreateSchema).not.toBeUndefined();
+
+    const resultCreate = object()({
+      // we checked that personCreateSchema is not undefined
+      mapper: simpleCreateSchema ? simpleCreateSchema : ({} as any),
+      value: {
+        simpleId: { id: '1' },
+      },
+    });
+    // nest simple-entity into organisation and check if the reference can be used when nested
+    expect(resultCreate).toEqual({ simple: { connect: { id: '1' } } });
   });
 
   it('should use manyRelation()', () => {
@@ -452,23 +526,36 @@ describe('object()', () => {
       addresses: { connect: [{ id: '1' }] },
     });
   });
+});
 
-  describe('mapFromPrismaSchema()', () => {
-    it('should map using the schema', () => {
-      const createSchema = personSchema.createSchema;
-      expect(createSchema).not.toBeUndefined();
-      if (!createSchema) {
-        return;
-      }
+describe('mapFromPrismaSchema()', () => {
+  it('should map using the schema', () => {
+    const createSchema = personSchema.createSchema;
+    expect(createSchema).not.toBeUndefined();
 
-      const resultCreate = mapFromPrismaSchema({
-        schema: createSchema,
-        value: { addressesIds: [{ id: '1' }] },
-      });
+    if (!createSchema) {
+      return;
+    }
 
-      expect(resultCreate).toEqual({
-        addresses: { connect: [{ id: '1' }] },
-      });
+    const resultCreate = mapFromPrismaSchema({
+      schema: createSchema,
+      value: { addressesIds: [{ id: '1' }] },
     });
+
+    expect(resultCreate).toEqual({
+      addresses: { connect: [{ id: '1' }] },
+    });
+  });
+});
+
+describe('prismaSchemaBuilder()', () => {
+  it('should accept undefined as create / update', () => {
+    const schema = prismaSchemaBuilder({
+      props: {},
+    });
+
+    const relation = schema.relation();
+    expect(relation.create).toEqual(undefined);
+    expect(relation.update).toEqual(undefined);
   });
 });
