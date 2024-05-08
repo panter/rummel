@@ -38,3 +38,6 @@ export const prismaInputBuilderFromGraphql = <
     FData
   >;
 };
+
+export type ExtractFragmentType<T> =
+  T extends TypedDocumentNode<infer U> ? U : never;

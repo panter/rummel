@@ -59,8 +59,12 @@ type ExtractManyReferenceType<T> = T extends { connect?: (infer C)[] }
   : never;
 
 type ExtractManyRelationUpdateDataType<U> = U extends { data?: infer UU }
-  ? Partial<UU> | never
-  : never;
+  ? Partial<UU> | undefined
+  : any;
+
+type ExtractManyRelationUpdateWhereType<U> = U extends { where?: infer UU }
+  ? Partial<UU> | undefined
+  : any;
 
 export type CommonProperties<T, U> = Extract<keyof T, keyof U>;
 
@@ -88,11 +92,17 @@ export type PrismaOneObjectInput<Create, Update, Connect> = {
   update?: Update;
 };
 
-export type PrismaManyObjectInput<Create, Update, Connect, Disconnect> = {
+export type PrismaManyObjectInput<
+  Create,
+  Update,
+  UpdateWhere,
+  Connect,
+  Disconnect,
+> = {
   connect?: Connect[];
   create?: Create[];
   disconnect?: Disconnect[];
-  update?: { where: GenericEntityIdInput; data: Update }[];
+  update?: { where: UpdateWhere; data: Update }[];
 };
 
 export type PrismaOneReferenceInput<Connect> = {
@@ -141,6 +151,7 @@ export type OneRelationMapper<
 export type ManyRelationMapper<
   Input extends GenericPrismaRelation,
   Model = any,
+  UpdateWhere = any,
   Create = Input['create'],
   Update = Input['update'],
   Connect = 'connect' extends keyof Input
@@ -162,7 +173,9 @@ export type ManyRelationMapper<
   map: (props: {
     value?: Model[] | null;
     oldValue?: Model[] | null;
-  }) => PrismaManyObjectInput<Create, Update, Connect, Disconnect> | undefined;
+  }) =>
+    | PrismaManyObjectInput<Create, Update, UpdateWhere, Connect, Disconnect>
+    | undefined;
   __typename: 'ManyRelation';
 };
 
@@ -231,9 +244,10 @@ export type PrismaInputSchemaProperty<
   ? ManyRelationMapper<
       Input,
       any, // ExtractArrayModelDataType<Model>,
+      ExtractManyRelationUpdateWhereType<U> | undefined,
       C | undefined,
       ExtractManyRelationUpdateDataType<U> | undefined,
-      ExtractManyRelationConnectType<Input>,
+      ExtractManyRelationConnectType<Input> | undefined,
       ExtractManyRelationDisconnectType<Input>,
       ModelSource,
       Key
