@@ -42,7 +42,7 @@ export type ConnectRelationInput = {
 };
 
 export type EntityIdInput = {
-  id: Scalars['String']['input'];
+  id?: Scalars['String']['input'] | null;
 };
 
 export type Simple = {
@@ -85,7 +85,7 @@ export type SimpleUpdateInput = {
 };
 
 export type PersonCreateInput = {
-  addresses: AddressCreateNestedManyWithoutPersonInput;
+  addresses?: AddressCreateNestedManyWithoutPersonInput | null;
   name?: InputMaybe<Scalars['String']['input']>;
   organisation?: InputMaybe<OrganisationCreateNestedOneWithoutPersonInput>;
 };
@@ -118,7 +118,7 @@ export type AddressUpdateInput = {
 
 export type AddressUpdateWithWhereUniqueWithoutPersonInput = {
   data?: InputMaybe<AddressUpdateInput>;
-  where: EntityIdInput;
+  where?: EntityIdInput | null;
 };
 
 export type OrganisationCreateInput = {
@@ -164,7 +164,7 @@ export type SimpleCreateNestedManyWithoutOrganisationInput = {
 
 export type SimpleUpdateWithWhereUniqueWithoutOrganisationInput = {
   data?: InputMaybe<SimpleUpdateInput>;
-  where: EntityIdInput;
+  where?: EntityIdInput | null;
 };
 
 export type SimpleUpdateNestedOneWithoutOrganisationInput = {
@@ -184,14 +184,17 @@ const simpleSchema = prismaSchemaBuilder<
   Simple
 >({
   props: {
+    name: property((m) => m?.fname),
     //     name: {
     //       __typename: 'Property',
     // pick: (m) => m?.name,
     //     }
-    name: property((m) => m?.fname),
+    // name: property((m) => m?.fname),
   },
   create: {},
-  update: { secondName: property((m) => m?.fsecondeName) },
+  update: {
+    secondName: property((m) => m?.fsecondeName),
+  },
 });
 
 export const personSchema = prismaSchemaBuilder<
@@ -212,18 +215,13 @@ export const personSchema = prismaSchemaBuilder<
       (m) => m?.organisation && { id: m.organisation.id || '' },
     ),
   },
-  create: {},
-  update: {},
+  create: {
+    // name: property((m) => m?.name),
+  },
+  update: {
+    // name: property((m) => m?.name),
+  },
 });
-
-type A = DeepIntersect<
-  PrismaInput<AddressCreateWithoutPersonInput>,
-  PrismaInput<AddressUpdateInput>
->;
-
-const A: A = {
-  address: '',
-};
 
 const addressSchema = prismaSchemaBuilder<
   AddressCreateWithoutPersonInput,
@@ -284,7 +282,9 @@ export const organisationCreateMapper: PrismaInputSchema<
       () => simpleSchema.relation(),
     ),
     simpleId: autoReference(),
-    simples: autoManyRelation(() => simpleSchema.relation(), 'id'),
+    simples: autoManyRelation(() => simpleSchema.relation(), {
+      foreignKey: 'id',
+    }),
     simplesIds: autoManyReference(),
     // description: {
     //   pick: (m) => `${m?.description}`,

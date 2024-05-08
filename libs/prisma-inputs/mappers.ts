@@ -27,6 +27,8 @@ const MAPPER_ORDER: { [key: string]: number } = {
 
 // type StringTuple<T extends (string | number | symbol)[]> = [T[number], ...T];
 
+export const ignoreProperty: any = () => undefined;
+
 export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
   method: M,
   value: Model,
@@ -231,7 +233,14 @@ export const autoRelation = <
   __typename: 'Relation',
 });
 
-const mapManyRelation = <Model, Create, Update, Connect, Where>(p: {
+const mapManyRelation = <
+  Model,
+  Create,
+  Update,
+  UpdateWhere,
+  Connect,
+  Where,
+>(p: {
   pickForUpdate?:
     | false
     | ((m: Model | null | undefined) => Where | null | undefined);
@@ -256,6 +265,7 @@ const mapManyRelation = <Model, Create, Update, Connect, Where>(p: {
   const inputData: PrismaManyObjectInput<
     Create | undefined,
     Update | undefined,
+    UpdateWhere | undefined,
     Connect | undefined,
     any
   > = {};
@@ -379,6 +389,7 @@ export const manyRelation = <
 ): ManyRelationMapper<
   T,
   S | undefined | null,
+  any,
   Create | undefined,
   Update | undefined,
   Connect | undefined,
@@ -398,6 +409,9 @@ export const manyRelation = <
   __typename: 'ManyRelation',
 });
 
+type SinglePropertyObject<K extends string | number | symbol, V> = {
+  [P in K]: V;
+};
 export const autoManyRelation = <
   T extends { create?: any[] | null; update?: any[] | null },
   S = T,
@@ -408,24 +422,25 @@ export const autoManyRelation = <
   // ConnectData = T extends { connect?: (infer Data)[] | null }
   //   ? Data | undefined
   //   : undefined,
-  UpdateWhere = 'where' extends keyof SourceUpdate
-    ? SourceUpdate['where']
-    : undefined,
+  // UpdateWhere = 'where' extends keyof SourceUpdate
+  //   ? SourceUpdate['where']
+  //   : undefined,
   // Disconnect = T extends { disconnect?: any[] | null }
   //   ? T | undefined
   //   : undefined,
   ModelSource = object,
   Key = any,
-  ForeignKey extends keyof UpdateWhere = any,
+  ForeignKey extends keyof S = never,
 >(
   p: () => {
     create?: () => PrismaInputSchema<Create, S> | undefined;
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
-  foreignKey: ForeignKey,
+  options: { foreignKey: ForeignKey | false },
 ): ManyRelationMapper<
   T,
   S | undefined | null,
+  SinglePropertyObject<ForeignKey, S[ForeignKey]> | undefined,
   Create | undefined,
   Update | undefined,
   Connect | undefined,
@@ -433,25 +448,23 @@ export const autoManyRelation = <
   ModelSource,
   Key extends keyof ModelSource
     ? ModelSource[Key] extends Partial<InferPrismaModel<Create>>[]
-      ? ModelSource[Key][0] extends UpdateWhere | undefined | null
-        ? ForeignKey extends keyof ModelSource[Key][0]
-          ? ForeignKey extends keyof UpdateWhere
-            ? Key
-            : unknown
-          : unknown
+      ? ForeignKey extends keyof ModelSource[Key][0]
+        ? Key
         : unknown
       : unknown
     : unknown
 > => ({
+  // pick: omitTypename,
   map: ({ value, oldValue }) => {
+    const { foreignKey } = options;
     return mapManyRelation({
       pickForUpdate: (m?: any) =>
-        m?.[foreignKey as any]
-          ? { [foreignKey]: m?.[foreignKey as any] }
+        m?.[foreignKey]
+          ? { [foreignKey as number]: m?.[foreignKey] }
           : undefined,
       relationMappers: p,
-      value,
-      oldValue,
+      value: omitTypenameFromArray(value) as any,
+      oldValue: omitTypenameFromArray(oldValue) as any,
     });
   },
   __typename: 'ManyRelation',
@@ -516,7 +529,6 @@ type DeepOmitTypename<T> = T extends object
 
 // Function to deeply omit __typename from an object or array
 const omitTypename = <T>(value: T): DeepOmitTypename<T> => {
-  console.log('value', value);
   if (value === null || value === undefined) {
     return value as DeepOmitTypename<T>;
   }
@@ -539,7 +551,6 @@ const omitTypename = <T>(value: T): DeepOmitTypename<T> => {
 const omitTypenameFromArray = <T>(
   value: T[] | null | undefined,
 ): DeepOmitTypename<T>[] | null | undefined => {
-  console.log('value', value);
   if (value === null || value === undefined) {
     return value as DeepOmitTypename<T>[] | null | undefined;
   }
@@ -799,7 +810,6 @@ export const object =
           const propMapper: PrismaInputSchemaProperty = (
             props.mapper.properties as any
           )[key as keyof Input];
-
           const value = propMapper.pick
             ? propMapper.pick(source)
             : (source[key as keyof Model] as any);
@@ -819,6 +829,7 @@ export const object =
             }
           } else if (propMapper.__typename === 'Reference') {
             const relationPropKey = key.endsWith('Id') ? key.slice(0, -2) : key;
+            // const relationPropKey = key;
             if (inputData[relationPropKey]) {
               console.warn(
                 `prima-input mapper: ${relationPropKey} relation already set, skipping reference updates`,
@@ -875,6 +886,7 @@ export const object =
                 value: refValue,
                 oldValue: oldRefValue,
               });
+
               if (referenceInput) {
                 inputData[key] = referenceInput;
               }
@@ -911,6 +923,47 @@ export const mapFromPrismaSchema = <T, M>({
   value?: Partial<M> | null | undefined;
   oldValue?: Partial<M> | null | undefined;
 }) => schema.mapper({ value, oldValue, mapper: schema });
+
+// const assertDisconnectConflict = (v: any, v2: any, key: string) => {
+//   if (v?.disconnect && v2?.disconnect) {
+//     console.error(
+//       `object: reference and relation property on ${key} want to disconnect`,
+//       key,
+//     );
+//   }
+// };
+
+// function shallowEqual(value1: any, value2: any): boolean {
+//   // Check if both values are strictly equal, covering primitives and reference equality for objects
+//   if (value1 === value2) {
+//     return true;
+//   }
+
+//   // Check for null or undefined
+//   if (value1 == null || value2 == null) {
+//     return value1 === value2;
+//   }
+
+//   // Ensure both values are objects before proceeding with object comparison
+//   if (typeof value1 !== 'object' || typeof value2 !== 'object') {
+//     return false;
+//   }
+
+//   const keys1 = Object.keys(value1);
+//   const keys2 = Object.keys(value2);
+
+//   if (keys1.length !== keys2.length) {
+//     return false;
+//   }
+
+//   for (const key of keys1) {
+//     if (value1[key] !== value2[key]) {
+//       return false;
+//     }
+//   }
+
+//   return true;
+// }
 
 function someKeysHaveValues(obj: any) {
   for (const key in obj) {
