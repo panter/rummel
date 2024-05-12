@@ -41,17 +41,21 @@ export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
   return result;
 };
 
-export function property<Input, ModelSource, Nullable extends boolean = false>(
+export function property<Input, ModelSource, Required extends boolean = false>(
   pick: (a?: ModelSource | null) => Input | undefined,
-  options?: { forceMethod?: 'create' | 'update'; nullable: Nullable },
-): PropertyMapper<Input | null | undefined, ModelSource, any> {
+  options?: { set?: boolean; required: Required },
+): PropertyMapper<
+  Required extends true ? Input | undefined : Input | undefined | null,
+  ModelSource,
+  any
+> {
   return {
     pick,
     map: ({ value, oldValue, method }) => {
-      const { forceMethod } = options || {};
+      const { set } = options || {};
       if (value !== oldValue) {
         return setPropertyMapper(
-          forceMethod || method,
+          set && method === 'update' ? 'update' : 'create',
           value === null ? undefined : value,
         );
       }
