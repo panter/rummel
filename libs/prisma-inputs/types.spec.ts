@@ -148,9 +148,7 @@ describe('types: PropertyMapper -> property', () => {
         // @ts-expect-error Model.name is boolean but Input.name is string
         secondName: property((m) => m?.name),
         // no error map optionalName to displayName, both are nullable and strings
-        displayName: property((m) => m?.optionalName, {
-          nullable: true,
-        }),
+        displayName: property((m) => m?.optionalName),
       },
     };
 

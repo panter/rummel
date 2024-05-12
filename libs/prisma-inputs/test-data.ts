@@ -1,5 +1,4 @@
 import {
-  DeepIntersect,
   InferPrismaModel,
   PrismaInput,
   PrismaInputSchema,

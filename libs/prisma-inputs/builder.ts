@@ -19,6 +19,17 @@ import {
 export type ExcludeTypes<T, U> = Pick<T, Difference<T, U>>;
 type Difference<T, U> = Exclude<keyof T, keyof U>;
 
+// // Utility type to filter out properties of type `never`
+// type ExcludeNever<T> = {
+//   [P in keyof T as T[P] extends false | undefined | null ? never : P]: T[P];
+// };
+
+// // Helper type to compare two types
+// type IfEquals<X, Y> =
+//   // (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+//   // Y extends X ? Y : unknown;
+//   X | Y;
+
 /**
  * Represents a type that recursively merges the shared properties of `T` and `U`.
  *
