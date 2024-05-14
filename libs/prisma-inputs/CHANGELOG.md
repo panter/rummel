@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.8
+
+### Patch Changes
+
+- 6ea525c: Fix boolean mapper
+
 ## 0.0.7
 
 ### Patch Changes
