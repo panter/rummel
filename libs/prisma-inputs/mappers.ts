@@ -443,7 +443,7 @@ export const object =
               oldValue,
               method,
             });
-            if (mappedValue) {
+            if (mappedValue !== undefined) {
               inputData[key] = mappedValue;
             }
           } else if (propMapper.__typename === 'Reference') {
