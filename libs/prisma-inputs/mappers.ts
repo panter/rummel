@@ -264,7 +264,7 @@ export const reference = <T extends { connect?: any }, S>(p: {
     //   return map({ value, oldValue });
     // }
     const { fk: foreignKeys = [] } = p;
-    if (value === oldValue) {
+    if (deepCompareObjects(value, oldValue)) {
       return;
     }
 
