@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.9
+
+### Patch Changes
+
+- 78a6fb6: fix reference mapper
+
 ## 0.0.8
 
 ### Patch Changes
