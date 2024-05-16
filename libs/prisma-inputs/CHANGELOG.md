@@ -1,5 +1,11 @@
 # @panter/prisma-inputs
 
+## 0.0.10
+
+### Patch Changes
+
+- 9e59078: feat loosen up deepintersect
+
 ## 0.0.9
 
 ### Patch Changes
