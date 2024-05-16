@@ -30,19 +30,7 @@ type Difference<T, U> = Exclude<keyof T, keyof U>;
  * Properties that do not exist in both `T` and `U` are excluded from the resulting type.
  */
 export type DeepIntersect<T, U> = {
-  [P in keyof T & keyof U]?: T[P] extends Array<infer TI>
-    ? U[P] extends Array<infer UI>
-      ? Array<DeepIntersect<TI, UI>>
-      : T[P] | U[P]
-    : T[P] extends ReadonlyArray<infer TI>
-      ? U[P] extends ReadonlyArray<infer UI>
-        ? ReadonlyArray<DeepIntersect<TI, UI>>
-        : T[P] | U[P]
-      : T[P] extends object
-        ? U[P] extends object
-          ? DeepIntersect<T[P], U[P]>
-          : T[P] | U[P]
-        : T[P] | U[P];
+  [P in keyof T & keyof U]?: T[P] | U[P];
 };
 
 /**
