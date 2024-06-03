@@ -61,7 +61,7 @@ export type PrismaFormProps<
     input?: PrismaInputArgs<MVariables>;
     queryVariables?: QVariables;
     model: FModel;
-  }) => MVariables | undefined;
+  }) => Promise<MVariables | undefined>;
 } & Omit<UseFormQueryProps<QData, QVariables>, 'onCompleted' | 'variables'> &
   Omit<
     UseFormMutationProps<FModel, MData, MVariables>,

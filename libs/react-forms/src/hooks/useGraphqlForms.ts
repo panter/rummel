@@ -27,7 +27,10 @@ export type GraphqlFormProps<
       data: QData,
     ) => DefaultValues<FModel> | undefined | null;
     onQueryCompleted?: (data?: QData) => void;
-    modelToInput: (data: FModel, queryData?: QData) => MVariables | undefined;
+    modelToInput: (
+      data: FModel,
+      queryData?: QData,
+    ) => Promise<MVariables | undefined>;
     queryVariables?: QVariables;
     defaultValues?:
       | DefaultValues<FModel>

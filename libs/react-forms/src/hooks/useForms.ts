@@ -68,7 +68,7 @@ export type FormMutationOptions<
   MData = any,
   MVariables extends OperationVariables = OperationVariables,
 > = {
-  modelToInput: (data: FModel) => MVariables | undefined;
+  modelToInput: (data: FModel) => Promise<MVariables | undefined>;
 } & BaseFormOptions &
   GenericMutationOptions<FModel, MData, MVariables>;
 
@@ -78,7 +78,7 @@ export type UseFormMutationProps<
   MVariables extends OperationVariables,
 > = {
   resourceId?: string;
-  modelToInput: (data: FModel) => MVariables | undefined;
+  modelToInput: (data: FModel) => Promise<MVariables | undefined>;
   mutationDataToModel?: (data: MData) => FModel | undefined | null;
   onClose?: (reason: FormCloseReason, v?: MData | null) => void;
   mutation: TypedDocumentNode<MData, MVariables>;
@@ -157,8 +157,8 @@ export function useFormMutation<
     [onClose, mutationOptions.reset],
   );
 
-  const submit = form.handleSubmit((formModel) => {
-    const variables = modelToInput(formModel);
+  const submit = form.handleSubmit(async (formModel) => {
+    const variables = await modelToInput(formModel);
     if (variables || (!variables && sendEmptyVariables)) {
       callMutation({ variables });
     } else {
