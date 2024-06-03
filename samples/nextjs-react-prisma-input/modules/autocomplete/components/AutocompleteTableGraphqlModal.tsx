@@ -34,7 +34,7 @@ export const AutocompleteTableGraphqlModal: React.FC<
     query: OneAutocompleteQuery,
     mutation: UpdateOneAutocompleteMutation,
     defaultValues: {} as Partial<AutocompleteFragmentType>,
-    modelToInput: (formModel, queryData) => {
+    modelToInput: async (formModel, queryData) => {
       const id = queryData?.autocomplete?.id;
       const autocompleteQueryData = getFragment(
         AutocompleteFragment,
@@ -67,7 +67,7 @@ export const AutocompleteTableGraphqlModal: React.FC<
   const [createOne, formModalPropsCreate] = useGraphqlFormModal({
     mutation: CreateOneAutocompleteMutation,
     defaultValues: {} as Partial<AutocompleteFragmentType>,
-    modelToInput: (formModel, _queryData) => {
+    modelToInput: async (formModel, _queryData) => {
       const mutationVars: CreateOneAutocompleteMutationVariables = { data: {} };
       if (formModel.key) {
         mutationVars.data.key = formModel.key;
