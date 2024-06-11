@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 /**
  *
- * <FormWrapper><div>top</div><div>bottom</>
+ * <FormWrapper><div>top</div><div>bottom</div></FormWrapper>
  */
 export const FormWithBottom = styled.div`
   display: flex;

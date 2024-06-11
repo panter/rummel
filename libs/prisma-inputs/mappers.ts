@@ -25,9 +25,34 @@ const MAPPER_ORDER: { [key: string]: number } = {
   ManyReference: 5,
 };
 
+export function pickProperty<T, K extends keyof T>(
+  obj: T | null | undefined,
+  key: K,
+): { [P in K]: T[P] } | undefined | null {
+  if (!obj) {
+    return obj;
+  }
+  return { [key]: obj[key] } as { [P in K]: T[P] };
+}
+
+export function pickPropertyFromArray<T, K extends keyof T>(
+  arr: T[] | null | undefined,
+  key: K,
+): { [P in K]: T[P] }[] | undefined | null {
+  if (arr === null || arr === undefined) {
+    return arr;
+  }
+
+  return arr.map((item) => ({ [key]: item[key] }) as { [P in K]: T[P] });
+}
+
 // type StringTuple<T extends (string | number | symbol)[]> = [T[number], ...T];
 
-export const ignoreProperty: any = () => undefined;
+export const ignoreProperty: any = () => ({
+  pick: () => undefined,
+  map: () => undefined,
+  __typename: '',
+});
 
 export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
   method: M,
@@ -64,9 +89,9 @@ export function property<Input, ModelSource, Required extends boolean = false>(
   };
 }
 
-export function autoProperty<Input, ModelSource, Key>(
-  forceMethod?: 'create' | 'update',
-): PropertyMapper<
+export function autoProperty<Input, ModelSource, Key>(options?: {
+  set?: boolean;
+}): PropertyMapper<
   Input,
   ModelSource,
   Key extends keyof ModelSource
@@ -79,7 +104,7 @@ export function autoProperty<Input, ModelSource, Key>(
     map: ({ value, oldValue, method }) => {
       if (value !== oldValue) {
         return setPropertyMapper(
-          forceMethod || method,
+          options?.set && method === 'update' ? 'update' : 'create',
           value === null ? undefined : value,
         );
       }
@@ -753,7 +778,7 @@ export const manyReference = <
   ModelSource,
   Required extends boolean = false,
 >(
-  resolveValue?: (value?: ModelSource | null) => S[] | null | undefined,
+  resolveValue: (value?: ModelSource | null) => S[] | null | undefined,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options?: {
     required?: Required;
@@ -822,7 +847,7 @@ export const object =
             : (oldSource?.[key as keyof Model] as any);
 
           if (propMapper.__typename === 'Property') {
-            const method = oldValue ? 'update' : 'create';
+            const method = oldSource ? 'update' : 'create';
             const mappedValue = propMapper.map?.({
               value,
               oldValue,
@@ -927,47 +952,6 @@ export const mapFromPrismaSchema = <T, M>({
   value?: Partial<M> | null | undefined;
   oldValue?: Partial<M> | null | undefined;
 }) => schema.mapper({ value, oldValue, mapper: schema });
-
-// const assertDisconnectConflict = (v: any, v2: any, key: string) => {
-//   if (v?.disconnect && v2?.disconnect) {
-//     console.error(
-//       `object: reference and relation property on ${key} want to disconnect`,
-//       key,
-//     );
-//   }
-// };
-
-// function shallowEqual(value1: any, value2: any): boolean {
-//   // Check if both values are strictly equal, covering primitives and reference equality for objects
-//   if (value1 === value2) {
-//     return true;
-//   }
-
-//   // Check for null or undefined
-//   if (value1 == null || value2 == null) {
-//     return value1 === value2;
-//   }
-
-//   // Ensure both values are objects before proceeding with object comparison
-//   if (typeof value1 !== 'object' || typeof value2 !== 'object') {
-//     return false;
-//   }
-
-//   const keys1 = Object.keys(value1);
-//   const keys2 = Object.keys(value2);
-
-//   if (keys1.length !== keys2.length) {
-//     return false;
-//   }
-
-//   for (const key of keys1) {
-//     if (value1[key] !== value2[key]) {
-//       return false;
-//     }
-//   }
-
-//   return true;
-// }
 
 function someKeysHaveValues(obj: any) {
   for (const key in obj) {

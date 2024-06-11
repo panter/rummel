@@ -183,7 +183,7 @@ const simpleSchema = prismaSchemaBuilder<
   Simple
 >({
   props: {
-    name: property((m) => m?.fname),
+    name: property((m) => m?.fname, { set: true, required: false }),
     //     name: {
     //       __typename: 'Property',
     // pick: (m) => m?.name,
@@ -202,7 +202,7 @@ export const personSchema = prismaSchemaBuilder<
   Person
 >({
   props: {
-    name: property((m) => m?.name),
+    name: property((m) => m?.name, { set: true, required: false }),
     addresses: manyRelation(
       () => addressSchema.relation(),
       (m) => m?.addresses, // BUG m should be typeof person[address]

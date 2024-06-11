@@ -34,13 +34,19 @@ describe('property()', () => {
   });
 
   it('should return new value if no oldValue is not set "update"', () => {
-    const resultUndefined = property<string, boolean>(TESTPICK).map({
+    const resultUndefined = property<string, boolean>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       value: 'John',
       method: 'update',
     });
     expect(resultUndefined).toEqual({ set: 'John' });
 
-    const resultNull = property<string | null, string>(TESTPICK).map({
+    const resultNull = property<string | null, string>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       value: 'John',
       oldValue: null,
       method: 'update',
@@ -80,13 +86,19 @@ describe('property()', () => {
   });
 
   it('should return undefined if new value is null or undefined and oldValue is set on create', () => {
-    const resultCreate = property<string, string>(TESTPICK).map({
+    const resultCreate = property<string, string>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       oldValue: 'John',
       method: 'update',
     });
     expect(resultCreate).toEqual({ set: undefined });
 
-    const resultUpdate = property<string | null, string>(TESTPICK).map({
+    const resultUpdate = property<string | null, string>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       value: null,
       oldValue: 'John',
       method: 'update',
@@ -95,13 +107,19 @@ describe('property()', () => {
   });
 
   it('should return new value if no oldValue is not set "update"', () => {
-    const resultUndefined = property<string, string>(TESTPICK).map({
+    const resultUndefined = property<string, string>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       value: 'John',
       method: 'update',
     });
     expect(resultUndefined).toEqual({ set: 'John' });
 
-    const resultNull = property<string | null, string>(TESTPICK).map({
+    const resultNull = property<string | null, string>(TESTPICK, {
+      set: true,
+      required: false,
+    }).map({
       value: 'John',
       oldValue: null,
       method: 'update',
@@ -112,7 +130,7 @@ describe('property()', () => {
 
 describe('autoProperty()', () => {
   it('should return new value if no oldValue is not set "create"', () => {
-    const resultUndefined = autoProperty<string, any, any>('create').map({
+    const resultUndefined = autoProperty<string, any, any>().map({
       value: 'John',
       method: 'create',
     });
