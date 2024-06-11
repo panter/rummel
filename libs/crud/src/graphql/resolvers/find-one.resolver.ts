@@ -61,6 +61,10 @@ export function FindOneResolver<T>(
       @Args()
       { where: { id } }: FindOneEntityWhereArgs,
     ) {
+      if (!id) {
+        return null;
+      }
+
       return resolveFindOne(classRef, id, {
         info,
         currentUser,

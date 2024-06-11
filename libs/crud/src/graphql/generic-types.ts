@@ -4,15 +4,15 @@ import { IsUUID } from 'class-validator';
 @InputType()
 export class ConnectRelationInput {
   @IsUUID(4)
-  @Field()
-  id!: string;
+  @Field({ nullable: true })
+  id?: string | null;
 }
 
 @InputType()
 export class EntityIdInput {
   @IsUUID(4)
-  @Field()
-  id!: string;
+  @Field({ nullable: true })
+  id?: string | null;
 }
 
 @ArgsType()
