@@ -452,10 +452,10 @@ export const autoManyRelation = <
   ModelSource,
   Key extends keyof ModelSource
     ? ModelSource[Key] extends Partial<InferPrismaModel<Create>>[]
-      ? ForeignKey extends keyof ModelSource[Key][0]
+      ? ForeignKey extends keyof ModelSource[Key][number]
         ? Key
         : unknown
-      : unknown
+      : keyof ModelSource[Key]
     : unknown
 > => ({
   // pick: omitTypename,
