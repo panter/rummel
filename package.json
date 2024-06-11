@@ -34,6 +34,6 @@
     "concurrently": "^8.2.2",
     "patch-package": "^8.0.0",
     "syncpack": "^12.3.0",
-    "turbo": "^1.11.3"
+    "turbo": "^2.0.3"
   }
 }
