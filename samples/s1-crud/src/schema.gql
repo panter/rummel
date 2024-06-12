@@ -106,7 +106,7 @@ type Query {
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }
 
 input PersonWhereInput {
@@ -222,7 +222,7 @@ input AddressConnectCreateUpdateNestedManyWithoutPersonInput {
 }
 
 input ConnectRelationInput {
-  id: String!
+  id: String
 }
 
 input AddressCreateWithoutPersonInput {

@@ -19,14 +19,14 @@
   "devDependencies": {
     "@rummel/eslint-config-custom": "*",
     "@rummel/tsconfig": "*",
-    "@types/uuid": "^9.0.7",
-    "eslint": "8.56.0",
-    "rimraf": "^5.0.5",
-    "typescript": "^5.3.3",
+    "@types/uuid": "^9.0.8",
+    "eslint": "8.57.0",
+    "rimraf": "^5.0.7",
+    "typescript": "^5.4.5",
     "uuid": "^9.0.1"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.7.0",
+    "@google-cloud/storage": "^7.11.2",
     "@panter/nestjs-utils": "*"
   }
 }
