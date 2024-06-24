@@ -1,5 +1,5 @@
 import {
-  InferPrismaModel,
+  Nullable,
   PrismaInput,
   PrismaInputSchema,
   PrismaInputSchemaProperties,
@@ -18,6 +18,17 @@ import {
  */
 export type ExcludeTypes<T, U> = Pick<T, Difference<T, U>>;
 type Difference<T, U> = Exclude<keyof T, keyof U>;
+
+// // Utility type to filter out properties of type `never`
+// type ExcludeNever<T> = {
+//   [P in keyof T as T[P] extends false | undefined | null ? never : P]: T[P];
+// };
+
+// // Helper type to compare two types
+// type IfEquals<X, Y> =
+//   // (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+//   // Y extends X ? Y : unknown;
+//   X | Y;
 
 /**
  * Represents a type that recursively merges the shared properties of `T` and `U`.
@@ -46,7 +57,9 @@ export type DeepIntersect<T, U> = {
  * If `prismaSchemaBuilder` returns a schema object based on the provided creation and update input types,
  * `InferSchema` will represent that schema object's type.
  */
-export type InferSchema<C, U> = ReturnType<typeof prismaSchemaBuilder<C, U>>;
+export type InferSchema<C, U, M> = ReturnType<
+  typeof prismaSchemaBuilder<C, U, M>
+>;
 
 /**
  * Maps a given model to its corresponding input format using a provided Prisma input schema.
@@ -62,10 +75,10 @@ export type InferSchema<C, U> = ReturnType<typeof prismaSchemaBuilder<C, U>>;
  * into the format expected by Prisma operations (e.g., create, update). It can also consider previous
  * model values for differential mapping.
  */
-export const mapModelToInput = <T>(
-  schema: PrismaInputSchema<T>,
-  value?: InferPrismaModel<T> | null | undefined,
-  oldValue?: InferPrismaModel<T> | null | undefined,
+export const mapModelToInput = <T, M>(
+  schema: PrismaInputSchema<T, M>,
+  value?: M | null | undefined,
+  oldValue?: M | null | undefined,
 ) => schema.mapper({ value, oldValue, mapper: schema });
 
 /**
@@ -93,6 +106,7 @@ export const mapModelToInput = <T>(
 export const prismaSchemaBuilder = <
   CreateInput,
   UpdateInput,
+  ModelSource,
   PrismaUnionInput extends DeepIntersect<
     PrismaInput<CreateInput>,
     PrismaInput<UpdateInput>
@@ -100,41 +114,43 @@ export const prismaSchemaBuilder = <
   PrismaCreateInput = PrismaInput<CreateInput>,
   PrismaUpdateInput = PrismaInput<UpdateInput>,
 >(schemas: {
-  props: PrismaInputSchemaProperties<PrismaUnionInput>;
+  props: PrismaInputSchemaProperties<PrismaUnionInput, ModelSource>;
   create?:
     | PrismaInputSchemaProperties<
-        ExcludeTypes<PrismaCreateInput, PrismaUnionInput>
+        ExcludeTypes<PrismaCreateInput, PrismaUnionInput>,
+        ModelSource
       >
     | false;
   update?:
     | PrismaInputSchemaProperties<
-        ExcludeTypes<PrismaUpdateInput, PrismaUnionInput>
+        ExcludeTypes<PrismaUpdateInput, PrismaUnionInput>,
+        // PrismaUnionInput,
+        ModelSource
       >
     | false;
 }): {
-  unionSchema: PrismaInputSchema<PrismaUnionInput>;
-  createSchema?: PrismaInputSchema<PrismaCreateInput>;
-  updateSchema?: PrismaInputSchema<PrismaUpdateInput>;
-  relation: (
-    customSchemas?:
-      | {
-          create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
-          update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
-        }
-      | undefined,
-  ) => {
-    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
-    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
+  unionSchema: PrismaInputSchema<PrismaUnionInput, ModelSource>;
+  createSchema?: PrismaInputSchema<PrismaCreateInput, ModelSource>;
+  updateSchema?: PrismaInputSchema<PrismaUpdateInput, ModelSource>;
+  relation: () => {
+    create?: () =>
+      | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
+      | undefined;
+    update?: () =>
+      | PrismaInputSchema<PrismaUpdateInput, Nullable<Partial<ModelSource>>>
+      | undefined;
   };
 } => {
   const { props, create, update } = schemas;
 
-  const unionSchema: PrismaInputSchema<PrismaUnionInput> = {
+  const unionSchema: PrismaInputSchema<PrismaUnionInput, ModelSource> = {
     mapper: object(),
     properties: props,
   } as any;
 
-  const createSchema: PrismaInputSchema<PrismaCreateInput> | undefined =
+  const createSchema:
+    | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
+    | undefined =
     create &&
     ({
       mapper: object(),
@@ -144,7 +160,9 @@ export const prismaSchemaBuilder = <
       },
     } as any);
 
-  const updateSchema: PrismaInputSchema<PrismaUpdateInput> | undefined =
+  const updateSchema:
+    | PrismaInputSchema<PrismaUpdateInput, Nullable<Partial<ModelSource>>>
+    | undefined =
     update &&
     ({
       mapper: object(),
@@ -154,23 +172,16 @@ export const prismaSchemaBuilder = <
       },
     } as any);
 
-  const relation = (customSchemas?: {
-    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
-    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
-  }): {
-    create?: () => PrismaInputSchema<PrismaCreateInput> | undefined;
-    update?: () => PrismaInputSchema<PrismaUpdateInput> | undefined;
+  const relation = (): {
+    create?: () =>
+      | PrismaInputSchema<PrismaCreateInput, Nullable<Partial<ModelSource>>>
+      | undefined;
+    update?: () =>
+      | PrismaInputSchema<PrismaUpdateInput, Nullable<Partial<ModelSource>>>
+      | undefined;
   } => ({
-    create: customSchemas?.create
-      ? customSchemas?.create
-      : createSchema
-        ? () => createSchema
-        : (undefined as any as () => PrismaInputSchema<PrismaCreateInput>),
-    update: customSchemas?.update
-      ? customSchemas?.update
-      : updateSchema
-        ? () => updateSchema
-        : (undefined as any as () => PrismaInputSchema<PrismaUpdateInput>),
+    create: createSchema ? () => createSchema : undefined,
+    update: updateSchema ? () => updateSchema : undefined,
   });
 
   return {

@@ -39,6 +39,9 @@ export function DatePickerFormInput<
           {...datePickerProps}
           style={{ width: '100%', ...datePickerProps?.style }}
           {...field}
+          onChange={(date, d) => {
+            field.onChange(date ? date.toISOString() : date);
+          }}
           value={field.value ? dayjs(field.value) : undefined}
           inputReadOnly={readOnly}
           disabled={disabled}

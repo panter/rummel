@@ -107,7 +107,7 @@ export function useGraphqlForm<
         ...(newModel || ({} as any)),
         ...((isFunction(defaultValues)
           ? defaultValues(newModel, data)
-          : defaultValues) || ({} as any)),
+          : defaultValues) || {}),
       });
       onQueryCompleted?.(data);
     },

@@ -57,14 +57,16 @@ export const resourceId = 'Autocomplete';
 
 export const autocompleteSchema: PrismaSchemaFromGraphql<
   typeof CreateOneAutocompleteMutation,
-  typeof UpdateOneAutocompleteMutation
+  typeof UpdateOneAutocompleteMutation,
+  typeof AutocompleteFragment
 > = prismaInputBuilderFromGraphql({
+  fragment: AutocompleteFragment,
   create: CreateOneAutocompleteMutation,
   update: UpdateOneAutocompleteMutation,
 })({
   props: {
-    key: property(),
-    value: property(),
+    key: property((m) => m?.key),
+    value: property((m) => m?.value),
   },
   create: {},
   update: {},
@@ -84,8 +86,6 @@ export const AutocompleteCreateResource = prismaResource({
   schema: autocompleteSchema.createSchema,
   mutation: CreateOneAutocompleteMutation,
   skipQuery: true,
-  queryDataToModel: (data) =>
-    getFragment(AutocompleteFragment, data.autocomplete),
   mutationDataToModel: (data) =>
     getFragment(AutocompleteFragment, data.createOneAutocomplete),
 });
