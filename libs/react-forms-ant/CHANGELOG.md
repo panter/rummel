@@ -1,5 +1,19 @@
 # @panter/react-forms-ant
 
+## 1.0.0
+
+### Major Changes
+
+- e531c50: No property symetry between model and input needed anymore.
+
+### Patch Changes
+
+- Updated dependencies [6d1169c]
+- Updated dependencies [e531c50]
+- Updated dependencies [d6de0c5]
+  - @panter/prisma-inputs@1.0.0
+  - @panter/react-forms@1.0.0
+
 ## 0.0.11
 
 ### Patch Changes

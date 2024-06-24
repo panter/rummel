@@ -1,6 +1,6 @@
 {
   "name": "@panter/react-forms",
-  "version": "0.0.12",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "src/index.ts",
   "scripts": {
@@ -21,7 +21,7 @@
     "typescript": "^5.3.3"
   },
   "peerDependencies": {
-    "@panter/prisma-inputs": "0.x",
+    "@panter/prisma-inputs": "1.0.0",
     "react": "18.2.0",
     "react-hook-form": "~7.51.1"
   },
