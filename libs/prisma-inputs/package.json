@@ -1,6 +1,6 @@
 {
   "name": "@panter/prisma-inputs",
-  "version": "0.0.10",
+  "version": "1.0.0",
   "license": "MIT",
   "main": "index.ts",
   "scripts": {

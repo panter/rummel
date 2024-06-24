@@ -1,5 +1,18 @@
 # @panter/react-forms
 
+## 1.0.0
+
+### Major Changes
+
+- e531c50: No property symetry between model and input needed anymore.
+
+### Patch Changes
+
+- d6de0c5: make "modelToInput" async
+- Updated dependencies [6d1169c]
+- Updated dependencies [e531c50]
+  - @panter/prisma-inputs@1.0.0
+
 ## 0.0.12
 
 ### Patch Changes
