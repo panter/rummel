@@ -42,7 +42,7 @@ export function DatePickerFormInput<
           onChange={(date, d) => {
             field.onChange(date ? date.toISOString() : date);
           }}
-          value={field.value ? dayjs(field.value) : undefined}
+          value={field.value ? (dayjs(field.value) as any) : undefined}
           inputReadOnly={readOnly}
           disabled={disabled}
           format={dateFormat}
