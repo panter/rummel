@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.1
+
+### Patch Changes
+
+- 9d5cdd1: EntityIdInput and ReferenceInput props are nullable
+
 ## 0.2.0
 
 ### Minor Changes
