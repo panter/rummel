@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.2
+
+### Patch Changes
+
+- b16f546: Fix crudinfos in object relation resolver
+
 ## 0.2.1
 
 ### Patch Changes
