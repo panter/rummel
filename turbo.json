@@ -9,6 +9,7 @@
       "persistent": true
     },
     "build": {
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "^build"
       ],
@@ -19,6 +20,7 @@
       ]
     },
     "test": {
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "build",
         "test:unit",
@@ -27,16 +29,19 @@
       ]
     },
     "test:unit": {
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "build"
       ]
     },
     "test:e2e": {
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "build"
       ]
     },
     "test:integration": {
+      "inputs": ["$TURBO_DEFAULT$", ".env"],
       "dependsOn": [
         "build"
       ]

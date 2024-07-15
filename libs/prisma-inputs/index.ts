@@ -66,6 +66,12 @@ type ExtractManyRelationUpdateWhereType<U> = U extends { where?: infer UU }
   ? Partial<UU> | undefined
   : any;
 
+type UnknownToUndefined<T> = T extends unknown ? undefined : T;
+
+export type SafeProperty<T, K extends string> = K extends keyof T
+  ? UnknownToUndefined<T[K]>
+  : undefined;
+
 export type CommonProperties<T, U> = Extract<keyof T, keyof U>;
 
 /**
@@ -117,26 +123,25 @@ export type PrismaManyReferenceInput<Connect> = {
 
 // ---
 
-export type PropertyMapper<Input, ModelSource, Key> = {
+export type PropertyMapper<Model, ModelSource, Key> = {
   // fake property needed for the mapper to work
   __key__?: Key;
-  pick?: (o?: ModelSource) => Input | undefined;
+  pick?: (o?: ModelSource) => Model | undefined;
   map: (props: {
-    value?: Input;
-    oldValue?: Input;
+    value?: Model;
+    oldValue?: Model;
     method: 'create' | 'update';
-  }) => Input | { set?: Input } | undefined;
+  }) => Model | { set?: Model } | undefined;
   __typename: 'Property';
 };
 
 export type OneRelationMapper<
-  Input extends GenericPrismaRelation | undefined,
-  Model = any,
-  Create = 'create' extends keyof Input ? Input['create'] : never,
-  Update = 'update' extends keyof Input ? Input['update'] : never,
-  Connect = 'connect' extends keyof Input ? Input['connect'] : never,
-  ModelSource = any,
-  Key = any,
+  Model,
+  Create,
+  Update,
+  Connect,
+  ModelSource,
+  Key,
 > = {
   __key__?: Key;
   // embbedded?: boolean;
@@ -149,27 +154,20 @@ export type OneRelationMapper<
 };
 
 export type ManyRelationMapper<
-  Input extends GenericPrismaRelation,
-  Model = any,
-  UpdateWhere = any,
-  Create = Input['create'],
-  Update = Input['update'],
-  Connect = 'connect' extends keyof Input
-    ? Input['connect'] extends unknown
-      ? undefined
-      : Input['connect']
-    : undefined,
-  Disconnect = 'disconnect' extends keyof Input
-    ? Input['disconnect'] extends unknown
-      ? undefined
-      : Input['disconnect']
-    : undefined,
-  ModelSource = any,
-  Key = any,
+  Model,
+  Create,
+  Update,
+  UpdateWhere,
+  Connect,
+  Disconnect,
+  ModelSource,
+  Key,
 > = {
   // embbedded?: boolean;
   __key__?: Key;
-  pick?: (o?: ModelSource | null) => any;
+  pick?: (
+    o?: ModelSource | null,
+  ) => (Partial<Model> | null | undefined)[] | null | undefined;
   map: (props: {
     value?: Model[] | null;
     oldValue?: Model[] | null;
@@ -180,12 +178,13 @@ export type ManyRelationMapper<
 };
 
 export type OneReferenceMapper<
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Input extends GenericPrismaOneConnect,
-  Model = Input, // TODO: Model no needed, eg Model is always same as Connect
-  Connect = Input['connect'],
-  ModelSource = any,
-  Key = any,
-  Required = false,
+  Model, // TODO: Model no needed, eg Model is always same as Connect
+  Connect,
+  ModelSource,
+  Key,
+  Required,
 > = {
   __key__?: Key;
   __required__?: Required;
@@ -242,11 +241,10 @@ export type PrismaInputSchemaProperty<
   update?: (infer U)[] | null;
 }
   ? ManyRelationMapper<
-      Input,
-      any, // ExtractArrayModelDataType<Model>,
-      ExtractManyRelationUpdateWhereType<U> | undefined,
+      any,
       C | undefined,
       ExtractManyRelationUpdateDataType<U> | undefined,
+      ExtractManyRelationUpdateWhereType<U> | undefined,
       ExtractManyRelationConnectType<Input> | undefined,
       ExtractManyRelationDisconnectType<Input>,
       ModelSource,
@@ -254,7 +252,6 @@ export type PrismaInputSchemaProperty<
     >
   : Input extends { create?: infer C; update?: infer U }
     ? OneRelationMapper<
-        Input,
         any, // Model,
         C extends unknown ? C | undefined : C | undefined,
         U extends unknown ? U | undefined : U | undefined,

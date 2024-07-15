@@ -15,6 +15,7 @@ import {
   PrismaOneObjectInput,
   PrismaOneReferenceInput,
   PropertyMapper,
+  SafeProperty,
 } from './index';
 
 const MAPPER_ORDER: { [key: string]: number } = {
@@ -54,62 +55,69 @@ export const ignoreProperty: any = () => ({
   __typename: '',
 });
 
-export const setPropertyMapper = <Model, M extends 'create' | 'update'>(
-  method: M,
-  value: Model,
-):
-  | Model
-  | {
-      set?: Model;
-    } => {
-  const result = method === 'create' ? value : { set: value };
-  return result;
+type PropertyOptions = {
+  set?: boolean;
 };
 
-export function property<Input, ModelSource, Required extends boolean = false>(
+export function property<Input, ModelSource>(
   pick: (a?: ModelSource | null) => Input | undefined,
-  options?: { set?: boolean; required: Required },
-): PropertyMapper<
-  Required extends true ? Input | undefined : Input | undefined | null,
-  ModelSource,
-  any
-> {
+  options?: PropertyOptions & { required?: false },
+): PropertyMapper<Input | undefined | null, ModelSource, any>;
+
+export function property<Input, ModelSource>(
+  pick: (a?: ModelSource | null) => Input | undefined,
+  options?: PropertyOptions & { required: true },
+): PropertyMapper<Input | undefined, ModelSource, any>;
+
+export function property<Input, ModelSource>(
+  pick: (a?: ModelSource | null) => Input | undefined,
+  options: PropertyOptions & { required?: boolean } = {},
+): PropertyMapper<Input | undefined | null, ModelSource, any> {
+  const { set = false } = options;
+
   return {
     pick,
     map: ({ value, oldValue, method }) => {
-      const { set } = options || {};
-      if (value !== oldValue) {
-        return setPropertyMapper(
-          set && method === 'update' ? 'update' : 'create',
-          value === null ? undefined : value,
-        );
+      if (value === oldValue) return;
+
+      const mappedValue = value === null ? undefined : value;
+
+      if (set && method === 'update') {
+        return { set: mappedValue };
       }
+
+      return mappedValue;
     },
-    __typename: 'Property',
+    __typename: 'Property' as const,
   };
 }
 
-export function autoProperty<Input, ModelSource, Key>(options?: {
+export function autoProperty<
+  Input,
+  ModelSource,
+  Key extends keyof ModelSource,
+>(options?: {
   set?: boolean;
 }): PropertyMapper<
   Input,
   ModelSource,
-  Key extends keyof ModelSource
-    ? ModelSource[Key] extends Input
-      ? Key
-      : unknown
-    : unknown
+  ModelSource[Key] extends Input ? Key : unknown
 > {
+  const { set = false } = options || {};
+
   return {
     map: ({ value, oldValue, method }) => {
-      if (value !== oldValue) {
-        return setPropertyMapper(
-          options?.set && method === 'update' ? 'update' : 'create',
-          value === null ? undefined : value,
-        );
+      if (value === oldValue) return;
+
+      const mappedValue = value === null ? undefined : value;
+
+      if (set && method === 'update') {
+        return { set: mappedValue };
       }
+
+      return mappedValue;
     },
-    __typename: 'Property',
+    __typename: 'Property' as const,
   };
 }
 
@@ -126,13 +134,8 @@ const mapRelation = <Model, Create, Update, Connect>(p: {
   if (value === oldValue) {
     return;
   }
-  const inputData:
-    | PrismaOneObjectInput<
-        Create | undefined,
-        Update | undefined,
-        Connect | undefined
-      >
-    | undefined = {};
+  const inputData: PrismaOneObjectInput<Create, Update, Connect> | undefined =
+    {};
 
   if (
     oldValue !== undefined &&
@@ -169,36 +172,23 @@ const mapRelation = <Model, Create, Update, Connect>(p: {
 };
 
 export const relation = <
-  T extends { create?: any; update?: any },
-  S = T,
-  Create = 'create' extends keyof T
-    ? T['create'] extends unknown
-      ? undefined
-      : T['create']
-    : undefined,
-  Update = 'update' extends keyof T
-    ? T['update'] extends unknown
-      ? undefined
-      : T['update']
-    : undefined,
-  Connect = 'connect' extends keyof T
-    ? T['connect'] extends unknown
-      ? undefined
-      : T['connect']
-    : undefined,
+  T extends { create?: any; update?: any; connect?: any },
+  S,
   ModelSource = any,
+  Create = SafeProperty<T, 'create'>,
+  Update = SafeProperty<T, 'update'>,
+  Connect = SafeProperty<T, 'connect'>,
 >(
-  pick: (m?: ModelSource | null) => Partial<S> | undefined,
+  pick: (m?: ModelSource | null) => S | undefined | null,
   p: () => {
     create?: () => PrismaInputSchema<Create, S> | undefined;
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
 ): OneRelationMapper<
-  T,
-  Partial<S> | undefined | null,
-  Create | undefined,
-  Update | undefined,
-  Connect | undefined,
+  S | undefined | null,
+  Create,
+  Update,
+  Connect,
   ModelSource,
   any
 > => ({
@@ -210,27 +200,15 @@ export const relation = <
       oldValue,
     });
   },
-  __typename: 'Relation',
+  __typename: 'Relation' as const,
 });
 
 export const autoRelation = <
   T extends { create?: any; update?: any },
   S = T,
-  Create = 'create' extends keyof T
-    ? T['create'] extends unknown
-      ? undefined
-      : T['create']
-    : undefined,
-  Update = 'update' extends keyof T
-    ? T['update'] extends unknown
-      ? undefined
-      : T['update']
-    : undefined,
-  Connect = 'connect' extends keyof T
-    ? T['connect'] extends unknown
-      ? undefined
-      : T['connect']
-    : undefined,
+  Create = SafeProperty<T, 'create'>,
+  Update = SafeProperty<T, 'update'>,
+  Connect = SafeProperty<T, 'connect'>,
   ModelSource = any,
   Key = any,
 >(
@@ -239,11 +217,10 @@ export const autoRelation = <
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
 ): OneRelationMapper<
-  T,
   Partial<S> | undefined | null,
-  Create | undefined,
-  Update | undefined,
-  Connect | undefined,
+  Create,
+  Update,
+  Connect,
   ModelSource,
   Key extends keyof ModelSource
     ? ModelSource[Key] extends InferPrismaModel<Create> &
@@ -292,10 +269,10 @@ const mapManyRelation = <
   }
 
   const inputData: PrismaManyObjectInput<
-    Create | undefined,
-    Update | undefined,
-    UpdateWhere | undefined,
-    Connect | undefined,
+    Create,
+    Update,
+    UpdateWhere,
+    Connect,
     any
   > = {};
 
@@ -409,18 +386,15 @@ export const manyRelation = <
     create?: () => PrismaInputSchema<Create, S> | undefined;
     update?: () => PrismaInputSchema<Update, S> | undefined;
   },
-  pick: (
-    m?: ModelSource | null,
-  ) => (Partial<S> | null | undefined)[] | null | undefined,
+  pick: (m?: ModelSource | null) => Partial<S>[] | null | undefined,
   pickForUpdate: 'where' extends keyof SourceUpdate
     ? (m: S | undefined | null) => SourceUpdate['where'] | null | undefined
     : false,
 ): ManyRelationMapper<
-  T,
-  S | undefined | null,
-  any,
+  S,
   Create | undefined,
   Update | undefined,
+  any,
   Connect | undefined,
   any, // Errros in disconnect will popup on runtime
   ModelSource,
@@ -467,11 +441,10 @@ export const autoManyRelation = <
   },
   options: { foreignKey: ForeignKey | false },
 ): ManyRelationMapper<
-  T,
-  S | undefined | null,
-  SinglePropertyObject<ForeignKey, S[ForeignKey]> | undefined,
+  S,
   Create | undefined,
   Update | undefined,
+  SinglePropertyObject<ForeignKey, S[ForeignKey]> | undefined,
   Connect | undefined,
   any, // Errors in disconnect will popup on runtime
   ModelSource,
@@ -499,11 +472,15 @@ export const autoManyRelation = <
   __typename: 'ManyRelation',
 });
 
-type IsTypeAssignable<A, B> = A extends B
-  ? keyof Omit<A, '__typename'> extends keyof Omit<B, '__typename'>
-    ? true
-    : false
-  : false;
+type IsTypeAssignable<A, B> =
+  NonNullable<A> extends NonNullable<B>
+    ? keyof Omit<NonNullable<A>, '__typename'> extends keyof Omit<
+        NonNullable<B>,
+        '__typename'
+      >
+      ? true
+      : false
+    : false;
 
 const mapReference = <Model, Connect>(p?: {
   value?: Model | null;
@@ -596,19 +573,8 @@ export const autoReference = <
   Input['connect'],
   Input['connect'],
   ModelSource,
-  // Key extends keyof ModelSource
-  //   ? ModelSource[Key] extends Input['connect'] | undefined | null
-  //     ? Key
-  //     : unknown
-  //   : unknown
-  // Model source:   { id?: string | null | undefined; } | null | undefined
-  // Input[source]:  { id?: string | null | undefined; } | null | undefined
-  //
   Key extends keyof ModelSource
-    ? IsTypeAssignable<
-        NonNullable<ModelSource[Key]>,
-        NonNullable<Input['connect']>
-      > extends true
+    ? IsTypeAssignable<ModelSource[Key], Input['connect']> extends true
       ? Key
       : unknown
     : unknown,
@@ -631,9 +597,7 @@ export const reference = <
   ModelSource,
   Required extends boolean = false,
 >(
-  resolveValue: (
-    value?: Partial<ModelSource> | null,
-  ) => Input['connect'] | undefined,
+  resolveValue: (value?: Partial<ModelSource> | null) => Input['connect'],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   options?: {
     required?: Required;
@@ -644,7 +608,7 @@ export const reference = <
   Input['connect'],
   ModelSource,
   any,
-  Required extends true ? true : false
+  Required
 > => ({
   pick: resolveValue,
   map: (p) => mapReference(p),
