@@ -57,6 +57,8 @@ export const getCrudInfosForType = (classRef: Type<unknown>): CrudInfo[] => {
       console.error('Runtime crud infos not found', classRef.constructor.name);
     }
     return cache[classRef.constructor.name] || [];
+  } else if (cache[classRef.name]) {
+    return cache[classRef.name];
   }
 
   const { fields } = getFieldsAndDecoratorForType(classRef);
