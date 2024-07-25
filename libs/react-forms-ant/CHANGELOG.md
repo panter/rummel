@@ -1,5 +1,11 @@
 # @panter/react-forms-ant
 
+## 1.0.1
+
+### Patch Changes
+
+- 0750d0f: Disable one to many actions
+
 ## 1.0.0
 
 ### Major Changes
