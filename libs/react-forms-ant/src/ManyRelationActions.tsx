@@ -10,7 +10,7 @@ type ManyRelationActionsProps = {
   className?: string;
   style?: React.CSSProperties;
   dividerTitle?: string;
-  append: () => void;
+  append?: () => void;
   remove?: () => void;
 };
 
@@ -31,7 +31,7 @@ export const ManyRelationActions: React.FC<ManyRelationActionsProps> = ({
         </div>
       }
       <Space size={'small'}>
-        {!remove ? <Button onClick={() => append()}>+</Button> : null}
+        {append ? <Button onClick={() => append()}>+</Button> : null}
         {remove ? <Button onClick={() => remove()}>-</Button> : null}
       </Space>
     </ManyRelationActionsBase>
