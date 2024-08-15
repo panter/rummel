@@ -10,7 +10,6 @@ export const FormWithBottom = styled.div`
   justify-content: space-between;
   height: 100%;
   overflow-x: hidden;
-  padding: 10px 0;
 `;
 
 export const FormContainer = styled.div`
