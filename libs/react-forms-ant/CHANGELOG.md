@@ -1,5 +1,14 @@
 # @panter/react-forms-ant
 
+## 1.0.2
+
+### Patch Changes
+
+- 6fb5136: fix css for FormComponents
+- 12f7e3e: Default where for usePrismaManyQuery
+- Updated dependencies [12f7e3e]
+  - @panter/react-forms@1.0.1
+
 ## 1.0.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 1.0.1
+
+### Patch Changes
+
+- 12f7e3e: Default where for usePrismaManyQuery
+
 ## 1.0.0
 
 ### Major Changes
