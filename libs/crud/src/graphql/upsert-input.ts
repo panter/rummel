@@ -110,7 +110,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
   } else {
     return updateOneRelationInput(designType as Type, {
       parentRef,
-      hideUpdate: !p.crudOptions?.relation?.showUpdate,
+      hideUpdate: true,
       hideDisconnect: true,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       parentProperty: p.name,
