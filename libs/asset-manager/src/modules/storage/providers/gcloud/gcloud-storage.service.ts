@@ -62,6 +62,14 @@ export class GcloudStorageService extends StorageService {
     return storageFile;
   }
 
+  async getDownloadUrl(path: string, expires: string, access: AssetAccess) {
+    const [url] = await this.storage
+      .bucket(this.getBucket(access))
+      .file(path)
+      .getSignedUrl({ action: 'read', expires, version: 'v4' });
+    return url;
+  }
+
   public async ensureBuckets() {
     const notFoundBuckets = [];
     for (const bucket of [this.privateBucket, this.publicBucket].filter(

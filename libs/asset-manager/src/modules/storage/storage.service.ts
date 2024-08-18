@@ -23,4 +23,10 @@ export abstract class StorageService {
     newPath: string,
     access: AssetAccess,
   ): Promise<string>;
+
+  abstract getDownloadUrl(
+    path: string,
+    expires: string,
+    access: AssetAccess,
+  ): Promise<string>;
 }

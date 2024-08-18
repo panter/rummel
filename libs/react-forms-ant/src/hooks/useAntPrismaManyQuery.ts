@@ -34,6 +34,7 @@ export function useAntPrismaManyQuery<
   query: TypedDocumentNode<TResult, TVariables>,
   countFromQuery: (data: TResult) => number,
   initialVariables?: {
+    defaultWhere?: ExtractWhereVariable<TVariables>;
     orderBy?: ExtractOrderByVariable<TVariables>;
     where?: ExtractWhereVariable<TVariables>;
     pageSize?: number;

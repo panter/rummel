@@ -65,6 +65,10 @@ export class LocalStorageService extends StorageService {
     return resolve(newFilePath);
   }
 
+  async getDownloadUrl(path: string, expires: string, access: AssetAccess) {
+    return `file://${this.getFullPath(access || AssetAccess.public, path)}`;
+  }
+
   private async ensureFolders() {
     await this.createFolderIfNotExists(this.rootFolder);
     for (const access of [AssetAccess.private, AssetAccess.public]) {

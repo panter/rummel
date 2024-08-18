@@ -15,6 +15,12 @@ import {
   usePrismaWhereVariable,
 } from './usePrismaWhereVariableState';
 
+function isFunction<T extends (...args: any[]) => any>(
+  value: unknown,
+): value is T {
+  return typeof value === 'function';
+}
+
 type PaginationOptions = {
   total: number;
   current?: number;
@@ -25,6 +31,11 @@ export function usePrismaManyQuery<TResult, TVariables>(
   query: TypedDocumentNode<TResult, TVariables>,
   countFromQuery: (data: TResult) => number,
   initialVariables?: {
+    defaultWhere?:
+      | ExtractWhereVariable<TVariables>
+      | ((
+          where: ExtractWhereVariable<TVariables> | undefined,
+        ) => ExtractWhereVariable<TVariables>);
     orderBy?: ExtractOrderByVariable<TVariables>;
     where?: ExtractWhereVariable<TVariables>;
     pageSize?: number;
@@ -47,9 +58,13 @@ export function usePrismaManyQuery<TResult, TVariables>(
   );
   const [take, setTake] = useState<number | undefined>(initialVariables?.take);
 
+  const defaultWhere = initialVariables?.defaultWhere;
+  const queryWhere = isFunction(defaultWhere)
+    ? defaultWhere(where)
+    : { ...(where || {}), ...(defaultWhere || {}) };
   const queryResult = useQuery(query, {
     variables: {
-      where,
+      where: queryWhere,
       orderBy,
       skip:
         pageSize !== undefined && take !== undefined
