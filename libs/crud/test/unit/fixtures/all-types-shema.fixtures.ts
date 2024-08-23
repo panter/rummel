@@ -29,6 +29,8 @@ registerEnumType(DummyEnum, {
 @ObjectType()
 @Entity()
 export class Dummy {
+  static readonly entityName = 'Dummy';
+
   @Field(() => ID)
   @Property()
   idProp!: number;

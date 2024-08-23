@@ -7,6 +7,8 @@ import { User } from './user.entity';
 @Entity()
 @ObjectType()
 export class Company {
+  static readonly entityName = 'Company';
+
   @CrudField({ hideCreate: true, hideUpdate: true })
   @Field()
   @PrimaryKey({ type: 'uuid' })

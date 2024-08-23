@@ -134,8 +134,8 @@ export const instanceFromClass = (classRef: Type<unknown>) => {
 //   });
 // };
 
-export const applyCreateOneResolver = async <Entity>(
-  gqlInput: object,
+export const applyCreateOneResolver = async <Entity, Input extends object>(
+  gqlInput: Input,
   options: InputResolverOptions<Entity>,
 ) => {
   const crudObjectOptions = getCrudObjectOptions(options.type);
@@ -146,8 +146,8 @@ export const applyCreateOneResolver = async <Entity>(
   );
 };
 
-export const applyUpdateOneResolver = async <Entity>(
-  gqlInput: object,
+export const applyUpdateOneResolver = async <Entity, Input extends object>(
+  gqlInput: Input,
   options: InputResolverOptions<Entity>,
 ) => {
   const crudObjectOptions = getCrudObjectOptions(options.type);
@@ -165,7 +165,7 @@ export const applyStaticWhereFieldResolver = <T = any>(
     ormQuery,
     gqlWhere,
   }: {
-    currentUser: AuthenticatedUser;
+    currentUser: AuthenticatedUser | undefined | null;
     ormQuery: ObjectQuery<T>;
     gqlWhere: any;
   },
@@ -191,7 +191,7 @@ export const applyStaticInputFieldResolver = async <Entity>(
     rootOrmData,
   }: {
     em: EntityManager;
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     ormData: object;
     gqlInput: object;
     rootOrmData?: object;

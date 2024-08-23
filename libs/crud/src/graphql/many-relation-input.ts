@@ -5,10 +5,11 @@ import { typesCache } from './types-cache';
 import { updateManyEntityInput } from './update-many-entity-input';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
+import { CrudEntityType } from './crud-types';
 
 // CRO TODO: hideReference, hideDisconnect
-export const manyRelationInput = <T>(
-  classRef: Type<T>,
+export const manyRelationInput = <T, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
   options?: {
     parentRef: Type<any>;
     hideCreate?: boolean;

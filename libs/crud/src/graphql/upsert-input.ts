@@ -1,12 +1,14 @@
 import { Type } from '@nestjs/common';
 import { Field, Float, InputType, TypeMetadataStorage } from '@nestjs/graphql';
+import { CrudGqlType } from '../'; // CrudGqlType needs to be imported from root index.ts
+import { GraphQLJSON } from 'graphql-scalars';
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 import { isArray, uniqBy } from 'lodash';
+import { CrudEntityType } from './crud-types';
 import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
 import { updateOneRelationInput } from './update-one-relation-input';
 import { CrudInfo, getCrudInfosForType, getTypeName } from './utils';
-import { GraphQLJSON } from 'graphql-scalars';
-import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 
 @InputType()
 class StringInput {
@@ -79,7 +81,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     if (manyDesignType === String) {
       return [String];
     }
-    return manyRelationInput(manyDesignType as Type, {
+    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
       parentRef,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -108,7 +110,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     // return String; // TODO workaround for enums
     return designType;
   } else {
-    return updateOneRelationInput(designType as Type, {
+    return updateOneRelationInput(designType as CrudEntityType<any, string>, {
       parentRef,
       hideUpdate: true,
       hideDisconnect: true,
@@ -129,7 +131,7 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
       return StringArrayInput;
     }
 
-    return manyRelationInput(manyDesignType as Type, {
+    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
       parentRef,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -158,14 +160,14 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     return enumInput(designType);
   } else {
     if (isArray(designType)) {
-      return manyRelationInput(designType[0] as Type, {
+      return manyRelationInput(designType[0] as CrudEntityType<any, string>, {
         parentRef,
         hideCreate: !p.crudOptions?.relation?.showCreate,
         hideUpdate: !p.crudOptions?.relation?.showUpdate,
         parentProperty: p.name,
       });
     } else {
-      return updateOneRelationInput(designType as Type, {
+      return updateOneRelationInput(designType as CrudEntityType<any, string>, {
         parentRef,
         hideCreate: !p.crudOptions?.relation?.showCreate,
         hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -177,10 +179,16 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
   }
 };
 
-export const upsertInput = <T>(
-  classRef: Type<T>,
-  options?: { ignoreType?: Type<any>; isUpdate?: boolean },
-) => {
+export const upsertInput = <
+  T,
+  N extends string,
+  NA extends string,
+  I,
+  U extends boolean = false,
+>(
+  classRef: CrudEntityType<T, NA>,
+  options?: { ignoreType?: Type<I>; isUpdate?: U },
+): CrudGqlType<`${NA}${U extends true ? 'Update' : 'Create'}Input`> => {
   try {
     const fields = getCrudInfosForType(classRef);
     const uniqueFields = uniqBy(fields, (f) => f.name);
@@ -188,9 +196,9 @@ export const upsertInput = <T>(
       ? `Without${getTypeName(options?.ignoreType)}`
       : '';
     const typeName = getTypeName(classRef);
-    const name = `${typeName}${
+    const name: N = `${typeName}${
       options?.isUpdate ? 'Update' : 'Create'
-    }${withoutTypeName}Input`;
+    }${withoutTypeName}Input` as N;
 
     if (typesCache[name]) {
       return typesCache[name];
@@ -226,7 +234,7 @@ export const upsertInput = <T>(
 
     InputType(name, { isAbstract: false })(A);
 
-    return A;
+    return A as CrudGqlType<N>;
   } catch (error) {
     // TODO: error handling
     console.log(error);

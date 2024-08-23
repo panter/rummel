@@ -13,6 +13,8 @@ import { v4 } from 'uuid';
   tableName: 'autocomplete',
 })
 export class Autocomplete {
+  static readonly entityName = 'Autocomplete';
+
   @HideField()
   [EntityRepositoryType]?: AutocompleteRepository;
 

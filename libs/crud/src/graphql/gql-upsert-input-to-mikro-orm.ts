@@ -10,8 +10,10 @@ import {
 } from './utils';
 import { AuthenticatedUser } from './types';
 
-export const gqlUpsertKeyInputToOrm = async (
-  gqlInput: any,
+export const gqlUpsertKeyInputToOrm = async <
+  Input extends { [key: string | number | symbol]: any },
+>(
+  gqlInput: Input,
   ormData: any,
   key: string | number | symbol,
   type: Type<any>,
@@ -23,7 +25,7 @@ export const gqlUpsertKeyInputToOrm = async (
     skipInputResolver,
   }: {
     em: EntityManager;
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     currentOrmData?: any;
     rootOrmData?: any;
     skipInputResolver?: boolean;
@@ -101,9 +103,10 @@ export const gqlUpsertKeyInputToOrm = async (
 
   return ormData;
 };
+
 // TODO: use schema info from the crudInfos to get relation types
-export const gqlUpsertInputToOrm = async <Entity>(
-  gqlInput: object,
+export const gqlUpsertInputToOrm = async <Entity, Input extends object>(
+  gqlInput: Input,
   type: Type<Entity>,
   {
     em,
@@ -111,7 +114,7 @@ export const gqlUpsertInputToOrm = async <Entity>(
     currentOrmData,
     rootOrmData,
   }: {
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     em: EntityManager;
     currentOrmData?: any;
     rootOrmData?: any;
@@ -166,7 +169,7 @@ export const upsertMany = async (
     rootOrmData,
   }: {
     currentOrmData?: any;
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     em: EntityManager;
     rootOrmData?: any;
   },

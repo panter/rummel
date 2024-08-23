@@ -16,6 +16,8 @@ import { Organisation } from './organisation.entity';
 @ObjectType()
 @Entity()
 export class Person {
+  static readonly entityName = 'Person';
+
   @Field(() => ID)
   @PrimaryKey({ type: 'uuid' })
   id: string = v4();

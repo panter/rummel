@@ -7,7 +7,7 @@ import { AuthenticatedUser } from './types';
 
 export type InputResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: AuthenticatedUser;
+  currentUser?: AuthenticatedUser | null;
   currentOrmData?: Entity;
   type: Type<Entity>;
 };

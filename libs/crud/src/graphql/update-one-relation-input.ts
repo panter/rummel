@@ -4,6 +4,7 @@ import { ConnectRelationInput } from './generic-types';
 import { typesCache } from './types-cache';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
+import { CrudEntityType } from './crud-types';
 
 const operationsName = (options?: {
   hideConnect?: boolean;
@@ -31,8 +32,8 @@ const operationsName = (options?: {
 
   return name;
 };
-export const updateOneRelationInput = <T>(
-  classRef: Type<T>,
+export const updateOneRelationInput = <T, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
   options?: {
     parentRef: Type<any>;
     hideConnect?: boolean;
@@ -85,7 +86,7 @@ export const updateOneRelationInput = <T>(
 
   if (!options?.hideCreate) {
     // call upsertInput after adding to cache because of recursive call
-    const CreateInputType = upsertInput(classRef, {
+    const CreateInputType: any = upsertInput(classRef, {
       ignoreType: options?.parentRef,
     });
     Field(() => CreateInputType, { nullable: true })(
@@ -96,7 +97,7 @@ export const updateOneRelationInput = <T>(
 
   if (!options?.hideUpdate) {
     // call upsertInput after adding to cache because of recursive call
-    const UpdateInputType = upsertInput(classRef, {
+    const UpdateInputType: any = upsertInput(classRef, {
       ignoreType: options?.parentRef,
       isUpdate: true,
     });

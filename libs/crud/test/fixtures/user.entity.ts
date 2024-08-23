@@ -6,6 +6,8 @@ import { CrudField } from '../../src';
 @Entity()
 @ObjectType()
 export class User {
+  static readonly entityName = 'User';
+
   @CrudField({ hideCreate: true, hideUpdate: true })
   @Field()
   @PrimaryKey({ type: 'uuid' })
