@@ -1,10 +1,5 @@
-import {
-  EntityData,
-  EntityDTO,
-  EntityManager,
-  FromEntityType,
-  wrap,
-} from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/postgresql';
+
 import { Type } from '@nestjs/common';
 import { Args, Info, Mutation, Resolver } from '@nestjs/graphql';
 import {
@@ -13,25 +8,53 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { GraphQLResolveInfo } from 'graphql';
-import { CrudResource } from '../../crud-resource.decorator';
-import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
+import {
+  CrudAuditCallback,
+  CrudAuthorizeCallback,
+  CrudEntityServiceFactory,
+  ICrudEntityService,
+  OrmData,
+  CrudEntityType,
+  CrudGqlType,
+} from '../../';
+import { CrudResource } from '../../service/crud-resource.decorator';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
 import { AuthenticatedUser } from '../types';
-import { upsertInput } from '../upsert-input';
-import { CrudEntityType } from '../crud-types';
+import { upsertInput, UpsertInputName } from '../upsert-input';
 
-export type ICreateOneContext<T, I> = {
+export type CreateOneResolverContext<T, D> = {
   classRef: Type<T>;
   info: GraphQLResolveInfo;
   currentUser?: AuthenticatedUser | null | undefined;
   request: Express.Request;
-  input?: I | null;
+  /**
+   * GraphQL input data
+   */
+  data?: D | null;
 };
 
-export interface ICreateOneOptions<T, I> {
+/**
+ * The context type for the create one resolver
+ *
+ * Usage:
+ * ```ts
+ * async method(context: CreateOneResolverContextType<typeof YourEntity>) {
+ *  // your code here
+ * }
+ * ```
+ */
+export type CreateOneResolverContextType<E extends CrudEntityType> =
+  E extends CrudEntityType<infer T, infer NA>
+    ? CreateOneResolverContext<
+        T,
+        CrudGqlType<UpsertInputName<NA, undefined, false>>
+      >
+    : never;
+
+export interface CreateOneOptions<T, D> {
   name?: string;
   resolveCallback?: (
-    args: ICreateOneContext<T, I> & {
+    args: CreateOneResolverContext<T, D> & {
       em: EntityManager;
     },
   ) => Promise<T | null | undefined>;
@@ -39,114 +62,181 @@ export interface ICreateOneOptions<T, I> {
   auditCallback?: CrudAuditCallback;
 }
 
-function AbstractCreateOneService<T extends object, Input extends object>(
-  classRef: Type<T>,
-  options: ICreateOneOptions<T, Input> = {},
-) {
+function AbstractCreateOneService<
+  T extends object,
+  NA extends string,
+  D extends CrudGqlType<UpsertInputName<NA, undefined, false>>,
+>(classRef: CrudEntityType<T>, options: CreateOneOptions<T, D> = {}) {
   abstract class Resolver {
     authorizeCallback?: CrudAuthorizeCallback = options.authorizeCallback;
     auditCallback?: CrudAuditCallback = options.auditCallback;
+    crudEntityService: ICrudEntityService<T>;
 
-    constructor(readonly em: EntityManager) {}
-
-    async initContext(
-      input?: Input | null,
-    ): Promise<{ input?: Input | null; entity: T }> {
-      return { input, entity: new classRef() };
+    constructor(
+      protected readonly em: EntityManager,
+      crudEntityFactory: CrudEntityServiceFactory,
+      pCrudEntityService?: ICrudEntityService<T>,
+    ) {
+      this.crudEntityService =
+        pCrudEntityService || crudEntityFactory.getCrudService(classRef);
     }
 
-    async resolveBefore(_context: ICreateOneContext<T, Input>): Promise<void> {
-      // Custom logic before createOne can be placed here
-    }
+    /**
+     * Override this method to validate the context before creating the entity.
+     * Throw an error if the context is invalid.
+     *
+     * By default, this method does nothing.
+     *
+     * @param _context
+     */
+    async validateContext(
+      _context: CreateOneResolverContext<T, D>,
+    ): Promise<void> {}
 
-    async resolveBeforeFlush(
-      _context: ICreateOneContext<T, Input>,
-      result: T,
-    ): Promise<T> {
-      // Custom logic after createOne can be placed here
-      return result;
-    }
-
-    async resolveAfterFlush(
-      _context: ICreateOneContext<T, Input>,
-      result: T | null | undefined,
-    ): Promise<T | null | undefined> {
-      // Custom logic after createOne can be placed here
-      return result;
-    }
-
-    async getEntity(_context: ICreateOneContext<T, Input>): Promise<T> {
-      return new classRef();
-    }
-
-    async getCreateData<
-      Naked extends FromEntityType<T> = FromEntityType<T>,
-      Data extends EntityData<Naked> | Partial<EntityDTO<Naked>> =
-        | EntityData<Naked>
-        | Partial<EntityDTO<Naked>>,
-    >(entity: T, context: ICreateOneContext<T, Input>): Promise<Data> {
-      return gqlUpsertInputToOrm(context.input || {}, classRef, {
+    /**
+     * Override this method to customize the transformation of the input data to orm data.
+     *
+     * By default methods the mapped input data to orm data.
+     *
+     * @param context
+     * @returns By default methods the mapped input data to orm data.
+     */
+    async getCreateData(
+      context: CreateOneResolverContext<T, D>,
+    ): Promise<OrmData<T>> {
+      const ormData = await gqlUpsertInputToOrm(context.data || {}, classRef, {
         em: this.em,
         currentUser: context.currentUser,
-        rootOrmData: entity,
       });
+
+      return ormData;
     }
 
-    async createOne(
-      initContext: ICreateOneContext<T, Input>,
+    /**
+     * Override this method to create the entity with the provided 'ormData' before persisting it.
+     * This method is called after the data is transformed to orm data.
+     *
+     * If 'undefined' is returned, the entity is created by the default
+     * behavior in the 'CrudEntityService'.
+     *
+     * This method return 'undefined' by default.
+     *
+     * @param context
+     * @param ormData - the data used to create the entity
+     */
+    async createEntity(
+      _context: CreateOneResolverContext<T, D>,
+      _ormData: OrmData<T>,
+    ): Promise<T | undefined> {
+      return undefined;
+    }
+
+    /**
+     * Override this method to resolve the response before returning it.
+     * This method is called after the entity is created, persisted and populated.
+     *
+     * @param context
+     * @param result - the created entity
+     * @param ormData - the data used to create the entity
+     */
+    async resolveResponse(
+      _context: CreateOneResolverContext<T, D>,
+      result: T | null | undefined,
+      _ormData: OrmData<T>,
     ): Promise<T | null | undefined> {
-      await this.resolveBefore(initContext);
+      return result;
+    }
 
-      const { input, entity: initEntity } = await this.initContext(
-        initContext.input,
-      );
-      const context: ICreateOneContext<T, Input> = {
-        ...initContext,
-        input,
-      };
+    /**
+     * This method is called by the mutation resolver and offers a customizable
+     * way to create an entity by overriding `getCreateData` and/or `createEntity`.
+     *
+     * If you need to completely customize the creation process, you should override
+     * this method.
+     *
+     * @param context
+     * @returns the created entity
+     */
+    async createOne(
+      context: CreateOneResolverContext<T, D>,
+    ): Promise<T | null | undefined> {
+      await this.validateContext(context);
 
-      const createData: object = await this.getCreateData(initEntity, context);
-
-      wrap(initEntity).assign(createData, { em: this.em });
-
-      const entity = await this.resolveBeforeFlush(context, initEntity);
-
-      await this.em.persistAndFlush(entity);
-      await this.em.populate(
-        entity,
-        getFieldsToPopulate(context.info, classRef),
+      const data = await this.getCreateData(context);
+      const fromEntity = await this.createEntity(context, data);
+      const entity = await this.crudEntityService.createOne(
         {
-          refresh: true,
+          ...context,
+          data,
         },
+        fromEntity,
       );
 
-      return await this.resolveAfterFlush(context, entity);
+      if (entity) {
+        await this.em.persistAndFlush(entity);
+        await this.em.populate(
+          entity,
+          getFieldsToPopulate(context.info, classRef),
+          {
+            refresh: true,
+          },
+        );
+        return entity;
+      }
+      return await this.resolveResponse(context, entity, data);
     }
   }
 
   return Resolver;
 }
 
+/**
+ * Create a resolver for creating a single entity
+ *
+ * Usage:
+ *
+ * ```ts
+ * @Resolver(() => YourEntity)
+ * export class CreateOneYourEntityResolver extends CreateOneResolver(YourEntity) {
+ *   async createEntity(context: CreateOneResolverContextType<typeof YourEntity>, ormData: OrmData<YourEntity>) {
+ *     // your code here
+ *   }
+ * }
+ * ```
+ *
+ * @param classRef - the entity class
+ * @param options - the resolver options
+ * @returns the resolver class
+ */
 export function CreateOneResolver<
   T extends object,
-  Input extends object,
   NA extends string,
->(classRef: CrudEntityType<T, NA>, options: ICreateOneOptions<T, Input> = {}) {
+  D extends CrudGqlType<UpsertInputName<NA, undefined, false>>,
+>(classRef: CrudEntityType<T, NA>, options: CreateOneOptions<T, D> = {}) {
   const methodName = options.name || `createOne${classRef.name}`;
   const CreateOneArg = upsertInput(classRef);
 
   @CrudResource(classRef.name)
   @Resolver(() => classRef)
-  class ConcreteResolver extends AbstractCreateOneService<T, Input>(
-    classRef,
-    options,
-  ) {
-    constructor(em: EntityManager) {
-      super(em);
+  class ConcreteResolver extends AbstractCreateOneService(classRef, options) {
+    constructor(
+      public readonly em: EntityManager,
+      public readonly crudEntityFactory: CrudEntityServiceFactory,
+    ) {
+      super(em, crudEntityFactory);
     }
 
+    /**
+     * Graphql Mutation Method
+     *
+     * This method is used a mutation resolver for creating a single entity
+     * and should not be called directly
+     *
+     * If you need to customize the creation process, you should override the `createOne`,
+     * `getCreateData`, `createEntity` or `resolveResponse` methods
+     */
     @Mutation(() => classRef, { name: methodName })
-    async doCreateOne(
+    async _createOneMutation(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
       @CurrentRequest() request: Express.Request,
@@ -154,7 +244,7 @@ export function CreateOneResolver<
         type: () => CreateOneArg,
         nullable: true,
       })
-      data?: Input,
+      data?: D,
     ): Promise<T | null | undefined> {
       this.authorizeCallback?.({
         operation: 'create',
@@ -165,11 +255,11 @@ export function CreateOneResolver<
         em: this.em,
       });
 
-      const context: ICreateOneContext<T, Input> = {
+      const context: CreateOneResolverContext<T, D> = {
         info,
         currentUser,
         request,
-        input: data,
+        data,
         classRef,
       };
       let result;

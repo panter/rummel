@@ -1,8 +1,8 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { CRUD_RESOURCE } from './crud-resource.decorator';
 import { DiscoveryService } from '@nestjs/core';
-import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
-import { CrudModuleOptions } from './crud.module';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../';
+import { CrudModuleOptions } from '../crud.module';
 
 @Injectable()
 export class CrudService {

@@ -1,10 +1,9 @@
-import { Type } from '@nestjs/common';
 import { ArgsType, Field, InputType } from '@nestjs/graphql';
+import { CrudEntityType } from './crud-types';
 import { ConnectRelationInput } from './generic-types';
 import { typesCache } from './types-cache';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
-import { CrudEntityType } from './crud-types';
 
 const operationsName = (options?: {
   hideConnect?: boolean;
@@ -35,7 +34,7 @@ const operationsName = (options?: {
 export const updateOneRelationInput = <T, NA extends string>(
   classRef: CrudEntityType<T, NA>,
   options?: {
-    parentRef: Type<any>;
+    parentRef: CrudEntityType;
     hideConnect?: boolean;
     hideCreate?: boolean;
     hideUpdate?: boolean;

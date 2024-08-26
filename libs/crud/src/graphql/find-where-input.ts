@@ -11,6 +11,8 @@ import {
 } from './gql-filter-types';
 import { typesCache } from './types-cache';
 import { CrudInfo, getCrudInfosForType, getTypeName } from './utils';
+import { CrudGqlType } from '../';
+import { CrudEntityType } from './crud-types';
 
 const getFilterDesignType = (p: CrudInfo) => {
   if (
@@ -42,18 +44,21 @@ const getFilterDesignType = (p: CrudInfo) => {
   ) {
     return DateTimeFilter;
   } else if (p.options.isArray) {
-    return whereInput(designType as Type);
+    return whereInput(designType as CrudEntityType);
   } else if (typeof designType !== 'function') {
     return enumFilter(designType); // TODO workaround for enums
   } else {
     if (isArray(designType)) {
-      return whereInput(designType as Type);
+      return whereInput(designType as any);
     }
-    return findOneRelationFilter(designType as Type);
+    return findOneRelationFilter(designType as any);
   }
 };
 
-export const whereInput = <T>(classRef: Type<T>, pentityType?: Type<T>) => {
+export const whereInput = <T, _N extends string, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
+  pentityType?: Type<T>,
+): Type<CrudGqlType<`${NA}WhereInput`>> => {
   const entityType = pentityType || classRef;
   try {
     const fields = getCrudInfosForType(entityType);
@@ -96,6 +101,7 @@ export const whereInput = <T>(classRef: Type<T>, pentityType?: Type<T>) => {
 
     return WhereInput;
   } catch (error) {
-    // TODO: error handling
+    console.error('Error in whereInput', error);
+    throw error;
   }
 };

@@ -11,9 +11,9 @@ import {
   CurrentUser,
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../';
 import { AuthenticatedUser } from '../types';
-import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
-import { CrudResource } from '../../crud-resource.decorator';
+import { CrudResource } from '../../service/crud-resource.decorator';
 
 export type IFindOneContext<T> = {
   classRef: Type<T>;

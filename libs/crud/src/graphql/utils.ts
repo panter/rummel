@@ -135,7 +135,7 @@ export const instanceFromClass = (classRef: Type<unknown>) => {
 // };
 
 export const applyCreateOneResolver = async <Entity, Input extends object>(
-  gqlInput: Input,
+  gqlInput: Input | undefined,
   options: InputResolverOptions<Entity>,
 ) => {
   const crudObjectOptions = getCrudObjectOptions(options.type);
@@ -147,7 +147,7 @@ export const applyCreateOneResolver = async <Entity, Input extends object>(
 };
 
 export const applyUpdateOneResolver = async <Entity, Input extends object>(
-  gqlInput: Input,
+  gqlInput: Input | undefined,
   options: InputResolverOptions<Entity>,
 ) => {
   const crudObjectOptions = getCrudObjectOptions(options.type);
@@ -193,7 +193,7 @@ export const applyStaticInputFieldResolver = async <Entity>(
     em: EntityManager;
     currentUser?: AuthenticatedUser | null;
     ormData: object;
-    gqlInput: object;
+    gqlInput?: object;
     rootOrmData?: object;
     currentOrmData?: object;
   },
