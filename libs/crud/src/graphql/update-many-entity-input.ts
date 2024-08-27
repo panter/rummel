@@ -4,9 +4,10 @@ import { EntityIdInput } from './generic-types';
 import { typesCache } from './types-cache';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
+import { CrudEntityType } from './crud-types';
 
-export const updateManyEntityInput = <T>(
-  classRef: Type<T>,
+export const updateManyEntityInput = <T, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
   options?: { ignoreType?: Type<any> },
 ) => {
   const withoutTypeName = options?.ignoreType
@@ -29,7 +30,7 @@ export const updateManyEntityInput = <T>(
 
   typesCache[name] = UpdateManyEntityArgsType;
 
-  const InputDataType = upsertInput(classRef, { isUpdate: true });
+  const InputDataType: any = upsertInput(classRef, { isUpdate: true });
   Field(() => InputDataType, { nullable: true })(
     UpdateManyEntityArgsType.prototype,
     'data',

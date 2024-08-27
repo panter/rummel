@@ -13,6 +13,8 @@ import { User } from './user.entity';
 @Entity()
 @ObjectType()
 export class Group {
+  static readonly entityName = 'Group';
+
   @CrudField({ hideCreate: true, hideUpdate: true })
   @Field()
   @PrimaryKey({ type: 'uuid' })

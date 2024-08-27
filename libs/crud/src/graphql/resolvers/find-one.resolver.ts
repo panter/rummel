@@ -11,129 +11,159 @@ import {
   CurrentUser,
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../';
 import { AuthenticatedUser } from '../types';
-import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
-import { CrudResource } from '../../crud-resource.decorator';
+import { CrudResource } from '../../service/crud-resource.decorator';
 
-export interface IFindOneType<T> {
-  findOne: (
-    info: GraphQLResolveInfo,
-    currentUser: AuthenticatedUser,
-    request: Express.Request,
-    whereArgs: FindOneEntityWhereArgs,
-  ) => Promise<T | null | undefined>;
-}
+export type IFindOneContext<T> = {
+  classRef: Type<T>;
+  info: GraphQLResolveInfo;
+  currentUser?: AuthenticatedUser | null | undefined;
+  request: Express.Request;
+  data?: FindOneEntityWhereArgs | null;
+};
 
 export interface IFindOneOptions<T> {
   name?: string;
   nullable?: boolean;
-  onResolve?: IFindOneType<T>['findOne'];
+  resolveCallback?: (
+    args: IFindOneContext<T>,
+    em: EntityManager,
+  ) => Promise<T | null | undefined>;
   authorizeCallback?: CrudAuthorizeCallback;
   auditCallback?: CrudAuditCallback;
 }
 
+function AbstractFindOneService<T>(
+  classRef: Type<T>,
+  options: IFindOneOptions<T> = {},
+) {
+  abstract class Resolver {
+    authorizeCallback?: CrudAuthorizeCallback = options.authorizeCallback;
+    auditCallback?: CrudAuditCallback = options.auditCallback;
+
+    constructor(readonly em: EntityManager) {}
+
+    async mapData(
+      args?: FindOneEntityWhereArgs | null,
+    ): Promise<FindOneEntityWhereArgs | null | undefined> {
+      return args;
+    }
+
+    async mapResult(result?: T | null): Promise<T | null | undefined> {
+      return result;
+    }
+
+    async resolveBeforeFindOne(_context: IFindOneContext<T>): Promise<void> {
+      // Custom logic before findOne can be placed here
+    }
+
+    async resolveQuery(context: IFindOneContext<T>) {
+      const crudInfos = getCrudInfosForType(context.classRef);
+
+      const ormQueryRaw =
+        gqlFilterToMikro<T>(context.data?.where, crudInfos, {
+          currentUser: context.currentUser,
+        }) || {};
+
+      const ormQuery = isArray(ormQueryRaw) ? ormQueryRaw[0] : ormQueryRaw;
+      return ormQuery;
+    }
+
+    async resolveAfterFindOne(
+      _context: IFindOneContext<T>,
+      result: T | null | undefined,
+    ): Promise<T | null | undefined> {
+      // Custom logic after findOne can be placed here
+      return result;
+    }
+
+    async findOne(
+      info: GraphQLResolveInfo,
+      currentUser: AuthenticatedUser | undefined,
+      request: Express.Request,
+      initData: FindOneEntityWhereArgs,
+    ) {
+      const data = await this.mapData(initData);
+
+      const context: IFindOneContext<T> = {
+        info,
+        currentUser,
+        request,
+        data,
+        classRef,
+      };
+
+      await this.resolveBeforeFindOne(context);
+      const ormQuery = await this.resolveQuery(context);
+
+      console.log('asaaa', this.em);
+      let result = await this.em.findOne(classRef, ormQuery, {
+        populate: getFieldsToPopulate(info, classRef),
+      });
+
+      result = await this.resolveAfterFindOne(context, result);
+
+      return this.mapResult(result);
+    }
+  }
+
+  return Resolver;
+}
+
 export function FindOneResolver<T>(
   classRef: Type<T>,
-  {
-    name,
-    onResolve,
-    authorizeCallback,
-    auditCallback,
-  }: IFindOneOptions<T> | undefined = {},
-): Type<IFindOneType<T>> {
-  const methodName = name ? name : lowerFirst(classRef.name);
+  options: IFindOneOptions<T> = {},
+) {
+  const methodName = options.name ? options.name : lowerFirst(classRef.name);
 
-  @Resolver(() => classRef, { isAbstract: true })
-  abstract class AbstractResolver implements IFindOneType<T> {
-    protected authorizeCallback?: CrudAuthorizeCallback = authorizeCallback;
-    protected auditCallback?: CrudAuditCallback = auditCallback;
-
-    constructor(protected readonly em: EntityManager) {}
+  @CrudResource(classRef.name)
+  @Resolver(() => classRef)
+  class ConcreteResolver extends AbstractFindOneService(classRef, options) {
+    constructor(em: EntityManager) {
+      super(em);
+    }
 
     @Query(() => classRef, {
       name: methodName,
       nullable: true,
     })
-    async findOne(
+    async doFindOne(
       @Info() info: GraphQLResolveInfo,
       @CurrentUser() currentUser: AuthenticatedUser,
       @CurrentRequest() request: Express.Request,
       @Args()
-      { where: { id } }: FindOneEntityWhereArgs,
+      data: FindOneEntityWhereArgs,
     ) {
-      if (!id) {
-        return null;
-      }
-
-      return resolveFindOne(classRef, id, {
+      const context: IFindOneContext<T> = {
         info,
         currentUser,
-        em: this.em,
-      });
-    }
-  }
+        request,
+        data,
+        classRef,
+      };
 
-  @CrudResource(classRef.name)
-  @Resolver(() => classRef)
-  class ConcreteResolver extends AbstractResolver {
-    @Query(() => classRef, {
-      name: methodName,
-      nullable: true,
-    })
-    async findOne(
-      info: GraphQLResolveInfo,
-      currentUser: AuthenticatedUser,
-      request: Express.Request,
-      where: FindOneEntityWhereArgs,
-    ) {
       this.authorizeCallback?.({
         operation: 'read',
         resource: classRef.name,
         currentUser,
         request,
-        condition: where,
+        condition: data,
         em: this.em,
       });
       this.auditCallback?.({
         operation: 'read',
         resource: classRef.name,
         currentUser,
-        data: where,
+        data,
       });
 
-      if (onResolve) {
-        return onResolve(info, currentUser, request, where);
+      if (options.resolveCallback) {
+        return options.resolveCallback(context, this.em);
       }
-      return super.findOne(info, currentUser, request, where);
+      return this.findOne(info, currentUser, request, data);
     }
   }
 
-  return ConcreteResolver as Type<IFindOneType<T>>;
+  return ConcreteResolver;
 }
-
-export const resolveFindOne = async <T extends Type>(
-  type: T,
-  id: string,
-  {
-    info,
-    em,
-    currentUser,
-  }: {
-    em: EntityManager;
-    currentUser: AuthenticatedUser;
-    info: GraphQLResolveInfo;
-  },
-) => {
-  const crudInfos = getCrudInfosForType(type);
-
-  const ormQueryRaw =
-    gqlFilterToMikro<T>({ id }, crudInfos, {
-      currentUser,
-    }) || {};
-
-  const ormQuery = isArray(ormQueryRaw) ? ormQueryRaw[0] : ormQueryRaw;
-
-  return em.findOne(type, ormQuery, {
-    populate: getFieldsToPopulate(info, type),
-  });
-};

@@ -12,9 +12,10 @@ import {
   CurrentUser,
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../';
 import { AuthenticatedUser } from '../types';
-import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
-import { CrudResource } from '../../crud-resource.decorator';
+import { CrudResource } from '../../service/crud-resource.decorator';
+import { CrudEntityType } from '../crud-types';
 
 export interface IFindManyType<T> {
   findMany: (
@@ -39,8 +40,8 @@ export interface IFindManyOptions<T> {
   auditCallback?: CrudAuditCallback;
 }
 
-export function FindManyResolver<T>(
-  classRef: Type<T>,
+export function FindManyResolver<T, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
   {
     name,
     onResolve,

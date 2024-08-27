@@ -1,5 +1,5 @@
-import { Type } from '@nestjs/common';
 import { ArgsType, Field, InputType } from '@nestjs/graphql';
+import { CrudEntityType } from './crud-types';
 import { ConnectRelationInput, EntityIdInput } from './generic-types';
 import { typesCache } from './types-cache';
 import { updateManyEntityInput } from './update-many-entity-input';
@@ -7,10 +7,10 @@ import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
 
 // CRO TODO: hideReference, hideDisconnect
-export const manyRelationInput = <T>(
-  classRef: Type<T>,
+export const manyRelationInput = <T, NA extends string>(
+  classRef: CrudEntityType<T, NA>,
   options?: {
-    parentRef: Type<any>;
+    parentRef: CrudEntityType;
     hideCreate?: boolean;
     hideUpdate?: boolean;
     parentProperty?: string;

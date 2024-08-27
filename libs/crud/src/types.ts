@@ -1,4 +1,5 @@
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityData, FromEntityType } from '@mikro-orm/postgresql';
+import { EntityDTO, EntityManager } from '@mikro-orm/postgresql';
 
 export type CrudOperation = 'create' | 'read' | 'update' | 'delete';
 
@@ -32,3 +33,11 @@ export interface CrudAuditRequest<T> {
   resource: string;
   data?: any;
 }
+
+export type OrmData<
+  T,
+  Naked extends FromEntityType<T> = FromEntityType<T>,
+  Data extends EntityData<Naked> | Partial<EntityDTO<Naked>> =
+    | EntityData<Naked>
+    | Partial<EntityDTO<Naked>>,
+> = Data;

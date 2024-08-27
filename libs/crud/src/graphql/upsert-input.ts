@@ -1,12 +1,19 @@
-import { Type } from '@nestjs/common';
 import { Field, Float, InputType, TypeMetadataStorage } from '@nestjs/graphql';
+import { GraphQLJSON } from 'graphql-scalars';
+import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 import { isArray, uniqBy } from 'lodash';
+import { CrudGqlType } from '../'; // CrudGqlType needs to be imported from root index.ts
+import { CrudEntityType } from './crud-types';
 import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
 import { updateOneRelationInput } from './update-one-relation-input';
 import { CrudInfo, getCrudInfosForType, getTypeName } from './utils';
-import { GraphQLJSON } from 'graphql-scalars';
-import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
+
+export type UpsertInputName<
+  NA extends string,
+  INA extends string | undefined,
+  U extends boolean,
+> = `${NA}${U extends true ? 'Update' : 'Create'}${INA extends undefined ? '' : `Without${INA}`}Input`;
 
 @InputType()
 class StringInput {
@@ -69,7 +76,7 @@ export const enumInput = (e: any) => {
   return EnumInput;
 };
 
-const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
+const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
     return;
   }
@@ -79,7 +86,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     if (manyDesignType === String) {
       return [String];
     }
-    return manyRelationInput(manyDesignType as Type, {
+    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
       parentRef,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -108,7 +115,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     // return String; // TODO workaround for enums
     return designType;
   } else {
-    return updateOneRelationInput(designType as Type, {
+    return updateOneRelationInput(designType as CrudEntityType, {
       parentRef,
       hideUpdate: true,
       hideDisconnect: true,
@@ -118,7 +125,7 @@ const getCreateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
   }
 };
 
-const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
+const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
     return;
   }
@@ -129,7 +136,7 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
       return StringArrayInput;
     }
 
-    return manyRelationInput(manyDesignType as Type, {
+    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
       parentRef,
       hideCreate: !p.crudOptions?.relation?.showCreate,
       hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -158,14 +165,14 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
     return enumInput(designType);
   } else {
     if (isArray(designType)) {
-      return manyRelationInput(designType[0] as Type, {
+      return manyRelationInput(designType[0] as CrudEntityType<any, string>, {
         parentRef,
         hideCreate: !p.crudOptions?.relation?.showCreate,
         hideUpdate: !p.crudOptions?.relation?.showUpdate,
         parentProperty: p.name,
       });
     } else {
-      return updateOneRelationInput(designType as Type, {
+      return updateOneRelationInput(designType as CrudEntityType<any, string>, {
         parentRef,
         hideCreate: !p.crudOptions?.relation?.showCreate,
         hideUpdate: !p.crudOptions?.relation?.showUpdate,
@@ -177,10 +184,28 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: Type<any>) => {
   }
 };
 
-export const upsertInput = <T>(
-  classRef: Type<T>,
-  options?: { ignoreType?: Type<any>; isUpdate?: boolean },
-) => {
+/**
+ *
+ * Create an upsert input type for a graphql object type.
+ *
+ * @see ObjectType decorator
+ *
+ */
+export const upsertInput = <
+  T,
+  N extends string,
+  NA extends string,
+  I,
+  INA extends string | undefined = undefined,
+  U extends boolean = false,
+  G extends UpsertInputName<NA, INA, U> = UpsertInputName<NA, INA, U>,
+>(
+  classRef: CrudEntityType<T, NA>,
+  options?: {
+    ignoreType?: INA extends string ? CrudEntityType<I, INA> : undefined;
+    isUpdate?: U;
+  },
+): CrudGqlType<G> => {
   try {
     const fields = getCrudInfosForType(classRef);
     const uniqueFields = uniqBy(fields, (f) => f.name);
@@ -188,9 +213,9 @@ export const upsertInput = <T>(
       ? `Without${getTypeName(options?.ignoreType)}`
       : '';
     const typeName = getTypeName(classRef);
-    const name = `${typeName}${
+    const name: N = `${typeName}${
       options?.isUpdate ? 'Update' : 'Create'
-    }${withoutTypeName}Input`;
+    }${withoutTypeName}Input` as N;
 
     if (typesCache[name]) {
       return typesCache[name];
@@ -230,5 +255,6 @@ export const upsertInput = <T>(
   } catch (error) {
     // TODO: error handling
     console.log(error);
+    throw error;
   }
 };

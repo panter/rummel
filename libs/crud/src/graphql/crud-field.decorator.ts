@@ -30,14 +30,14 @@ export type WhereFieldResolver<Entity = any, GqlWhere = any> = (
   ormQuery: ObjectQuery<Entity>,
   gqlWhere: GqlWhere,
   options: {
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     key: string | number | symbol;
   },
 ) => void;
 
 export type InputFieldResolverOptions<Entity> = {
   em: EntityManager;
-  currentUser: AuthenticatedUser;
+  currentUser?: AuthenticatedUser | null;
   currentOrmData?: Entity;
   rootOrmData?: Entity;
   type: Type<Entity>;

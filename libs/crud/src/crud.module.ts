@@ -1,9 +1,11 @@
 import { ConfigModule } from '@nestjs/config';
 import { DiscoveryModule } from '@nestjs/core';
 import { DynamicModule, Module, OnModuleInit } from '@nestjs/common';
-import { CrudAuditCallback, CrudAuthorizeCallback } from './types';
-import { CrudService } from './crud.service';
+import { CrudAuditCallback, CrudAuthorizeCallback } from './';
+import { CrudService } from './service/crud.service';
 import { ModuleAsyncOptions } from '@panter/nestjs-utils';
+import { CrudEntityServiceFactory } from './service/crud-entity-service.factory';
+import { CrudEntityService } from '.';
 
 export interface CrudModuleOptions<T> {
   authorizeCallback?: CrudAuthorizeCallback<T>;
@@ -31,8 +33,15 @@ export class CrudModule implements OnModuleInit {
           inject: inject || [],
         },
         CrudService,
+        CrudEntityService,
+        CrudEntityServiceFactory,
       ],
-      exports: ['CONFIG_OPTIONS', CrudService],
+      exports: [
+        'CONFIG_OPTIONS',
+        CrudService,
+        CrudEntityService,
+        CrudEntityServiceFactory,
+      ],
     };
   }
 

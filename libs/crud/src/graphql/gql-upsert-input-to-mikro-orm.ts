@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Type } from '@nestjs/common';
 import { isArray, isFunction, isNil } from 'lodash';
+import { OrmData } from '../';
 import {
   applyCreateOneResolver,
   applyStaticInputFieldResolver,
@@ -10,8 +11,10 @@ import {
 } from './utils';
 import { AuthenticatedUser } from './types';
 
-export const gqlUpsertKeyInputToOrm = async (
-  gqlInput: any,
+export const gqlUpsertKeyInputToOrm = async <
+  Input extends { [key: string | number | symbol]: any },
+>(
+  gqlInput: Input,
   ormData: any,
   key: string | number | symbol,
   type: Type<any>,
@@ -23,7 +26,7 @@ export const gqlUpsertKeyInputToOrm = async (
     skipInputResolver,
   }: {
     em: EntityManager;
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     currentOrmData?: any;
     rootOrmData?: any;
     skipInputResolver?: boolean;
@@ -101,9 +104,10 @@ export const gqlUpsertKeyInputToOrm = async (
 
   return ormData;
 };
+
 // TODO: use schema info from the crudInfos to get relation types
-export const gqlUpsertInputToOrm = async <Entity>(
-  gqlInput: object,
+export const gqlUpsertInputToOrm = async <Entity, Input extends object>(
+  gqlInput: Input | undefined,
   type: Type<Entity>,
   {
     em,
@@ -111,12 +115,12 @@ export const gqlUpsertInputToOrm = async <Entity>(
     currentOrmData,
     rootOrmData,
   }: {
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     em: EntityManager;
     currentOrmData?: any;
     rootOrmData?: any;
   },
-): Promise<any> => {
+): Promise<OrmData<Entity>> => {
   if (!currentOrmData) {
     await applyCreateOneResolver(gqlInput, {
       em,
@@ -132,15 +136,17 @@ export const gqlUpsertInputToOrm = async <Entity>(
     });
   }
 
-  const ormData = await Object.keys(gqlInput).reduce(async (pdata, key) => {
-    const data = await pdata;
-    return await gqlUpsertKeyInputToOrm(gqlInput, data, key, type, {
-      em,
-      currentUser,
-      currentOrmData,
-      rootOrmData,
-    });
-  }, Promise.resolve({}));
+  const ormData = !gqlInput
+    ? {}
+    : await Object.keys(gqlInput).reduce(async (pdata, key) => {
+        const data = await pdata;
+        return await gqlUpsertKeyInputToOrm(gqlInput, data, key, type, {
+          em,
+          currentUser,
+          currentOrmData,
+          rootOrmData,
+        });
+      }, Promise.resolve({}));
 
   await applyStaticInputFieldResolver(type, {
     em,
@@ -166,7 +172,7 @@ export const upsertMany = async (
     rootOrmData,
   }: {
     currentOrmData?: any;
-    currentUser: AuthenticatedUser;
+    currentUser?: AuthenticatedUser | null;
     em: EntityManager;
     rootOrmData?: any;
   },

@@ -7,6 +7,7 @@ export * from './resolvers/delete-one.resolver';
 export * from './resolvers/object-relation-resolver';
 export * from './resolvers/object-reference-resolver';
 export * from './find-many-entity-args';
+export * from './find-where-input';
 export * from './gql-filter-to-mikro-orm';
 export * from './gql-upsert-input-to-mikro-orm';
 export * from './generic-types';

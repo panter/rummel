@@ -57,7 +57,7 @@
     "@types/react-transition-group": "^4.4.8",
     "@types/styled-components": "^5.1.29",
     "babel-plugin-styled-components-px2rem": "^1.5.5",
-    "eslint": "8.56.0",
+    "eslint": "8.57.0",
     "i18next-resources-for-ts": "^1.4.0",
     "jest": "^29.7.0",
     "rimraf": "^5.0.5",

@@ -7,6 +7,8 @@ import { v4 } from 'uuid';
   tableName: 'autocomplete',
 })
 export class Autocomplete {
+  static readonly entityName = 'Autocomplete';
+
   @Field(() => ID)
   @PrimaryKey({ type: 'uuid' })
   id: string = v4();

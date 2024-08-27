@@ -10,8 +10,8 @@ import {
   getFieldsToPopulate,
 } from '@panter/nestjs-utils';
 import { AuthenticatedUser } from '../types';
-import { CrudAuditCallback, CrudAuthorizeCallback } from '../../types';
-import { CrudResource } from '../../crud-resource.decorator';
+import { CrudAuditCallback, CrudAuthorizeCallback } from '../../';
+import { CrudResource } from '../../service/crud-resource.decorator';
 
 export interface IDeleteOneType<T> {
   deleteOne: (
