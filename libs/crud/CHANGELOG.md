@@ -1,5 +1,12 @@
 # @panter/crud
 
+## 0.2.3
+
+### Patch Changes
+
+- 767a683: Customize Create and Update Resolvers
+- dd7acce: Allow update relation on create
+
 ## 0.2.2
 
 ### Patch Changes
