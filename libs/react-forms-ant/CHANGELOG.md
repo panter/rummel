@@ -1,5 +1,12 @@
 # @panter/react-forms-ant
 
+## 1.0.3
+
+### Patch Changes
+
+- Updated dependencies [28f7fb7]
+  - @panter/react-forms@1.0.2
+
 ## 1.0.2
 
 ### Patch Changes

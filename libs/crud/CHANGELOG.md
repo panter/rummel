@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.4
+
+### Patch Changes
+
+- 28f7fb7: Fix asset polling and remove console.logs
+
 ## 0.2.3
 
 ### Patch Changes

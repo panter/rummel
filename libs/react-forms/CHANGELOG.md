@@ -1,5 +1,11 @@
 # @panter/react-forms
 
+## 1.0.2
+
+### Patch Changes
+
+- 28f7fb7: Fix asset polling and remove console.logs
+
 ## 1.0.1
 
 ### Patch Changes
