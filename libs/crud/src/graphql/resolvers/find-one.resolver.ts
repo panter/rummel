@@ -97,7 +97,6 @@ function AbstractFindOneService<T>(
       await this.resolveBeforeFindOne(context);
       const ormQuery = await this.resolveQuery(context);
 
-      console.log('asaaa', this.em);
       let result = await this.em.findOne(classRef, ormQuery, {
         populate: getFieldsToPopulate(info, classRef),
       });

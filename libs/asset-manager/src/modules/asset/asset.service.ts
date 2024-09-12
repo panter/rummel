@@ -66,7 +66,6 @@ export class AssetService<S extends AssetProvider> {
         publicUrl: asset.access == AssetAccess.public ? asset.url : undefined,
       });
     } catch (e) {
-      console.log(e);
       throw new UnknownException('Unable to create asset', e);
     }
   }

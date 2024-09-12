@@ -31,7 +31,12 @@ export const useAssetPolling = (
 
   const allInMemory = useInMemoryAssetDbQuery(
     assetDb instanceof InMemoryAssetsDb ? assetDb : inMemoryFallback,
-    () => assetDb.allScheduledAssetsInfos(),
+    async () => {
+      const assets = await assetDb.allAssetsInfos();
+      return assets.filter(
+        (asset) => asset.state === 'scheduled' || asset.state === 'uploading',
+      );
+    },
   );
 
   const assetInfos = indexedAssetsInfos || allInMemory;

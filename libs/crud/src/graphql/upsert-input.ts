@@ -254,7 +254,7 @@ export const upsertInput = <
     return A;
   } catch (error) {
     // TODO: error handling
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };
