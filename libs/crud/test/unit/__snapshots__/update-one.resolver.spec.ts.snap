@@ -1,9 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`UpdateOneResolver should generate graphql schema for UpdateOneCompanyResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Company {
@@ -44,10 +49,16 @@ input UserCrUpOneWithoutCompanyUpdateInput {
 
 input UserCreateWithoutCompanyInput {
   name: String
+  address: AddressNestedOneWithoutUserEmbeddedInput
+}
+
+input AddressNestedOneWithoutUserEmbeddedInput {
+  street: StringInput
 }
 
 input UserUpdateWithoutCompanyInput {
   name: StringInput
+  address: AddressNestedOneWithoutUserEmbeddedInput
 }
 
 input EntityIdInput {
@@ -56,9 +67,14 @@ input EntityIdInput {
 `;
 
 exports[`UpdateOneResolver should generate graphql schema for UpdateOneGroupResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Group {
@@ -106,6 +122,11 @@ input UserCrudManyWithoutGroupUpdateInput {
 
 input UserCreateWithoutGroupInput {
   name: String
+  address: AddressNestedOneWithoutUserEmbeddedInput
+}
+
+input AddressNestedOneWithoutUserEmbeddedInput {
+  street: StringInput
 }
 
 input UserUpdateWithWhereUniqueWithoutGroupInput {
@@ -115,13 +136,19 @@ input UserUpdateWithWhereUniqueWithoutGroupInput {
 
 input UserUpdateInput {
   name: StringInput
+  address: AddressNestedOneWithoutUserEmbeddedInput
 }"
 `;
 
 exports[`UpdateOneResolver should generate graphql schema for UpdateOneUserResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Mutation {
@@ -130,10 +157,15 @@ type Mutation {
 
 input UserUpdateInput {
   name: StringInput
+  address: AddressNestedOneWithoutUserEmbeddedInput
 }
 
 input StringInput {
   set: String
+}
+
+input AddressNestedOneWithoutUserEmbeddedInput {
+  street: StringInput
 }
 
 input EntityIdInput {

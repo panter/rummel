@@ -76,6 +76,11 @@ export type CrudFieldProps<Entity = any, GqlInput = any, GqlWhere = any> = {
   ormTypeFn?: ReturnTypeFunc;
   name?: string;
   /**
+   * If set to `true`, the field is an embedded field.
+   * C
+   */
+  isEmbedded?: boolean;
+  /**
    * Schema instructions.
    *  If set to `true`, the field will be hidden from the create operation, so the field cannot be set during creation.
    */

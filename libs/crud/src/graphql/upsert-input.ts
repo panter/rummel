@@ -12,6 +12,7 @@ import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
 import { updateOneRelationInput } from './update-one-relation-input';
 import { CrudInfo, getCrudInfosForType, getTypeName } from './utils';
+import { updateOneEmbeddedInput } from './update-one-embedded-input';
 
 export type UpsertInputName<
   NA extends string,
@@ -80,12 +81,17 @@ export const enumInput = (e: any) => {
   return EnumInput;
 };
 
-const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
+export const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
     return;
   }
   const designType = p.typeFn();
-  if (p.options.isArray) {
+  if (p.crudOptions?.isEmbedded) {
+    return updateOneEmbeddedInput(designType as CrudEntityType<any, string>, {
+      isUpdate: false,
+      parentRef,
+    });
+  } else if (p.options.isArray) {
     const manyDesignType = isArray(designType) ? designType[0] : designType;
     if (manyDesignType === String) {
       return [String];
@@ -148,12 +154,17 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
   }
 };
 
-const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
+export const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
   if (p.isVirtual && !p.crudOptions?.inputResolver) {
     return;
   }
   const designType = p.typeFn();
-  if (p.options.isArray) {
+  if (p.crudOptions?.isEmbedded) {
+    return updateOneEmbeddedInput(designType as CrudEntityType<any, string>, {
+      isUpdate: true,
+      parentRef,
+    });
+  } else if (p.options.isArray) {
     const manyDesignType = isArray(designType) ? designType[0] : designType;
     if (manyDesignType === String) {
       return StringArrayInput;

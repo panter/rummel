@@ -1,7 +1,8 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/postgresql';
+import { Embedded, Entity, PrimaryKey, Property } from '@mikro-orm/postgresql';
 import { Field, ObjectType } from '@nestjs/graphql';
 import { v4 } from 'uuid';
 import { CrudField } from '../../src';
+import { Address } from './address.embeddable';
 
 @Entity()
 @ObjectType()
@@ -16,4 +17,9 @@ export class User {
   @Field()
   @Property()
   name!: string;
+
+  @CrudField({ isEmbedded: true })
+  @Field(() => Address)
+  @Embedded(() => Address)
+  address!: Address;
 }

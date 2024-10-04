@@ -1,9 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`CreateOneResolver should generate graphql schema for CreateOneCompanyResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Company {
@@ -34,9 +39,14 @@ input ConnectRelationInput {
 `;
 
 exports[`CreateOneResolver should generate graphql schema for CreateOneGroupResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Group {
@@ -68,9 +78,14 @@ input ConnectRelationInput {
 `;
 
 exports[`CreateOneResolver should generate graphql schema for CreateOneUserResolver 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Mutation {
@@ -79,5 +94,10 @@ type Mutation {
 
 input UserCreateInput {
   name: String
+  address: AddressNestedOneWithoutUserEmbeddedInput
+}
+
+input AddressNestedOneWithoutUserEmbeddedInput {
+  street: String
 }"
 `;

@@ -1,9 +1,14 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`ObjectRelationResolver should generate relation resolvers graphql schema 1`] = `
-"type User {
+"type Address {
+  street: String!
+}
+
+type User {
   id: String!
   name: String!
+  address: Address!
 }
 
 type Group {
@@ -21,6 +26,7 @@ input UserWhereInput {
   NOT: [UserWhereInput!]
   id: StringFilter
   name: StringFilter
+  address: AddressOneRelationFilter
 }
 
 input StringFilter {
@@ -42,14 +48,33 @@ enum SringQueryMode {
   insensitive
 }
 
+input AddressOneRelationFilter {
+  AND: AddressWhereInput
+  OR: AddressWhereInput
+  NOT: AddressWhereInput
+  street: StringFilter
+}
+
+input AddressWhereInput {
+  AND: [AddressWhereInput!]
+  OR: [AddressWhereInput!]
+  NOT: [AddressWhereInput!]
+  street: StringFilter
+}
+
 input UserOrderByInput {
   id: SortOrder
   name: SortOrder
+  address: AddressOrderByInput
 }
 
 enum SortOrder {
   asc
   desc
+}
+
+input AddressOrderByInput {
+  street: SortOrder
 }
 
 type Company {
