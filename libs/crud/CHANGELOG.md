@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.5
+
+### Patch Changes
+
+- d19840f: Export AuthenticatedUser so it can be overwritten
+
 ## 0.2.4
 
 ### Patch Changes
