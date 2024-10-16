@@ -13,3 +13,5 @@ export * from './gql-upsert-input-to-mikro-orm';
 export * from './generic-types';
 export * from './crud-field.decorator';
 export * from './crud-object.decorator';
+export * from './utils';
+export * from './types';
