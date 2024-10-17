@@ -2,7 +2,7 @@ import { Field, Float, InputType, TypeMetadataStorage } from '@nestjs/graphql';
 import { GraphQLJSON } from 'graphql-scalars';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 import { isArray, uniqBy } from 'lodash';
-import { CrudGqlType } from '../'; // CrudGqlType needs to be imported from root index.ts
+import { CrudGqlType, defaultRelationModifier } from '../'; // CrudGqlType needs to be imported from root index.ts
 import { CrudEntityType } from './crud-types';
 import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
@@ -86,12 +86,20 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
     if (manyDesignType === String) {
       return [String];
     }
-    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
-      parentRef,
-      hideCreate: !p.crudOptions?.relation?.showCreate,
-      hideUpdate: !p.crudOptions?.relation?.showUpdate,
-      parentProperty: p.name,
-    });
+    return manyRelationInput(
+      manyDesignType as CrudEntityType<any, string>,
+      false,
+      {
+        parentRef,
+        hideDisconnect: true,
+        hideUpdate: true,
+        hideCreate:
+          p.crudOptions?.relation?.showCreate !== undefined
+            ? p.crudOptions?.relation?.showCreate
+            : defaultRelationModifier(),
+        parentProperty: p.name,
+      },
+    );
   } else if ((designType as any).name === 'String') {
     return String;
   } else if ((designType as any).name === 'Boolean') {
@@ -115,11 +123,14 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
     // return String; // TODO workaround for enums
     return designType;
   } else {
-    return updateOneRelationInput(designType as CrudEntityType, {
+    return updateOneRelationInput(designType as CrudEntityType, false, {
       parentRef,
       hideUpdate: true,
       hideDisconnect: true,
-      hideCreate: !p.crudOptions?.relation?.showCreate,
+      hideCreate:
+        p.crudOptions?.relation?.showCreate !== undefined
+          ? p.crudOptions?.relation?.showCreate
+          : defaultRelationModifier(),
       parentProperty: p.name,
     });
   }
@@ -136,12 +147,23 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
       return StringArrayInput;
     }
 
-    return manyRelationInput(manyDesignType as CrudEntityType<any, string>, {
-      parentRef,
-      hideCreate: !p.crudOptions?.relation?.showCreate,
-      hideUpdate: !p.crudOptions?.relation?.showUpdate,
-      parentProperty: p.name,
-    });
+    return manyRelationInput(
+      manyDesignType as CrudEntityType<any, string>,
+      true,
+      {
+        parentRef,
+        hideCreate:
+          p.crudOptions?.relation?.showCreate !== undefined
+            ? p.crudOptions?.relation?.showCreate
+            : defaultRelationModifier(),
+        hideUpdate:
+          p.crudOptions?.relation?.showUpdate !== undefined
+            ? p.crudOptions?.relation?.showUpdate
+            : defaultRelationModifier(),
+        hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+        parentProperty: p.name,
+      },
+    );
   } else if ((designType as any).name === 'String') {
     return StringInput;
   } else if ((designType as any).name === 'Boolean') {
@@ -165,21 +187,42 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
     return enumInput(designType);
   } else {
     if (isArray(designType)) {
-      return manyRelationInput(designType[0] as CrudEntityType<any, string>, {
-        parentRef,
-        hideCreate: !p.crudOptions?.relation?.showCreate,
-        hideUpdate: !p.crudOptions?.relation?.showUpdate,
-        parentProperty: p.name,
-      });
+      return manyRelationInput(
+        designType[0] as CrudEntityType<any, string>,
+        true,
+        {
+          parentRef,
+          hideCreate:
+            p.crudOptions?.relation?.showCreate !== undefined
+              ? p.crudOptions?.relation?.showCreate
+              : defaultRelationModifier(),
+          hideUpdate:
+            p.crudOptions?.relation?.showUpdate !== undefined
+              ? p.crudOptions?.relation?.showUpdate
+              : defaultRelationModifier(),
+          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          parentProperty: p.name,
+        },
+      );
     } else {
-      return updateOneRelationInput(designType as CrudEntityType<any, string>, {
-        parentRef,
-        hideCreate: !p.crudOptions?.relation?.showCreate,
-        hideUpdate: !p.crudOptions?.relation?.showUpdate,
-        hideConnect: p.crudOptions?.relation?.hideConnect,
-        hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
-        parentProperty: p.name,
-      });
+      return updateOneRelationInput(
+        designType as CrudEntityType<any, string>,
+        true,
+        {
+          parentRef,
+          hideCreate:
+            p.crudOptions?.relation?.showCreate !== undefined
+              ? p.crudOptions?.relation?.showCreate
+              : defaultRelationModifier(),
+          hideUpdate:
+            p.crudOptions?.relation?.showUpdate !== undefined
+              ? p.crudOptions?.relation?.showUpdate
+              : defaultRelationModifier(),
+          hideConnect: p.crudOptions?.relation?.hideConnect,
+          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          parentProperty: p.name,
+        },
+      );
     }
   }
 };
