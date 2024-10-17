@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.6
+
+### Patch Changes
+
+- 121caea: Default crud relation modifiers
+
 ## 0.2.5
 
 ### Patch Changes
