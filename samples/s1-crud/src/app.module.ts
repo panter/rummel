@@ -55,6 +55,7 @@ import mikroOrmConfig from '../mikro-orm.config';
     AuthenticationModule,
     AuthorizationModule.forRootAsync({ useFactory: async () => ({}) }),
     CrudModule.forRootAsync<UserAuthority>({
+      defaultRelationModifier: true,
       useFactory: () => {
         return {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars

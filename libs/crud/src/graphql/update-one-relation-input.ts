@@ -33,6 +33,7 @@ const operationsName = (options?: {
 };
 export const updateOneRelationInput = <T, NA extends string>(
   classRef: CrudEntityType<T, NA>,
+  isUpdate: boolean,
   options?: {
     parentRef: CrudEntityType;
     hideConnect?: boolean;
@@ -46,10 +47,11 @@ export const updateOneRelationInput = <T, NA extends string>(
   const withoutTypeName = options?.parentRef
     ? `Without${getTypeName(options?.parentRef)}`
     : '';
+  const type = isUpdate ? 'Update' : 'Create';
 
   const name = `${typeName}${operationsName(
     options,
-  )}NestedOne${withoutTypeName}Input`;
+  )}NestedOne${withoutTypeName}${type}Input`;
 
   if (typesCache[name]) {
     return typesCache[name];

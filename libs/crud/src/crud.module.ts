@@ -8,21 +8,28 @@ import { CrudEntityServiceFactory } from './service/crud-entity-service.factory'
 import { CrudEntityService } from '.';
 
 export interface CrudModuleOptions<T> {
+  defaultRelationModifier?: boolean;
   authorizeCallback?: CrudAuthorizeCallback<T>;
   auditCallback?: CrudAuditCallback<T>;
 }
 
 export type CrudModuleAsyncOptions<T> = ModuleAsyncOptions<
   CrudModuleOptions<T>
->;
+> & { defaultRelationModifier?: boolean };
+
+let relationModifier: boolean | undefined = undefined;
+
+export const defaultRelationModifier = () => relationModifier;
 
 @Module({})
 export class CrudModule implements OnModuleInit {
   static async forRootAsync<T>({
+    defaultRelationModifier,
     inject,
     imports,
     useFactory,
   }: CrudModuleAsyncOptions<T>): Promise<DynamicModule> {
+    relationModifier = defaultRelationModifier;
     return {
       module: CrudModule,
       imports: [...(imports || []), ConfigModule, DiscoveryModule],

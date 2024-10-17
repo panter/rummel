@@ -9,10 +9,12 @@ import { getTypeName } from './utils';
 // CRO TODO: hideReference, hideDisconnect
 export const manyRelationInput = <T, NA extends string>(
   classRef: CrudEntityType<T, NA>,
+  isUpdate: boolean,
   options?: {
     parentRef: CrudEntityType;
     hideCreate?: boolean;
     hideUpdate?: boolean;
+    hideDisconnect?: boolean;
     parentProperty?: string;
   },
 ) => {
@@ -28,7 +30,9 @@ export const manyRelationInput = <T, NA extends string>(
         : !options?.hideUpdate
           ? 'ConnectUpdate'
           : 'Connect';
-  const name = `${typeName}${operationsName}NestedMany${withoutTypeName}Input`;
+
+  const type = isUpdate ? 'Update' : 'Create';
+  const name = `${typeName}${operationsName}NestedMany${withoutTypeName}${type}Input`;
 
   if (typesCache[name]) {
     return typesCache[name];
@@ -40,7 +44,6 @@ export const manyRelationInput = <T, NA extends string>(
     @Field(() => [ConnectRelationInput], { nullable: true })
     connect?: ConnectRelationInput[];
 
-    @Field(() => [EntityIdInput], { nullable: true })
     disconnect?: EntityIdInput[];
 
     create?: any;
@@ -69,6 +72,14 @@ export const manyRelationInput = <T, NA extends string>(
     Field(() => [UpdateInputType], { nullable: true })(
       RelationInputArgsType.prototype,
       'update',
+    );
+  }
+
+  if (!options?.hideDisconnect) {
+    // call createInput after adding to cache because of recursive call
+    Field(() => [EntityIdInput], { nullable: true })(
+      RelationInputArgsType.prototype,
+      'disconnect',
     );
   }
   return RelationInputArgsType;
