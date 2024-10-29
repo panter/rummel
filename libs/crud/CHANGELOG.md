@@ -1,5 +1,12 @@
 # @panter/crud
 
+## 0.2.8
+
+### Patch Changes
+
+- 31967b3: Export UpdateOneResolverContext and fix createOne override of resolveResponse
+- 5548113: Update patch version
+
 ## 0.2.6
 
 ### Patch Changes
