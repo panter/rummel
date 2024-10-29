@@ -25,7 +25,7 @@ import { AuthenticatedUser } from '../types';
 import { upsertInput, UpsertInputName } from '../upsert-input';
 import { getCrudInfosForType } from '../utils';
 
-type UpdateOneResolverContext<T, D> = {
+export type UpdateOneResolverContext<T, D> = {
   classRef: Type<T>;
   info: GraphQLResolveInfo;
   currentUser?: AuthenticatedUser | null | undefined;
@@ -193,6 +193,7 @@ function AbstractUpdateOneService<
 
         return await this.resolveResponse(context, entity, data);
       }
+      //TODO: should we throw an error here?
     }
   }
 

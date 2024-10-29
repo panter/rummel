@@ -12,10 +12,10 @@ import {
   CrudAuditCallback,
   CrudAuthorizeCallback,
   CrudEntityServiceFactory,
-  ICrudEntityService,
-  OrmData,
   CrudEntityType,
   CrudGqlType,
+  ICrudEntityService,
+  OrmData,
 } from '../../';
 import { CrudResource } from '../../service/crud-resource.decorator';
 import { gqlUpsertInputToOrm } from '../gql-upsert-input-to-mikro-orm';
@@ -181,8 +181,9 @@ function AbstractCreateOneService<
             refresh: true,
           },
         );
-        return entity;
+        return this.resolveResponse(context, entity, data);
       }
+      //TODO, should we throw an error if entity is not created?
       return await this.resolveResponse(context, entity, data);
     }
   }
