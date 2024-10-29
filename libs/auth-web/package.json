@@ -1,0 +1,27 @@
+{
+  "name": "@panter/auth-web",
+  "version": "0.0.1",
+  "license": "MIT",
+  "main": "src/index.ts",
+  "scripts": {
+    "clean": "rimraf \"dist\"",
+    "lint": "eslint \"**/*.ts*\"",
+    "lint:type-check": "tsc --noEmit"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@rummel/eslint-config-custom": "*",
+    "@rummel/tsconfig": "*",
+    "eslint": "8.57.0",
+    "jest": "^29.7.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "react": "18",
+    "react-hook-form": "7"
+  }
+}
