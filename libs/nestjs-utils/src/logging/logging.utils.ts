@@ -3,14 +3,13 @@ import { Logger as BaseLogger } from '@nestjs/common/services/logger.service';
 import { Module } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ModuleInitializationException } from '../exceptions/module-initialization-exception';
-import { PinoLoggerModule } from './pino-logger.module';
 
 /**
  * Create custom logger to use it during the bootstrap process and unhandled errors.
  */
-export async function createLogger() {
+export async function createLogger(LoggerModule: any) {
   @Module({
-    imports: [PinoLoggerModule],
+    imports: [LoggerModule],
   })
   class TempModule {}
 
