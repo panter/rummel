@@ -1,5 +1,11 @@
 # @panter/nestjs-utils
 
+## 0.0.7
+
+### Patch Changes
+
+- 5e195ab: backport logging functionality from NNT
+
 ## 0.0.6
 
 ### Patch Changes
