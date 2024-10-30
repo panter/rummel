@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.9
+
+### Patch Changes
+
+- a638443: migrate DeleteOneResolver to composable pattern
+
 ## 0.2.8
 
 ### Patch Changes
