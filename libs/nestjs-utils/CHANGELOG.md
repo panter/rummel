@@ -1,5 +1,11 @@
 # @panter/nestjs-utils
 
+## 0.0.8
+
+### Patch Changes
+
+- 09d6c78: fix error where PinoLoggerModule was not initialized
+
 ## 0.0.7
 
 ### Patch Changes
