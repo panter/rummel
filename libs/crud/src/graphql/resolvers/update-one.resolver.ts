@@ -98,11 +98,11 @@ function AbstractUpdateOneService<
 
     /**
      * Override this method to resolve the response before returning it.
-     * This method is called after the entity is update, persisted and populated.
+     * This method is called after the entity is updated, persisted and populated.
      *
-     * @param context
+     * @param _context
      * @param result - the created entity
-     * @param ormData - the data used to create the entity
+     * @param _ormData - the data used to update the entity
      */
     async resolveResponse<T>(
       _context: UpdateOneResolverContext<T, D>,
@@ -193,7 +193,7 @@ function AbstractUpdateOneService<
 
         return await this.resolveResponse(context, entity, data);
       }
-      //TODO: should we throw an error here?
+      //TODO: should we throw an error here or return?
     }
   }
 
