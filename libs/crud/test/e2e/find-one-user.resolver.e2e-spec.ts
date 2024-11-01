@@ -40,6 +40,7 @@ describe('FindOneUser', () => {
 
     const user = em.create(User, {
       name: 'user',
+      address: { street: 'street' },
     });
     await em.persistAndFlush(user);
     em.clear();

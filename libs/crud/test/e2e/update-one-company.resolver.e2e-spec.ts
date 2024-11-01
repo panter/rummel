@@ -9,6 +9,8 @@ import {
   TEST_TIMEOUT,
   TestContext,
 } from './utils';
+import { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import { pgContainer } from './test-setup';
 
 jest.useRealTimers();
 
@@ -41,16 +43,22 @@ describe('UpdateOneCompany', () => {
       const httpServer = context.app.getHttpServer();
       const em = context.orm.em.fork();
 
-      const gor = em.create(User, { name: 'gor' });
+      const gor = em.create(User, {
+        name: 'gor',
+        address: { street: 'street' },
+      });
       await em.persistAndFlush(gor);
 
       const panter = em.create(Company, {
         name: 'panter',
         description: 'yeah',
-        founder: { name: 'cro' },
+        founder: { name: 'cro', address: { street: 'street' } },
         cto: gor,
       });
-      const psc = em.create(User, { name: 'psc' });
+      const psc = em.create(User, {
+        name: 'psc',
+        address: { street: 'street' },
+      });
       await em.persistAndFlush(panter);
       await em.persistAndFlush(psc);
 

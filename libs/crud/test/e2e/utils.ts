@@ -7,10 +7,6 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { INestApplication, Provider } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { Test } from '@nestjs/testing';
-import {
-  PostgreSqlContainer,
-  StartedPostgreSqlContainer,
-} from '@testcontainers/postgresql';
 import { v4 } from 'uuid';
 import { CrudModule } from '../../src';
 import { Company } from '../fixtures/company.entity';

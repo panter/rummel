@@ -41,8 +41,14 @@ describe('CreateOneGroup', () => {
       const httpServer = context.app.getHttpServer();
       const em = context.orm.em.fork();
 
-      const cro = em.create(User, { name: 'cro' });
-      const bbl = em.create(User, { name: 'bbl' });
+      const cro = em.create(User, {
+        name: 'cro',
+        address: { street: 'street' },
+      });
+      const bbl = em.create(User, {
+        name: 'bbl',
+        address: { street: 'street' },
+      });
       await em.persistAndFlush(cro);
       await em.persistAndFlush(bbl);
 

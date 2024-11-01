@@ -41,9 +41,11 @@ describe('UpdateOneGroup', () => {
 
     const gor = em.create(User, {
       name: 'gor',
+      address: { street: 'street' },
     });
     const csp = em.create(User, {
       name: 'csp',
+      address: { street: 'street' },
     });
     await em.persistAndFlush(gor);
     await em.persistAndFlush(csp);
@@ -51,15 +53,20 @@ describe('UpdateOneGroup', () => {
     const manul = em.create(Group, {
       name: 'manul',
       description: 'yeah',
-      founders: [{ name: 'cro' }, { name: 'bbl' }],
+      founders: [
+        { name: 'cro', address: { street: 'street' } },
+        { name: 'bbl', address: { street: 'street' } },
+      ],
       coordinator: [csp],
       finance: [gor],
     });
     const psc = em.create(User, {
       name: 'psc',
+      address: { street: 'street' },
     });
     const maw = em.create(User, {
       name: 'maw',
+      address: { street: 'street' },
     });
     await em.persistAndFlush(manul);
     await em.persistAndFlush(psc);

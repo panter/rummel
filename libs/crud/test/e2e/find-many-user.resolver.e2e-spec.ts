@@ -42,9 +42,11 @@ describe('FindManyUser', () => {
 
       const user1 = em.create(User, {
         name: 'user1',
+        address: { street: 'street' },
       });
       const user2 = em.create(User, {
         name: 'user2',
+        address: { street: 'street' },
       });
       await em.persistAndFlush(user1);
       await em.persistAndFlush(user2);
