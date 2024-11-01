@@ -288,7 +288,9 @@ export type PrismaInputSchemaProperty<
                 ModelSource,
                 Key
               >
-            : never;
+            : Input extends object
+              ? PropertyMapper<InputCopy, ModelSource, Key>
+              : never;
 
 /**
  * Represents a type that defines the structure and mapping behavior of a Prisma input schema.

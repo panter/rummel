@@ -528,3 +528,33 @@ describe('types: ManyReferenceMapper -> autoManyReference', () => {
     expect(schema).toBeDefined();
   });
 });
+
+describe('types: EmbeddedProperties', () => {
+  it('is should allow to map embedded objects', () => {
+    type Embedded = {
+      street?: string | null;
+    };
+    const schema: PrismaInputSchema<
+      {
+        address?: Embedded | null;
+      },
+      { address?: Embedded | null }
+    > = {
+      mapper: object(),
+      properties: {
+        address: {
+          pick: (m) => m?.address,
+          map: () => {
+            // use mapModelToInput with the schema of the embedded object
+            return {
+              street: 'street',
+            };
+          },
+          __typename: 'Property',
+        },
+      },
+    };
+
+    expect(schema).toBeDefined();
+  });
+});

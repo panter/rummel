@@ -48,7 +48,6 @@ export type CrudInfo = {
   crudOptions?: CrudFieldOptions;
   classRef: Type<unknown>;
   isVirtual?: boolean;
-  isEmbedded?: boolean;
   // target: Function;
 };
 

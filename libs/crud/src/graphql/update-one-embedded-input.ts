@@ -13,11 +13,8 @@ export const updateOneEmbeddedInput = <T, NA extends string>(
   },
 ) => {
   const typeName = getTypeName(classRef);
-  const withoutTypeName = options?.parentRef
-    ? `Without${getTypeName(options?.parentRef)}`
-    : '';
 
-  const name = `${typeName}NestedOne${withoutTypeName}EmbeddedInput`;
+  const name = `${typeName}EmbeddedInput`;
 
   if (typesCache[name]) {
     return typesCache[name];

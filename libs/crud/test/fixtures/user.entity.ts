@@ -21,5 +21,5 @@ export class User {
   @CrudField({ isEmbedded: true })
   @Field(() => Address)
   @Embedded(() => Address, { nullable: true })
-  address!: Address;
+  address?: Address;
 }

@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CreateOneUser should create user 1`] = `
+exports[`UpdateOneUser should update user 1`] = `
 {
   "address": {
     "street": "my street",
   },
-  "name": "bbl",
+  "name": "my name",
 }
 `;

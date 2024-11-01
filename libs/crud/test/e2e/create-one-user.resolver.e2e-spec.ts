@@ -44,9 +44,12 @@ describe('CreateOneUser', () => {
           mutation CreateOneUser($data: UserCreateInput) {
             createOneUser(data: $data) {
               name
+              address {
+                street
+              }
             }
           }`,
-        variables: { data: { name: 'bbl' } },
+        variables: { data: { name: 'bbl', address: { street: 'my street' } } },
         operationName: 'CreateOneUser',
       })
       .expect(200)

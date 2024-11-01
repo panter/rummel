@@ -48,6 +48,16 @@ export const gqlUpsertKeyInputToOrm = async <
     console.error(`No crud info found for ${key.toString()}`);
     return;
   }
+  if (crudInfo.crudOptions?.isEmbedded) {
+    const newType = crudInfo.typeFn() as any;
+    ormData[key] = await gqlUpsertInputToOrm(gqlInput[key], newType, {
+      em,
+      currentUser,
+      rootOrmData,
+    });
+
+    return ormData;
+  }
 
   // TODO: this should be in the crud info
   let isRelation: boolean;

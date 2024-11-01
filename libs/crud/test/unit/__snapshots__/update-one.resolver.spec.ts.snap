@@ -49,16 +49,16 @@ input UserCrUpOneWithoutCompanyUpdateInput {
 
 input UserCreateWithoutCompanyInput {
   name: String
-  address: AddressNestedOneWithoutUserEmbeddedInput
+  address: AddressEmbeddedInput
 }
 
-input AddressNestedOneWithoutUserEmbeddedInput {
+input AddressEmbeddedInput {
   street: StringInput
 }
 
 input UserUpdateWithoutCompanyInput {
   name: StringInput
-  address: AddressNestedOneWithoutUserEmbeddedInput
+  address: AddressEmbeddedInput
 }
 
 input EntityIdInput {
@@ -122,10 +122,10 @@ input UserCrudManyWithoutGroupUpdateInput {
 
 input UserCreateWithoutGroupInput {
   name: String
-  address: AddressNestedOneWithoutUserEmbeddedInput
+  address: AddressEmbeddedInput
 }
 
-input AddressNestedOneWithoutUserEmbeddedInput {
+input AddressEmbeddedInput {
   street: StringInput
 }
 
@@ -136,7 +136,7 @@ input UserUpdateWithWhereUniqueWithoutGroupInput {
 
 input UserUpdateInput {
   name: StringInput
-  address: AddressNestedOneWithoutUserEmbeddedInput
+  address: AddressEmbeddedInput
 }"
 `;
 
@@ -157,14 +157,14 @@ type Mutation {
 
 input UserUpdateInput {
   name: StringInput
-  address: AddressNestedOneWithoutUserEmbeddedInput
+  address: AddressEmbeddedInput
 }
 
 input StringInput {
   set: String
 }
 
-input AddressNestedOneWithoutUserEmbeddedInput {
+input AddressEmbeddedInput {
   street: StringInput
 }
 
