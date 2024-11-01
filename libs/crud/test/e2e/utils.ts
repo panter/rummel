@@ -1,35 +1,36 @@
+import { MikroORM } from '@mikro-orm/core';
+import { Migrator } from '@mikro-orm/migrations';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { PostgreSqlDriver } from '@mikro-orm/postgresql';
+import { SeedManager } from '@mikro-orm/seeder';
+import { ApolloDriver } from '@nestjs/apollo';
+import { INestApplication, Provider } from '@nestjs/common';
+import { GraphQLModule } from '@nestjs/graphql';
+import { Test } from '@nestjs/testing';
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from '@testcontainers/postgresql';
-import { Test } from '@nestjs/testing';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { User } from '../fixtures/user.entity';
-import { GraphQLModule } from '@nestjs/graphql';
-import { ApolloDriver } from '@nestjs/apollo';
-import { PostgreSqlDriver } from '@mikro-orm/postgresql';
-import { INestApplication, Provider } from '@nestjs/common';
-import { Group } from '../fixtures/group.entity';
-import { Company } from '../fixtures/company.entity';
+import { v4 } from 'uuid';
 import { CrudModule } from '../../src';
-import { Migrator } from '@mikro-orm/migrations';
-import { SeedManager } from '@mikro-orm/seeder';
-import { MikroORM } from '@mikro-orm/core';
+import { Company } from '../fixtures/company.entity';
+import { Group } from '../fixtures/group.entity';
+import { User } from '../fixtures/user.entity';
 
-export const TEST_TIMEOUT = 60000;
+export const TEST_TIMEOUT = 20000;
 
 export interface TestContext {
   app: INestApplication;
-  pgContainer: StartedPostgreSqlContainer;
   orm: MikroORM;
 }
 
-export const beforeAllCallback = async (
+export const beforeEachCallback = async (
   providers: Provider[],
 ): Promise<TestContext> => {
-  const pgContainer = await new PostgreSqlContainer()
-    .withStartupTimeout(TEST_TIMEOUT)
-    .start();
+  const schema = v4();
+  // create schema
+  const pgContainer = global.pgContainer;
+  await pgContainer.exec(`CREATE SCHEMA IF NOT EXISTS ${schema}`);
   const fixture = await Test.createTestingModule({
     imports: [
       MikroOrmModule.forRoot({
@@ -39,11 +40,12 @@ export const beforeAllCallback = async (
         user: pgContainer.getUsername(),
         password: pgContainer.getPassword(),
         dbName: pgContainer.getDatabase(),
+        schema,
         extensions: [Migrator, SeedManager],
         entities: [User, Group, Company],
         logger: (i) => i,
         migrations: {
-          path: 'test/e2e/migrations',
+          path: `test/e2e/migrations/${schema}`,
           snapshot: false,
         },
       }),
@@ -74,11 +76,11 @@ export const beforeAllCallback = async (
   }
 
   await app.init();
-  return { app, pgContainer, orm: orm as any };
+  return { app, orm: orm as any };
 };
 
-export const afterAllCallback = async (context: TestContext) => {
+export const afterEachCallback = async (context: TestContext) => {
+  await context?.orm.getSchemaGenerator().dropSchema();
   await context?.orm?.close(true);
   await context?.app?.close();
-  await context?.pgContainer?.stop();
 };

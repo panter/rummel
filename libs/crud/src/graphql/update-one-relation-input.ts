@@ -5,7 +5,7 @@ import { typesCache } from './types-cache';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
 
-const operationsName = (options?: {
+export const operationsName = (options?: {
   hideConnect?: boolean;
   hideCreate?: boolean;
   hideUpdate?: boolean;
@@ -18,23 +18,28 @@ const operationsName = (options?: {
     !options?.hideUpdate &&
     !options?.hideDisconnect
   ) {
-    return name;
-  } else if (!options?.hideConnect) {
-    name += 'Connect';
-  } else if (!options?.hideCreate) {
-    name += 'Create';
-  } else if (!options?.hideUpdate) {
-    name += 'Update';
-  } else if (!options?.hideDisconnect) {
-    name += 'Disconnect';
+    return 'Crud';
+  }
+  if (!options?.hideConnect) {
+    name += 'Co';
+  }
+  if (!options?.hideCreate) {
+    name += 'Cr';
+  }
+  if (!options?.hideUpdate) {
+    name += 'Up';
+  }
+  if (!options?.hideDisconnect) {
+    name += 'Di';
   }
 
   return name;
 };
+
 export const updateOneRelationInput = <T, NA extends string>(
   classRef: CrudEntityType<T, NA>,
   isUpdate: boolean,
-  options?: {
+  options: {
     parentRef: CrudEntityType;
     hideConnect?: boolean;
     hideCreate?: boolean;
@@ -43,15 +48,22 @@ export const updateOneRelationInput = <T, NA extends string>(
     parentProperty?: string;
   },
 ) => {
+  const operations = operationsName({
+    ...options,
+    hideUpdate: isUpdate ? options.hideUpdate : true,
+  });
+
+  if (operations === '') {
+    return undefined;
+  }
+
   const typeName = getTypeName(classRef);
-  const withoutTypeName = options?.parentRef
-    ? `Without${getTypeName(options?.parentRef)}`
+  const withoutTypeName = options.parentRef
+    ? `Without${getTypeName(options.parentRef)}`
     : '';
   const type = isUpdate ? 'Update' : 'Create';
 
-  const name = `${typeName}${operationsName(
-    options,
-  )}NestedOne${withoutTypeName}${type}Input`;
+  const name = `${typeName}${operations}One${withoutTypeName}${type}Input`;
 
   if (typesCache[name]) {
     return typesCache[name];
@@ -71,24 +83,24 @@ export const updateOneRelationInput = <T, NA extends string>(
 
   typesCache[name] = RelationInputArgsType;
 
-  if (!options?.hideConnect) {
+  if (!options.hideConnect) {
     Field(() => ConnectRelationInput, { nullable: true })(
       RelationInputArgsType.prototype,
       'connect',
     );
   }
 
-  if (!options?.hideDisconnect) {
+  if (!options.hideDisconnect) {
     Field(() => Boolean, { nullable: true })(
       RelationInputArgsType.prototype,
       'disconnect',
     );
   }
 
-  if (!options?.hideCreate) {
+  if (!options.hideCreate) {
     // call upsertInput after adding to cache because of recursive call
     const CreateInputType: any = upsertInput(classRef, {
-      ignoreType: options?.parentRef,
+      ignoreType: options.parentRef,
     });
     Field(() => CreateInputType, { nullable: true })(
       RelationInputArgsType.prototype,
@@ -96,10 +108,10 @@ export const updateOneRelationInput = <T, NA extends string>(
     );
   }
 
-  if (!options?.hideUpdate) {
+  if (isUpdate && !options.hideUpdate) {
     // call upsertInput after adding to cache because of recursive call
     const UpdateInputType: any = upsertInput(classRef, {
-      ignoreType: options?.parentRef,
+      ignoreType: options.parentRef,
       isUpdate: true,
     });
     Field(() => UpdateInputType, { nullable: true })(

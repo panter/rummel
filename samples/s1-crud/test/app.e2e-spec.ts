@@ -1,16 +1,16 @@
 import * as request from 'supertest';
-import { TestContext, afterAllCallback, beforeAllCallback } from './utils';
+import { TestContext, afterEachCallback, beforeEachCallback } from './utils';
 import { FindOneUserResolver } from '../src/app.resolver';
 
 describe('AppController (e2e)', () => {
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([FindOneUserResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([FindOneUserResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
   it('/ (GET)', () => {

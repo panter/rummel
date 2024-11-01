@@ -291,8 +291,7 @@ describe('manyReference()', () => {
   });
 
   it("should ingore the connect if the property id is not present in the value's object", () => {
-    const warnSpy = jest.spyOn(console, 'warn');
-    warnSpy.mockImplementation(() => '');
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     const resultCreate = manyReference<
       { connect: { id: string }[] },
@@ -469,6 +468,7 @@ describe('object()', () => {
   });
 
   it('should use relation()', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const simpleCreateSchema = organisationCreateMapper;
     expect(simpleCreateSchema).not.toBeUndefined();
 
@@ -483,6 +483,9 @@ describe('object()', () => {
     expect(resultCreate).toEqual({
       simple: { create: { name: 'Org1' } },
     });
+
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it('should use relation() als for "*Id" properties', () => {
@@ -501,6 +504,7 @@ describe('object()', () => {
   });
 
   it('should use manyRelation()', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const personCreateSchema = personSchema.createSchema;
     expect(personCreateSchema).not.toBeUndefined();
 
@@ -512,9 +516,13 @@ describe('object()', () => {
     expect(resultCreate).toEqual({
       addresses: { create: [{ address: 'Org1' }] },
     });
+
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it('should use reference()', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const personCreateSchema = personSchema.createSchema;
     expect(personCreateSchema).not.toBeUndefined();
 
@@ -525,11 +533,15 @@ describe('object()', () => {
         organisation: { id: '1' },
       },
     });
+
     expect(resultCreate).toEqual({
       organisation: {
         connect: { id: '1' },
       },
     });
+
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it('should use manyReference()', () => {

@@ -77,6 +77,6 @@ type Query {
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }"
 `;

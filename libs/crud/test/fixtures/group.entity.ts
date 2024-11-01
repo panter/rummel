@@ -29,19 +29,32 @@ export class Group {
   @Property()
   description!: string;
 
-  @CrudField({ hideUpdate: true })
+  @CrudField({
+    hideCreate: false,
+    hideUpdate: true,
+    relation: { hideConnect: false },
+  })
   @Field(() => [User])
   @ManyToMany({ entity: () => User })
   founders = new Collection<User>(this);
 
-  @CrudField({ hideCreate: true })
+  @CrudField({
+    hideCreate: true,
+    relation: { hideConnect: false, hideDisconnect: false },
+  })
   @Field(() => [User], { nullable: true })
   @ManyToMany({ entity: () => User, nullable: true })
   coordinator = new Collection<User>(this);
 
   @CrudField({
     hideCreate: true,
-    relation: { showCreate: true, showUpdate: true },
+    hideUpdate: false,
+    relation: {
+      showCreate: true,
+      showUpdate: true,
+      hideConnect: false,
+      hideDisconnect: false,
+    },
   })
   @Field(() => [User], { nullable: true })
   @ManyToMany({ entity: () => User, nullable: true })

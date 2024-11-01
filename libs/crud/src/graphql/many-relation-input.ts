@@ -5,34 +5,37 @@ import { typesCache } from './types-cache';
 import { updateManyEntityInput } from './update-many-entity-input';
 import { upsertInput } from './upsert-input';
 import { getTypeName } from './utils';
+import { operationsName } from './update-one-relation-input';
 
 // CRO TODO: hideReference, hideDisconnect
 export const manyRelationInput = <T, NA extends string>(
   classRef: CrudEntityType<T, NA>,
   isUpdate: boolean,
-  options?: {
+  options: {
     parentRef: CrudEntityType;
+    hideConnect?: boolean;
     hideCreate?: boolean;
     hideUpdate?: boolean;
     hideDisconnect?: boolean;
     parentProperty?: string;
   },
 ) => {
+  const operations = operationsName({
+    ...options,
+    hideUpdate: isUpdate ? options.hideUpdate : true,
+  });
+
+  if (operations === '') {
+    return undefined;
+  }
+
   const typeName = getTypeName(classRef);
-  const withoutTypeName = options?.parentRef
-    ? `Without${getTypeName(options?.parentRef)}`
+  const withoutTypeName = options.parentRef
+    ? `Without${getTypeName(options.parentRef)}`
     : '';
-  const operationsName =
-    !options?.hideCreate && !options?.hideUpdate
-      ? 'ConnectCreateUpdate'
-      : !options?.hideCreate
-        ? 'ConnectCreate'
-        : !options?.hideUpdate
-          ? 'ConnectUpdate'
-          : 'Connect';
 
   const type = isUpdate ? 'Update' : 'Create';
-  const name = `${typeName}${operationsName}NestedMany${withoutTypeName}${type}Input`;
+  const name = `${typeName}${operations}Many${withoutTypeName}${type}Input`;
 
   if (typesCache[name]) {
     return typesCache[name];
@@ -41,7 +44,6 @@ export const manyRelationInput = <T, NA extends string>(
   @ArgsType()
   @InputType(name, { isAbstract: false })
   class RelationInputArgsType {
-    @Field(() => [ConnectRelationInput], { nullable: true })
     connect?: ConnectRelationInput[];
 
     disconnect?: EntityIdInput[];
@@ -53,10 +55,17 @@ export const manyRelationInput = <T, NA extends string>(
 
   typesCache[name] = RelationInputArgsType;
 
-  if (!options?.hideCreate) {
+  if (!options.hideConnect) {
+    Field(() => [ConnectRelationInput], { nullable: true })(
+      RelationInputArgsType.prototype,
+      'connect',
+    );
+  }
+
+  if (!options.hideCreate) {
     // call createInput after adding to cache because of recursive call
     const CreateInputType = upsertInput(classRef, {
-      ignoreType: options?.parentRef,
+      ignoreType: options.parentRef,
     });
     Field(() => [CreateInputType], { nullable: true })(
       RelationInputArgsType.prototype,
@@ -64,10 +73,10 @@ export const manyRelationInput = <T, NA extends string>(
     );
   }
 
-  if (!options?.hideUpdate) {
+  if (isUpdate && !options.hideUpdate) {
     // call createInput after adding to cache because of recursive call
     const UpdateInputType = updateManyEntityInput(classRef, {
-      ignoreType: options?.parentRef,
+      ignoreType: options.parentRef,
     });
     Field(() => [UpdateInputType], { nullable: true })(
       RelationInputArgsType.prototype,
@@ -75,7 +84,7 @@ export const manyRelationInput = <T, NA extends string>(
     );
   }
 
-  if (!options?.hideDisconnect) {
+  if (!options.hideDisconnect) {
     // call createInput after adding to cache because of recursive call
     Field(() => [EntityIdInput], { nullable: true })(
       RelationInputArgsType.prototype,

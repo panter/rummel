@@ -4,10 +4,10 @@ import { UpdateOneResolver } from '../../src';
 import { Company } from '../fixtures/company.entity';
 import { User } from '../fixtures/user.entity';
 import {
+  afterEachCallback,
+  beforeEachCallback,
   TEST_TIMEOUT,
   TestContext,
-  afterAllCallback,
-  beforeAllCallback,
 } from './utils';
 
 jest.useRealTimers();
@@ -24,38 +24,41 @@ export class UpdateOneCompanyResolver extends UpdateOneResolver(Company) {
 
 describe('UpdateOneCompany', () => {
   jest.setTimeout(TEST_TIMEOUT);
+
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([UpdateOneCompanyResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([UpdateOneCompanyResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
-  it('should update company', async () => {
-    const httpServer = context.app.getHttpServer();
-    const em = context.orm.em.fork();
+  it(
+    'should update company',
+    async () => {
+      const httpServer = context.app.getHttpServer();
+      const em = context.orm.em.fork();
 
-    const gor = em.create(User, { name: 'gor' });
-    await em.persistAndFlush(gor);
+      const gor = em.create(User, { name: 'gor' });
+      await em.persistAndFlush(gor);
 
-    const panter = em.create(Company, {
-      name: 'panter',
-      description: 'yeah',
-      founder: { name: 'cro' },
-      cto: gor,
-    });
-    const psc = em.create(User, { name: 'psc' });
-    await em.persistAndFlush(panter);
-    await em.persistAndFlush(psc);
+      const panter = em.create(Company, {
+        name: 'panter',
+        description: 'yeah',
+        founder: { name: 'cro' },
+        cto: gor,
+      });
+      const psc = em.create(User, { name: 'psc' });
+      await em.persistAndFlush(panter);
+      await em.persistAndFlush(psc);
 
-    await request(httpServer)
-      .post(gql)
-      .set('Accept', 'application/json')
-      .send({
-        query: `mutation UpdateOneCompany($data: CompanyUpdateInput, $where: EntityIdInput!) {
+      await request(httpServer)
+        .post(gql)
+        .set('Accept', 'application/json')
+        .send({
+          query: `mutation UpdateOneCompany($data: CompanyUpdateInput, $where: EntityIdInput!) {
             updateOneCompany(where:$where data: $data) {
               name
               description
@@ -70,23 +73,25 @@ describe('UpdateOneCompany', () => {
               }
             }
           }`,
-        variables: {
-          where: { id: panter.id },
-          data: {
-            ceo: {
-              connect: { id: psc.id },
-            },
-            cto: {
-              create: { name: 'rog' },
+          variables: {
+            where: { id: panter.id },
+            data: {
+              ceo: {
+                connect: { id: psc.id },
+              },
+              cto: {
+                create: { name: 'rog' },
+              },
             },
           },
-        },
-        operationName: 'UpdateOneCompany',
-      })
-      .expect(200)
-      .expect((res) => expect(res.error).toBeFalsy())
-      .expect((res) => {
-        expect(res.body.data.updateOneCompany).toMatchSnapshot();
-      });
-  }, 60000);
+          operationName: 'UpdateOneCompany',
+        })
+        .expect(200)
+        .expect((res) => expect(res.error).toBeFalsy())
+        .expect((res) => {
+          expect(res.body.data.updateOneCompany).toMatchSnapshot();
+        });
+    },
+    TEST_TIMEOUT,
+  );
 });

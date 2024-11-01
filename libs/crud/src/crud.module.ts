@@ -17,7 +17,7 @@ export type CrudModuleAsyncOptions<T> = ModuleAsyncOptions<
   CrudModuleOptions<T>
 > & { defaultRelationModifier?: boolean };
 
-let relationModifier: boolean | undefined = undefined;
+let relationModifier: boolean | undefined = true;
 
 export const defaultRelationModifier = () => relationModifier;
 

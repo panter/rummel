@@ -5,8 +5,8 @@ import { User } from '../fixtures/user.entity';
 import {
   TEST_TIMEOUT,
   TestContext,
-  afterAllCallback,
-  beforeAllCallback,
+  afterEachCallback,
+  beforeEachCallback,
 } from './utils';
 
 jest.useRealTimers();
@@ -23,43 +23,52 @@ export class FindOneUserResolver extends FindManyResolver(User) {
 
 describe('FindManyUser', () => {
   jest.setTimeout(TEST_TIMEOUT);
+
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([FindOneUserResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([FindOneUserResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
-  it('should find all users when provided not query', async () => {
-    const httpServer = context.app.getHttpServer();
-    const em = context.orm.em.fork();
+  it(
+    'should find all users when provided not query',
+    async () => {
+      const httpServer = context.app.getHttpServer();
+      const em = context.orm.em.fork();
 
-    const user1 = em.create(User, { name: 'user1' });
-    const user2 = em.create(User, { name: 'user2' });
-    await em.persistAndFlush(user1);
-    await em.persistAndFlush(user2);
+      const user1 = em.create(User, {
+        name: 'user1',
+      });
+      const user2 = em.create(User, {
+        name: 'user2',
+      });
+      await em.persistAndFlush(user1);
+      await em.persistAndFlush(user2);
 
-    em.clear();
+      em.clear();
 
-    await request(httpServer)
-      .post(gql)
-      .set('Accept', 'application/json')
-      .send({
-        query: `
+      await request(httpServer)
+        .post(gql)
+        .set('Accept', 'application/json')
+        .send({
+          query: `
           query FindManyUser {
             users {
               name
             }
           }`,
-        operationName: 'FindManyUser',
-      })
-      .expect(200)
-      .expect((res) => expect(res.error).toBeFalsy())
-      .expect((res) => {
-        expect(res.body.data.users).toMatchSnapshot();
-      });
-  }, 60000);
+          operationName: 'FindManyUser',
+        })
+        .expect(200)
+        .expect((res) => expect(res.error).toBeFalsy())
+        .expect((res) => {
+          expect(res.body.data.users).toMatchSnapshot();
+        });
+    },
+    TEST_TIMEOUT,
+  );
 });

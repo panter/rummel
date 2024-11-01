@@ -95,7 +95,11 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
         hideUpdate: true,
         hideCreate:
           p.crudOptions?.relation?.showCreate !== undefined
-            ? p.crudOptions?.relation?.showCreate
+            ? !p.crudOptions?.relation?.showCreate
+            : defaultRelationModifier(),
+        hideConnect:
+          p.crudOptions?.relation?.hideConnect !== undefined
+            ? p.crudOptions?.relation?.hideConnect
             : defaultRelationModifier(),
         parentProperty: p.name,
       },
@@ -129,7 +133,11 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
       hideDisconnect: true,
       hideCreate:
         p.crudOptions?.relation?.showCreate !== undefined
-          ? p.crudOptions?.relation?.showCreate
+          ? !p.crudOptions?.relation?.showCreate
+          : defaultRelationModifier(),
+      hideConnect:
+        p.crudOptions?.relation?.hideConnect !== undefined
+          ? p.crudOptions?.relation?.hideConnect
           : defaultRelationModifier(),
       parentProperty: p.name,
     });
@@ -154,13 +162,20 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
         parentRef,
         hideCreate:
           p.crudOptions?.relation?.showCreate !== undefined
-            ? p.crudOptions?.relation?.showCreate
+            ? !p.crudOptions?.relation?.showCreate
             : defaultRelationModifier(),
         hideUpdate:
           p.crudOptions?.relation?.showUpdate !== undefined
-            ? p.crudOptions?.relation?.showUpdate
+            ? !p.crudOptions?.relation?.showUpdate
             : defaultRelationModifier(),
-        hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+        hideDisconnect:
+          p.crudOptions?.relation?.hideDisconnect !== undefined
+            ? p.crudOptions?.relation?.hideDisconnect
+            : defaultRelationModifier(),
+        hideConnect:
+          p.crudOptions?.relation?.hideConnect !== undefined
+            ? p.crudOptions?.relation?.hideConnect
+            : defaultRelationModifier(),
         parentProperty: p.name,
       },
     );
@@ -194,13 +209,20 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
           parentRef,
           hideCreate:
             p.crudOptions?.relation?.showCreate !== undefined
-              ? p.crudOptions?.relation?.showCreate
+              ? !p.crudOptions?.relation?.showCreate
               : defaultRelationModifier(),
           hideUpdate:
             p.crudOptions?.relation?.showUpdate !== undefined
-              ? p.crudOptions?.relation?.showUpdate
+              ? !p.crudOptions?.relation?.showUpdate
               : defaultRelationModifier(),
-          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          hideConnect:
+            p.crudOptions?.relation?.hideConnect !== undefined
+              ? p.crudOptions?.relation?.hideConnect
+              : defaultRelationModifier(),
+          hideDisconnect:
+            p.crudOptions?.relation?.hideDisconnect !== undefined
+              ? p.crudOptions?.relation?.hideDisconnect
+              : defaultRelationModifier(),
           parentProperty: p.name,
         },
       );
@@ -212,14 +234,20 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
           parentRef,
           hideCreate:
             p.crudOptions?.relation?.showCreate !== undefined
-              ? p.crudOptions?.relation?.showCreate
+              ? !p.crudOptions?.relation?.showCreate
               : defaultRelationModifier(),
           hideUpdate:
             p.crudOptions?.relation?.showUpdate !== undefined
-              ? p.crudOptions?.relation?.showUpdate
+              ? !p.crudOptions?.relation?.showUpdate
               : defaultRelationModifier(),
-          hideConnect: p.crudOptions?.relation?.hideConnect,
-          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          hideConnect:
+            p.crudOptions?.relation?.hideConnect !== undefined
+              ? p.crudOptions?.relation?.hideConnect
+              : defaultRelationModifier(),
+          hideDisconnect:
+            p.crudOptions?.relation?.hideDisconnect !== undefined
+              ? p.crudOptions?.relation?.hideDisconnect
+              : defaultRelationModifier(),
           parentProperty: p.name,
         },
       );

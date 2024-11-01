@@ -56,7 +56,10 @@ next-env.d.ts
 cloud_sql_proxy
 
 # turbo
-.turbo
+**/.turbo/*
+!**/.turbo/config.json
+
+## crud test migrations
 /libs/crud/test/e2e/migrations/
 
 # testing

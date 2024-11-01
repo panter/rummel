@@ -7,10 +7,10 @@ exports[`DeleteOneResolver should generate graphql schema for DeleteOneUserResol
 }
 
 type Mutation {
-  deleteOneUser(where: EntityIdInput): User!
+  deleteOneUser(where: EntityIdInput!): User!
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }"
 `;

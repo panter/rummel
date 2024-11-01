@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DeleteOneUser should create user 1`] = `
+exports[`DeleteOneUser should delete user 1`] = `
 {
   "name": "user",
 }

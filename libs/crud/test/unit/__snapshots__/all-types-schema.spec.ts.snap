@@ -152,13 +152,13 @@ type Query {
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }
 
 type Mutation {
   createOneDummy(data: DummyCreateInput): Dummy!
   updateOneDummy(data: DummyUpdateInput, where: EntityIdInput!): Dummy!
-  deleteOneDummy(where: EntityIdInput): Dummy!
+  deleteOneDummy(where: EntityIdInput!): Dummy!
 }
 
 input DummyCreateInput {
@@ -169,35 +169,23 @@ input DummyCreateInput {
   optionalStringProp: String
   boolProp: Boolean
   dateProp: DateTime
-  oneToManyProp: Dummy2ConnectCreateUpdateNestedManyWithoutDummyInput
-  manyToManyProp: Dummy2ConnectCreateUpdateNestedManyWithoutDummyInput
+  oneToManyProp: Dummy2CrManyWithoutDummyCreateInput
+  manyToManyProp: Dummy2CoCrManyWithoutDummyCreateInput
 }
 
-input Dummy2ConnectCreateUpdateNestedManyWithoutDummyInput {
-  connect: [ConnectRelationInput!]
-  disconnect: [EntityIdInput!]
+input Dummy2CrManyWithoutDummyCreateInput {
   create: [Dummy2CreateWithoutDummyInput!]
-  update: [Dummy2UpdateWithWhereUniqueWithoutDummyInput!]
-}
-
-input ConnectRelationInput {
-  id: String!
 }
 
 input Dummy2CreateWithoutDummyInput
 
-input Dummy2UpdateWithWhereUniqueWithoutDummyInput {
-  where: EntityIdInput!
-  data: Dummy2UpdateInput
+input Dummy2CoCrManyWithoutDummyCreateInput {
+  connect: [ConnectRelationInput!]
+  create: [Dummy2CreateWithoutDummyInput!]
 }
 
-input Dummy2UpdateInput {
-  dummyProp: DummyConnectNestedOneWithoutDummy2Input
-}
-
-input DummyConnectNestedOneWithoutDummy2Input {
-  connect: ConnectRelationInput
-  disconnect: Boolean
+input ConnectRelationInput {
+  id: String
 }
 
 input DummyUpdateInput {
@@ -208,8 +196,8 @@ input DummyUpdateInput {
   optionalStringProp: StringInput
   boolProp: BooleanInput
   dateProp: DateInput
-  oneToManyProp: Dummy2ConnectCreateUpdateNestedManyWithoutDummyInput
-  manyToManyProp: Dummy2ConnectCreateUpdateNestedManyWithoutDummyInput
+  oneToManyProp: Dummy2CrUpManyWithoutDummyUpdateInput
+  manyToManyProp: Dummy2CoCrUpManyWithoutDummyUpdateInput
 }
 
 input NumberInput {
@@ -230,5 +218,23 @@ input BooleanInput {
 
 input DateInput {
   set: DateTime
+}
+
+input Dummy2CrUpManyWithoutDummyUpdateInput {
+  create: [Dummy2CreateWithoutDummyInput!]
+  update: [Dummy2UpdateWithWhereUniqueWithoutDummyInput!]
+}
+
+input Dummy2UpdateWithWhereUniqueWithoutDummyInput {
+  where: EntityIdInput!
+  data: Dummy2UpdateInput
+}
+
+input Dummy2UpdateInput
+
+input Dummy2CoCrUpManyWithoutDummyUpdateInput {
+  connect: [ConnectRelationInput!]
+  create: [Dummy2CreateWithoutDummyInput!]
+  update: [Dummy2UpdateWithWhereUniqueWithoutDummyInput!]
 }"
 `;

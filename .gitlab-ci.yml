@@ -1,16 +1,18 @@
 image: node:20-alpine
 
 services:
-  - name: docker:dind
-    command: ["--tls=false"]
+  - name: docker:24.0.6-dind
+    command:
+      - --tls=false
+      - --registry-mirror=https://mirror.gcr.io
 
 variables:
-  DOCKER_HOST: "tcp://docker:2375"
-  DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://0.0.0.0:2375
+  DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
-  TESTCONTAINERS_HOST_OVERRIDE: "host.docker.internal"
-  KUBERNETES_CPU_REQUEST: "0.5"
-  KUBERNETES_CPU_LIMIT: "1"
+  DOCKER_BUILDKIT: '1'
+  KUBERNETES_CPU_REQUEST: '0.5'
+  KUBERNETES_CPU_LIMIT: '1'
   KUBERNETES_MEMORY_REQUEST: 2Gi
   KUBERNETES_MEMORY_LIMIT: 4Gi
 
@@ -28,7 +30,7 @@ stages:
 
 build-lib:
   stage: build
-  only: ["merge_requests", "main"]
+  only: ['merge_requests', 'main']
   script:
     - yarn --immutable
     - yarn build  --filter='./libs/*'
@@ -39,7 +41,7 @@ build-lib:
 
 build-samples:
   stage: build
-  only: ["merge_requests", "main"]
+  only: ['merge_requests', 'main']
   allow_failure: true
   script:
     - yarn --immutable
@@ -56,25 +58,9 @@ build-samples:
 #     - yarn --immutable
 #     - yarn changesets-gitlab comment
 
-lint-lib:
-  stage: test
-  only: ["merge_requests", "main"]
-  script:
-    - yarn --immutable
-    - yarn turbo run lint --filter='./libs/*'
-  cache:
-    paths:
-      - node_modules/
-      - .yarn
-
-# manual beacuse not working properly:
-# Could not find a working container runtime strategy
-# const pgContainer = await new PostgreSqlContainer()'
 test-lib:
   stage: test
-  only: ["merge_requests", "main"]
-  allow_failure: true
-  when: manual
+  only: ['merge_requests', 'main']
   script:
     - yarn --immutable
     - yarn turbo run test --filter='./libs/*'
@@ -88,7 +74,7 @@ test-lib:
 
 test-samples:
   stage: test
-  only: ["merge_requests", "main"]
+  only: ['merge_requests', 'main']
   allow_failure: true
   script:
     - yarn --immutable
@@ -101,7 +87,7 @@ test-samples:
 
 release:
   stage: release
-  only: ["main"]
+  only: ['main']
   script:
     - apk add --no-cache git
     - yarn --immutable
