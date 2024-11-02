@@ -11,10 +11,13 @@ variables:
   DOCKER_TLS_CERTDIR: ''
   DOCKER_DRIVER: overlay2
   DOCKER_BUILDKIT: '1'
+  DOCKER_MEMORY: '4g'
+  DOCKER_CPUS: '2'
+  TESTCONTAINERS_HOST_OVERRIDE: 'host.docker.internal'
+  KUBERNETES_MEMORY_REQUEST: 3Gi
+  KUBERNETES_MEMORY_LIMIT: 6Gi
   KUBERNETES_CPU_REQUEST: '0.5'
   KUBERNETES_CPU_LIMIT: '1'
-  KUBERNETES_MEMORY_REQUEST: 2Gi
-  KUBERNETES_MEMORY_LIMIT: 4Gi
 
 cache:
   - key: yarn-workspace
@@ -59,7 +62,8 @@ build-samples:
 #     - yarn changesets-gitlab comment
 
 test-lib:
-  stage: test
+  stage: build
+  needs: ['build-lib']
   only: ['merge_requests', 'main']
   script:
     - yarn --immutable
@@ -73,7 +77,8 @@ test-lib:
       - .yarn
 
 test-samples:
-  stage: test
+  stage: build
+  needs: ['build-samples']
   only: ['merge_requests', 'main']
   allow_failure: true
   script:

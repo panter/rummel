@@ -32,7 +32,7 @@ export class Group {
   @CrudField({
     hideCreate: false,
     hideUpdate: true,
-    relation: { hideConnect: false },
+    relation: { showConnect: true },
   })
   @Field(() => [User])
   @ManyToMany({ entity: () => User })
@@ -40,7 +40,7 @@ export class Group {
 
   @CrudField({
     hideCreate: true,
-    relation: { hideConnect: false, hideDisconnect: false },
+    relation: { showConnect: true, showDisconnect: true },
   })
   @Field(() => [User], { nullable: true })
   @ManyToMany({ entity: () => User, nullable: true })
@@ -52,8 +52,8 @@ export class Group {
     relation: {
       showCreate: true,
       showUpdate: true,
-      hideConnect: false,
-      hideDisconnect: false,
+      showConnect: true,
+      showDisconnect: true,
     },
   })
   @Field(() => [User], { nullable: true })
