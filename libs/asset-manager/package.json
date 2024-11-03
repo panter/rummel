@@ -19,7 +19,7 @@
   "devDependencies": {
     "@rummel/eslint-config-custom": "*",
     "@rummel/tsconfig": "*",
-    "@types/uuid": "^9.0.7",
+    "@types/uuid": "^9.0.8",
     "eslint": "8.57.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.6.3",

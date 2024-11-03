@@ -33,7 +33,7 @@
     "changesets-gitlab": "0.10.3",
     "concurrently": "^8.2.2",
     "patch-package": "^8.0.0",
-    "syncpack": "^12.3.0",
+    "syncpack": "^12.4.0",
     "turbo": "^2.0.3"
   }
 }

@@ -45,7 +45,7 @@
     "@rummel/tsconfig": "*",
     "@testcontainers/postgresql": "^10.13.2",
     "@types/lodash": "^4.17.13",
-    "@types/node": "^22.8.4",
+    "@types/node": "^22.8.7",
     "@types/pluralize": "^0.0.33",
     "@types/supertest": "^6.0.2",
     "class-transformer": "^0.5.1",
