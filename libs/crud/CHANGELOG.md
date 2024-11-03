@@ -1,5 +1,11 @@
 # @panter/crud
 
+## 0.2.10
+
+### Patch Changes
+
+- 4f10ad2: Feat: freaking change in CrudFiel, all relation show\* properties are default to false
+
 ## 0.2.9
 
 ### Patch Changes

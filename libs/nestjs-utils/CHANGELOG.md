@@ -1,5 +1,11 @@
 # @panter/nestjs-utils
 
+## 0.0.9
+
+### Patch Changes
+
+- 4f10ad2: Fix ModuleLogger typings
+
 ## 0.0.8
 
 ### Patch Changes
