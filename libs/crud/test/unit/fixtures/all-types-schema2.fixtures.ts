@@ -6,6 +6,7 @@ import { Dummy } from './all-types-shema.fixtures';
 @ObjectType()
 @Entity()
 export class Dummy2 {
+  // should not generate crud input fields because of ID type
   @Field(() => ID)
   @Property()
   idProp!: number;

@@ -4,6 +4,9 @@ import { DiscoveryService } from '@nestjs/core';
 import { CrudAuditCallback, CrudAuthorizeCallback } from '../';
 import { CrudModuleOptions } from '../crud.module';
 
+/**
+ * This service is used to register CRUD resources and to provide default authorization and audit callbacks.
+ */
 @Injectable()
 export class CrudService {
   private logger = new Logger(CrudService.name);

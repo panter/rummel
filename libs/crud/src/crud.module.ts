@@ -15,21 +15,25 @@ export interface CrudModuleOptions<T> {
 
 export type CrudModuleAsyncOptions<T> = ModuleAsyncOptions<
   CrudModuleOptions<T>
-> & { defaultRelationModifier?: boolean };
+>;
 
-let relationModifier: boolean | undefined = undefined;
+const relationModifier: boolean | undefined = true;
+const connectRelationModifier: boolean | undefined = true;
 
-export const defaultRelationModifier = () => relationModifier;
+export const defaultRelationModifier = () => {
+  return relationModifier;
+};
+export const defaultConnectRelationModifier = () => {
+  return connectRelationModifier;
+};
 
 @Module({})
 export class CrudModule implements OnModuleInit {
   static async forRootAsync<T>({
-    defaultRelationModifier,
     inject,
     imports,
     useFactory,
   }: CrudModuleAsyncOptions<T>): Promise<DynamicModule> {
-    relationModifier = defaultRelationModifier;
     return {
       module: CrudModule,
       imports: [...(imports || []), ConfigModule, DiscoveryModule],

@@ -21,15 +21,15 @@ type Mutation {
 
 input CompanyCreateInput {
   name: String
-  founder: UserConnectNestedOneWithoutCompanyInput
+  founder: UserCoOneWithoutCompanyCreateInput
 }
 
-input UserConnectNestedOneWithoutCompanyInput {
+input UserCoOneWithoutCompanyCreateInput {
   connect: ConnectRelationInput
 }
 
 input ConnectRelationInput {
-  id: String!
+  id: String
 }"
 `;
 
@@ -55,20 +55,15 @@ type Mutation {
 input GroupCreateInput {
   name: String
   description: String
-  founders: UserConnectNestedManyWithoutGroupInput
+  founders: UserCoManyWithoutGroupCreateInput
 }
 
-input UserConnectNestedManyWithoutGroupInput {
+input UserCoManyWithoutGroupCreateInput {
   connect: [ConnectRelationInput!]
-  disconnect: [EntityIdInput!]
 }
 
 input ConnectRelationInput {
-  id: String!
-}
-
-input EntityIdInput {
-  id: String!
+  id: String
 }"
 `;
 

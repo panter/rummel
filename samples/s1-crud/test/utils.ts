@@ -35,10 +35,10 @@ export interface TestContext {
   orm: MikroORM;
 }
 
-export const beforeAllCallback = async (
+export const beforeEachCallback = async (
   providers: Provider[],
 ): Promise<TestContext> => {
-  const pgContainer = await new PostgreSqlContainer()
+  const pgContainer = await new PostgreSqlContainer('postgres:13.3-alpine')
     .withStartupTimeout(TEST_TIMEOUT)
     .start();
   const fixture = await Test.createTestingModule({
@@ -98,7 +98,7 @@ export const beforeAllCallback = async (
   return { app, pgContainer, orm: orm as any };
 };
 
-export const afterAllCallback = async (context: TestContext) => {
+export const afterEachCallback = async (context: TestContext) => {
   await context?.orm?.close(true);
   await context?.app?.close();
   await context?.pgContainer?.stop();

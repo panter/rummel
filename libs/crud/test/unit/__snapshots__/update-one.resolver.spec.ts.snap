@@ -21,26 +21,23 @@ type Mutation {
 
 input CompanyUpdateInput {
   description: StringInput
-  ceo: UserConnectNestedOneWithoutCompanyInput
-  cto: UserNestedOneWithoutCompanyInput
+  ceo: UserCoOneWithoutCompanyUpdateInput
+  cto: UserCrUpOneWithoutCompanyUpdateInput
 }
 
 input StringInput {
   set: String
 }
 
-input UserConnectNestedOneWithoutCompanyInput {
+input UserCoOneWithoutCompanyUpdateInput {
   connect: ConnectRelationInput
-  disconnect: Boolean
 }
 
 input ConnectRelationInput {
-  id: String!
+  id: String
 }
 
-input UserNestedOneWithoutCompanyInput {
-  connect: ConnectRelationInput
-  disconnect: Boolean
+input UserCrUpOneWithoutCompanyUpdateInput {
   create: UserCreateWithoutCompanyInput
   update: UserUpdateWithoutCompanyInput
 }
@@ -54,7 +51,7 @@ input UserUpdateWithoutCompanyInput {
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }"
 `;
 
@@ -79,32 +76,32 @@ type Mutation {
 
 input GroupUpdateInput {
   description: StringInput
-  coordinator: UserConnectNestedManyWithoutGroupInput
-  finance: UserConnectCreateUpdateNestedManyWithoutGroupInput
+  coordinator: UserCoDiManyWithoutGroupUpdateInput
+  finance: UserCrudManyWithoutGroupUpdateInput
 }
 
 input StringInput {
   set: String
 }
 
-input UserConnectNestedManyWithoutGroupInput {
+input UserCoDiManyWithoutGroupUpdateInput {
   connect: [ConnectRelationInput!]
   disconnect: [EntityIdInput!]
 }
 
 input ConnectRelationInput {
-  id: String!
+  id: String
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }
 
-input UserConnectCreateUpdateNestedManyWithoutGroupInput {
+input UserCrudManyWithoutGroupUpdateInput {
   connect: [ConnectRelationInput!]
-  disconnect: [EntityIdInput!]
   create: [UserCreateWithoutGroupInput!]
   update: [UserUpdateWithWhereUniqueWithoutGroupInput!]
+  disconnect: [EntityIdInput!]
 }
 
 input UserCreateWithoutGroupInput {
@@ -140,6 +137,6 @@ input StringInput {
 }
 
 input EntityIdInput {
-  id: String!
+  id: String
 }"
 `;

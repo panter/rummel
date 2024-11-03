@@ -1,6 +1,6 @@
-import { LoggerModule } from 'nestjs-pino';
 import { DynamicModule, Module } from '@nestjs/common';
-import { Request } from 'express';
+import { IncomingMessage, ServerResponse } from 'http';
+import { LoggerModule } from 'nestjs-pino';
 import { ModuleAsyncOptions } from '../types';
 
 const pinoLevelToGcpSeverity = {
@@ -20,7 +20,10 @@ interface PinoLoggerModuleOptions {
    * @param req - Express request
    * @param res - Express response
    */
-  customProps?: (req: Request, res: Response) => Record<string, any>;
+  customProps?: (
+    req: IncomingMessage,
+    res: ServerResponse,
+  ) => Record<string, any>;
   /**
    * Pretty log format
    */
@@ -47,10 +50,12 @@ export class PinoLoggerModule {
         messageKey: messageKey,
         level: logLevel || 'trace',
         formatters: {
-          level(label: keyof typeof pinoLevelToGcpSeverity, number: number) {
+          level(label: string, number: number) {
             return {
               severity:
-                pinoLevelToGcpSeverity[label] || pinoLevelToGcpSeverity['info'],
+                pinoLevelToGcpSeverity[
+                  label as keyof typeof pinoLevelToGcpSeverity
+                ] || pinoLevelToGcpSeverity['info'],
               level: number,
             };
           },

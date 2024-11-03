@@ -3,10 +3,10 @@ import request from 'supertest';
 import { CreateOneResolver } from '../../src';
 import { User } from '../fixtures/user.entity';
 import {
-  afterAllCallback,
-  beforeAllCallback,
   TEST_TIMEOUT,
   TestContext,
+  afterEachCallback,
+  beforeEachCallback,
 } from './utils';
 
 jest.useRealTimers();
@@ -23,14 +23,15 @@ export class CreateOneUserResolver extends CreateOneResolver(User) {
 
 describe('CreateOneUser', () => {
   jest.setTimeout(TEST_TIMEOUT);
+
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([CreateOneUserResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([CreateOneUserResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
   it('should create user', async () => {
@@ -53,5 +54,5 @@ describe('CreateOneUser', () => {
       .expect((res) => {
         expect(res.body.data.createOneUser).toMatchSnapshot();
       });
-  }, 60000);
+  }, 120000);
 });

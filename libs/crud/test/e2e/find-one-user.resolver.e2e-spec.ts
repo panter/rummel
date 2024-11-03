@@ -3,8 +3,8 @@ import request from 'supertest';
 import { FindOneResolver } from '../../src';
 import { User } from '../fixtures/user.entity';
 import {
-  afterAllCallback,
-  beforeAllCallback,
+  afterEachCallback,
+  beforeEachCallback,
   TEST_TIMEOUT,
   TestContext,
 } from './utils';
@@ -23,21 +23,24 @@ export class FindOneUserResolver extends FindOneResolver(User) {
 
 describe('FindOneUser', () => {
   jest.setTimeout(TEST_TIMEOUT);
+
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([FindOneUserResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([FindOneUserResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
   it('should find a user', async () => {
     const httpServer = context.app.getHttpServer();
     const em = context.orm.em.fork();
 
-    const user = em.create(User, { name: 'user' });
+    const user = em.create(User, {
+      name: 'user',
+    });
     await em.persistAndFlush(user);
     em.clear();
 

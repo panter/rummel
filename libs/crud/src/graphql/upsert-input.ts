@@ -2,7 +2,11 @@ import { Field, Float, InputType, TypeMetadataStorage } from '@nestjs/graphql';
 import { GraphQLJSON } from 'graphql-scalars';
 import GraphQLUpload from 'graphql-upload/GraphQLUpload.js';
 import { isArray, uniqBy } from 'lodash';
-import { CrudGqlType, defaultRelationModifier } from '../'; // CrudGqlType needs to be imported from root index.ts
+import {
+  CrudGqlType,
+  defaultConnectRelationModifier,
+  defaultRelationModifier,
+} from '../'; // CrudGqlType needs to be imported from root index.ts
 import { CrudEntityType } from './crud-types';
 import { manyRelationInput } from './many-relation-input';
 import { typesCache } from './types-cache';
@@ -95,8 +99,12 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
         hideUpdate: true,
         hideCreate:
           p.crudOptions?.relation?.showCreate !== undefined
-            ? p.crudOptions?.relation?.showCreate
+            ? !p.crudOptions?.relation?.showCreate
             : defaultRelationModifier(),
+        hideConnect:
+          p.crudOptions?.relation?.showConnect !== undefined
+            ? !p.crudOptions?.relation?.showConnect
+            : defaultConnectRelationModifier(),
         parentProperty: p.name,
       },
     );
@@ -129,8 +137,12 @@ const getCreateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
       hideDisconnect: true,
       hideCreate:
         p.crudOptions?.relation?.showCreate !== undefined
-          ? p.crudOptions?.relation?.showCreate
+          ? !p.crudOptions?.relation?.showCreate
           : defaultRelationModifier(),
+      hideConnect:
+        p.crudOptions?.relation?.showConnect !== undefined
+          ? !p.crudOptions?.relation?.showConnect
+          : defaultConnectRelationModifier(),
       parentProperty: p.name,
     });
   }
@@ -154,13 +166,22 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
         parentRef,
         hideCreate:
           p.crudOptions?.relation?.showCreate !== undefined
-            ? p.crudOptions?.relation?.showCreate
+            ? !p.crudOptions?.relation?.showCreate
             : defaultRelationModifier(),
         hideUpdate:
           p.crudOptions?.relation?.showUpdate !== undefined
-            ? p.crudOptions?.relation?.showUpdate
+            ? !p.crudOptions?.relation?.showUpdate
             : defaultRelationModifier(),
-        hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+        hideDisconnect:
+          p.crudOptions?.relation?.showDisconnect !== undefined
+            ? !p.crudOptions?.relation?.showDisconnect
+            : !p.crudOptions?.fieldOptions?.nullable
+              ? true
+              : defaultConnectRelationModifier(),
+        hideConnect:
+          p.crudOptions?.relation?.showConnect !== undefined
+            ? !p.crudOptions?.relation?.showConnect
+            : defaultConnectRelationModifier(),
         parentProperty: p.name,
       },
     );
@@ -194,13 +215,22 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
           parentRef,
           hideCreate:
             p.crudOptions?.relation?.showCreate !== undefined
-              ? p.crudOptions?.relation?.showCreate
+              ? !p.crudOptions?.relation?.showCreate
               : defaultRelationModifier(),
           hideUpdate:
             p.crudOptions?.relation?.showUpdate !== undefined
-              ? p.crudOptions?.relation?.showUpdate
+              ? !p.crudOptions?.relation?.showUpdate
               : defaultRelationModifier(),
-          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          hideConnect:
+            p.crudOptions?.relation?.showConnect !== undefined
+              ? !p.crudOptions?.relation?.showConnect
+              : defaultConnectRelationModifier(),
+          hideDisconnect:
+            p.crudOptions?.relation?.showDisconnect !== undefined
+              ? !p.crudOptions?.relation?.showDisconnect
+              : !p.crudOptions?.fieldOptions?.nullable
+                ? true
+                : defaultConnectRelationModifier(),
           parentProperty: p.name,
         },
       );
@@ -212,14 +242,22 @@ const getUpdateDesignType = (p: CrudInfo, parentRef: CrudEntityType) => {
           parentRef,
           hideCreate:
             p.crudOptions?.relation?.showCreate !== undefined
-              ? p.crudOptions?.relation?.showCreate
+              ? !p.crudOptions?.relation?.showCreate
               : defaultRelationModifier(),
           hideUpdate:
             p.crudOptions?.relation?.showUpdate !== undefined
-              ? p.crudOptions?.relation?.showUpdate
+              ? !p.crudOptions?.relation?.showUpdate
               : defaultRelationModifier(),
-          hideConnect: p.crudOptions?.relation?.hideConnect,
-          hideDisconnect: p.crudOptions?.relation?.hideDisconnect,
+          hideConnect:
+            p.crudOptions?.relation?.showConnect !== undefined
+              ? !p.crudOptions?.relation?.showConnect
+              : defaultConnectRelationModifier(),
+          hideDisconnect:
+            p.crudOptions?.relation?.showDisconnect !== undefined
+              ? !p.crudOptions?.relation?.showDisconnect
+              : !p.crudOptions?.fieldOptions?.nullable
+                ? true
+                : defaultConnectRelationModifier(),
           parentProperty: p.name,
         },
       );

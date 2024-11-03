@@ -24,12 +24,12 @@ export class Company {
   @Property({ nullable: true })
   description?: string;
 
-  @CrudField({ hideUpdate: true })
+  @CrudField({ hideUpdate: true, relation: { showConnect: true } })
   @Field()
   @ManyToOne(() => User)
   founder!: User;
 
-  @CrudField({ hideCreate: true })
+  @CrudField({ hideCreate: true, relation: { showConnect: true } })
   @Field({ nullable: true })
   @ManyToOne(() => User, { nullable: true })
   ceo?: User;

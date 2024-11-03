@@ -73,7 +73,7 @@ export class Dummy {
 
   @CrudField({
     typeFn: () => Dummy2,
-    relation: { showCreate: true, showUpdate: true },
+    relation: { showCreate: true, showUpdate: true, showConnect: true },
   })
   @Field(() => [Dummy2])
   @ManyToMany(() => Dummy2, (dummy2) => dummy2.dummyProp)

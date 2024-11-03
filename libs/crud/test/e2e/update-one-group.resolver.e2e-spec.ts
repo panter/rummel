@@ -1,13 +1,13 @@
-import { Resolver, Query } from '@nestjs/graphql';
+import { Query, Resolver } from '@nestjs/graphql';
 import request from 'supertest';
 import { UpdateOneResolver } from '../../src';
 import { Group } from '../fixtures/group.entity';
 import { User } from '../fixtures/user.entity';
 import {
+  afterEachCallback,
+  beforeEachCallback,
   TEST_TIMEOUT,
   TestContext,
-  afterAllCallback,
-  beforeAllCallback,
 } from './utils';
 
 jest.useRealTimers();
@@ -24,22 +24,27 @@ export class UpdateOneGroupResolver extends UpdateOneResolver(Group) {
 
 describe('UpdateOneGroup', () => {
   jest.setTimeout(TEST_TIMEOUT);
+
   let context: TestContext;
 
-  beforeAll(async () => {
-    context = await beforeAllCallback([UpdateOneGroupResolver]);
+  beforeEach(async () => {
+    context = await beforeEachCallback([UpdateOneGroupResolver]);
   });
 
-  afterAll(async () => {
-    return afterAllCallback(context);
+  afterEach(async () => {
+    return afterEachCallback(context);
   });
 
   it('should update group', async () => {
     const httpServer = context.app.getHttpServer();
     const em = context.orm.em.fork();
 
-    const gor = em.create(User, { name: 'gor' });
-    const csp = em.create(User, { name: 'csp' });
+    const gor = em.create(User, {
+      name: 'gor',
+    });
+    const csp = em.create(User, {
+      name: 'csp',
+    });
     await em.persistAndFlush(gor);
     await em.persistAndFlush(csp);
 
@@ -50,8 +55,12 @@ describe('UpdateOneGroup', () => {
       coordinator: [csp],
       finance: [gor],
     });
-    const psc = em.create(User, { name: 'psc' });
-    const maw = em.create(User, { name: 'maw' });
+    const psc = em.create(User, {
+      name: 'psc',
+    });
+    const maw = em.create(User, {
+      name: 'maw',
+    });
     await em.persistAndFlush(manul);
     await em.persistAndFlush(psc);
     await em.persistAndFlush(maw);

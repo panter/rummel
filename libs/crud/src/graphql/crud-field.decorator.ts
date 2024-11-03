@@ -53,9 +53,9 @@ export type InputFieldResolver<Entity = any, GqlInput = any> = (
 
 export type CrudRelationFieldOptions = {
   /**
-   * If set to `true`, the relation cannot be connected by primary key
+   *  If set to `true`, the relation can be disconnected with all it's fields.
    */
-  hideConnect?: boolean;
+  showConnect?: boolean;
   /**
    *  If set to `true`, the relation can be created with all it's fields.
    */
@@ -65,9 +65,9 @@ export type CrudRelationFieldOptions = {
    */
   showUpdate?: boolean;
   /**
-   *  If set to `true`, the relation cannot be disconnected by primary key.
+   *  If set to `true`, the relation can be disconnected with all it's fields.
    */
-  hideDisconnect?: boolean;
+  showDisconnect?: boolean;
 };
 
 export type CrudFieldProps<Entity = any, GqlInput = any, GqlWhere = any> = {
